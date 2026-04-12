@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-super-admin-layout',
   standalone: true,
-  imports: [CommonModule],
-  template: `<div class="super-admin-layout min-h-screen bg-surface"><ng-content></ng-content></div>`,
+  imports: [RouterOutlet],
+  template: `<router-outlet></router-outlet>`
 })
 export class SuperAdminLayoutComponent {}

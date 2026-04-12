@@ -20,11 +20,11 @@
                 <form [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="space-y-6 sm:space-y-8">
                     <!-- OTP Inputs -->
                     <div class="flex justify-between gap-2 sm:gap-4">
-                        <input *ngFor="let i of [0,1,2,3,4,5]" 
+                        <input *ngFor="let i of [0,1,2,3,4,5]"
                                #otpInput
-                               type="text" 
-                               maxlength="1" 
-                               (input)="onInput($event, i)" 
+                               type="text"
+                               maxlength="1"
+                               (input)="onInput($event, i)"
                                (keydown.backspace)="onBackspace($event, i)"
                                class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface outline-none"
                                [formControlName]="'digit' + i">
@@ -35,7 +35,7 @@
                         <div class="text-sm text-on-surface-variant">
                             Resend code in <span class="font-mono font-bold text-primary">{{ formatTime(timer()) }}</span>
                         </div>
-                        <button type="button" 
+                        <button type="button"
                                 [disabled]="timer() > 0"
                                 (click)="onResendOtp()"
                                 class="text-sm font-bold text-primary hover:text-primary-dim transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
@@ -44,15 +44,15 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button [disabled]="otpForm.invalid || isSubmitting()" 
-                            class="w-full h-12 sm:h-14 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center justify-center gap-2 hover:opacity-95 active:scale-[0.98] transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed" 
+                    <button [disabled]="otpForm.invalid || isSubmitting()"
+                            class="w-full h-12 sm:h-14 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center justify-center gap-2 hover:opacity-95 active:scale-[0.98] transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
                             type="submit">
                         <span *ngIf="isSubmitting()" class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
                         {{ isSubmitting() ? 'Verifying...' : 'Verify & Proceed' }}
                         <span *ngIf="!isSubmitting()" class="material-symbols-outlined text-xl">check_circle</span>
                     </button>
                 </form>
-                
+
                 <div class="text-center">
                     <a routerLink="/auth/login" class="text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-lg">arrow_back</span>

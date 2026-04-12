@@ -17,7 +17,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   otpForm: FormGroup;
   isSubmitting = signal(false);
   timer = signal(300); // 5 minutes in seconds
-  email = signal('admin@taleemhub.edu');
+  email: string = localStorage.getItem('taleem_email') || '';
 
   private intervalId: any;
 
@@ -34,7 +34,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
 
     const state = this.router.getCurrentNavigation()?.extras.state;
     if (state?.['email']) {
-      this.email.set(state['email']);
+      this.email = state['email'];
     }
   }
 
@@ -81,7 +81,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   }
 
   onResendOtp(): void {
-    console.log('Resending OTP for:', this.email());
+    console.log('Resending OTP for:', this.email);
     this.startTimer();
   }
 
@@ -91,7 +91,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
       const otp = Object.values(this.otpForm.value).join('');
       console.log('Verifying OTP:', otp);
 
-      this.authService.verifyOtp({ email: this.email(), otp }).subscribe({
+      this.authService.verifyOtp({ email: this.email, otp }).subscribe({
         next: (res) => {
           this.isSubmitting.set(false);
           if (res.success) {
