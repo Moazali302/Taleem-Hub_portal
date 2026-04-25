@@ -1,170 +1,183 @@
 <body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
-    <!-- Main Registration Section -->
-    <main class="flex-grow flex items-center justify-center p-4 md:p-6 lg:p-12 relative overflow-hidden">
-        <!-- Abstract Background Elements -->
-        <div class="absolute inset-0 pointer-events-none opacity-5">
-            <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-surface-tint blur-[120px]"></div>
-            <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-tertiary blur-[120px]"></div>
+  <main class="flex-grow flex items-center justify-center p-4 md:p-6 lg:p-12 relative overflow-hidden">
+    <!-- Background Elements -->
+    <div class="absolute inset-0 pointer-events-none opacity-5">
+      <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-surface-tint blur-[120px]"></div>
+      <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-tertiary blur-[120px]"></div>
+    </div>
+
+    <div class="w-full max-w-[1200px] flex flex-col lg:flex-row bg-surface-container-lowest rounded-2xl lg:rounded-3xl shadow-[0px_12px_40px_rgba(43,52,55,0.08)] overflow-hidden relative z-10">
+      
+      <!-- Left Side -->
+      <div class="hidden md:flex lg:w-1/2 flex-col justify-between p-8 md:p-12 lg:p-16 bg-surface-container-low relative overflow-hidden">
+        <div class="relative z-10">
+          <div class="flex items-center gap-3 mb-10 lg:mb-16">
+            <span class="material-symbols-outlined text-primary text-3xl md:text-4xl">account_balance</span>
+            <span class="text-xl md:text-2xl font-headline font-bold tracking-tighter text-on-surface">Taleem_Hub</span>
+          </div>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-headline font-extrabold tracking-tight text-on-surface leading-[1.1] mb-6">
+            The Institution's <br class="hidden lg:block"/>Digital Foundation.
+          </h1>
+          <p class="text-base md:text-lg text-on-surface-variant max-w-sm leading-relaxed">
+            Join the elite network of academic institutions leveraging secure, authoritative data management for the modern era.
+          </p>
         </div>
-        <div class="w-full max-w-[1200px] flex flex-col lg:flex-row bg-surface-container-lowest rounded-2xl lg:rounded-3xl shadow-[0px_12px_40px_rgba(43,52,55,0.08)] overflow-hidden relative z-10">
-            <!-- Left Side: Editorial & Brand -->
-            <div class="hidden md:flex lg:w-1/2 flex-col justify-between p-8 md:p-12 lg:p-16 bg-surface-container-low relative overflow-hidden">
-                <div class="relative z-10">
-                    <div class="flex items-center gap-3 mb-10 lg:mb-16">
-                        <span class="material-symbols-outlined text-primary text-3xl md:text-4xl">account_balance</span>
-                        <span class="text-xl md:text-2xl font-headline font-bold tracking-tighter text-on-surface">
-                          Taleem_Hub</span>
-                    </div>
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-headline font-extrabold tracking-tight text-on-surface leading-[1.1] mb-6">
-                        The Institution's <br class="hidden lg:block"/>Digital Foundation.
-                    </h1>
-                    <p class="text-base md:text-lg text-on-surface-variant max-w-sm leading-relaxed">
-                        Join the elite network of academic institutions leveraging secure, authoritative data management for the modern era.
-                    </p>
-                </div>
-                <div class="relative z-10 mt-12 lg:mt-0">
-                    <div class="inline-flex items-center gap-4 p-4 rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant/10">
-                        <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-outlined text-on-secondary-container text-xl">verified</span>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-on-surface">Taleem Administrative Core</p>
-                            <p class="text-xs text-on-surface-variant">Validated Educational Security</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Decorative Image Inset -->
-                <div class="absolute bottom-0 right-0 w-[50%] h-[40%] opacity-15 grayscale pointer-events-none">
-                    <img alt="academic architecture" class="object-cover w-full h-full object-bottom" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCph_Y9LQUbYg3dMABHvmpTsh-WA59SlrJ5zPkKtpEh8gdh9LThjGEUQjYC40nhwlivqK80hS0hBSTeW1Oiy104wBgZWIGi7jq5wLxMpGK8Id5_LTkqhtkxxYnRWReurUu7ac_d9Lj7gdmsvlFDohs6mM7lYA_bl4o-ZDogJPys35_bB2CAhmpYntU6RrkLNRkUoz9S4PcIhNU1CWrfN4DK_uKpD9jmYpbXvYu_ABZEtqvzQDDFlJhTBWjBnvVi_BNPPklmiIR3vkg"/>
-                </div>
+        <div class="relative z-10 mt-12 lg:mt-0">
+          <div class="inline-flex items-center gap-4 p-4 rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant/10">
+            <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-on-secondary-container text-xl">verified</span>
             </div>
-            <!-- Mobile Brand Header -->
-            <div class="md:hidden p-6 pb-0 flex items-center gap-3">
-                <span class="material-symbols-outlined text-primary text-3xl">account_balance</span>
-                <span class="text-xl font-headline font-bold tracking-tighter text-on-surface">Taleem_Hub</span>
+            <div>
+              <p class="text-sm font-semibold text-on-surface">Taleem Administrative Core</p>
+              <p class="text-xs text-on-surface-variant">Validated Educational Security</p>
             </div>
-            <!-- Right Side: Registration Form -->
-            <div class="w-full lg:w-1/2 p-6 md:p-12 lg:p-16 flex flex-col justify-center">
-                <div class="mb-8 md:mb-10">
-                    <h2 class="text-2xl md:text-3xl font-headline font-bold tracking-tight text-on-surface mb-2">Create Institution Account</h2>
-                    <p class="text-sm md:text-base text-on-surface-variant font-medium">Please provide official school credentials to begin.</p>
-                </div>
-                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5 md:space-y-6">
-                    <div class="space-y-1.5">
-                        <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" 
-                        for="school_name">
-                        School Name 
-                      </label>
-                 
-                  <div class="relative">
-                    <input formControlName="schoolName"
-                       class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
-                       id="school_name"
-                       placeholder="E.g. Heritage International Academy"
-                            type="text"/>
-                          <div *ngIf="registerForm.get('schoolName')?.touched && registerForm.get('schoolName')?.invalid" 
-                            class="text-error text-[10px] mt-1">
-                            School Name is required
-                          </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-                        <div class="space-y-1.5">
-                            <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
-                             for="owner_name">
-                             Owner Name
-                            </label>
-
-                            <input formControlName="ownerName" 
-                            class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
-                             id="owner_name" 
-                             placeholder="Full Legal Name"
-                              type="text"/>
-                            <div *ngIf="registerForm.get('ownerName')?.touched && registerForm.get('ownerName')?.invalid"
-                             class="text-error text-[10px] mt-1">
-                             Owner Name is required
-                            </div>
-                        </div>
-
-                  <div class="space-y-1.5">
-                      <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
-                         for="phone">Phone Number
-                    </label>
-                            <input formControlName="phone"
-                            class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface
-                             placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
-                              id="phone"
-                              placeholder="+92XXXXXXXXXX"
-                              type="tel"/>
-                            <div *ngIf="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid"
-                             class="text-error text-[10px] mt-1">
-                                <span *ngIf="registerForm.get('phone')?.errors?.['required']">
-                                  Phone is required
-                                </span>
-                                <span *ngIf="registerForm.get('phone')?.errors?.['pattern']">
-                                  Format: +92XXXXXXXXXX
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
-                         for="address">School Address
-                        </label>
-                        <textarea formControlName="address"
-                         class="w-full p-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none text-sm md:text-base" 
-                         id="address"
-                          placeholder="Street, City, State, ZIP Code" 
-                          rows="3">
-                        </textarea>
-
-                        <div *ngIf="registerForm.get('address')?.touched && registerForm.get('address')?.invalid"
-                         class="text-error text-[10px] mt-1">Address is required</div>
-                    </div>
-                    <div class="space-y-1.5">
-                        <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" 
-                        for="password">Password</label>
-                        <div class="relative group">
-                            <input formControlName="password" [type]="showPassword() ? 'text' : 'password'"
-                             class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface 
-                             placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base" id="password" placeholder="••••••••••••" />
-                            <span (click)="togglePasswordVisibility()"
-                             class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline cursor-pointer hover:text-primary transition-colors">
-                                {{ showPassword() ? 'visibility_off' : 'visibility' }}
-                            </span>
-                        </div>
-                        <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid"
-                         class="text-error text-[10px] mt-1">
-                            <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</span>
-                            <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Minimum 8 characters</span>
-                            <span *ngIf="registerForm.get('password')?.errors?.['pattern']">Must have uppercase, lowercase, and number</span>
-                        </div>
-                    </div>
-                    <div class="pt-4 md:pt-6">
-                        <button [disabled]="registerForm.invalid || isSubmitting()" class="w-full h-14 md:h-16 primary-gradient text-on-primary font-headline font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-3 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed" type="submit">
-                            <span *ngIf="isSubmitting()" class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
-                            {{ isSubmitting() ? 'Registering...' : 'Complete Institutional Registration' }}
-                            <span *ngIf="!isSubmitting()" class="material-symbols-outlined text-xl">arrow_forward</span>
-                        </button>
-                    </div>
-                </form>
-                <div class="mt-8 md:mt-10 pt-8 md:pt-10 border-t border-outline-variant/10 text-center">
-                    <p class="text-sm text-on-surface-variant">
-                        Already registered?
-                        <a class="text-primary font-bold hover:underline ml-1" routerLink="/auth/login">Administrator Login</a>
-                    </p>
-                </div>
-            </div>
+          </div>
         </div>
-    </main>
-    <!-- Footer -->
-    <footer class="flex flex-col items-center gap-4 py-8 md:py-12 w-full mt-auto px-6">
-        <div class="flex flex-wrap justify-center items-center gap-x-8 gap-y-4">
-            <a class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-primary transition-colors duration-300" href="#">Privacy Policy</a>
-            <a class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-primary transition-colors duration-300" href="#">Terms of Service</a>
-            <a class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-primary transition-colors duration-300" href="#">Help Center</a>
+        <div class="absolute bottom-0 right-0 w-[50%] h-[40%] opacity-15 grayscale pointer-events-none">
+          <img alt="academic architecture" class="object-cover w-full h-full object-bottom"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCph_Y9LQUbYg3dMABHvmpTsh-WA59SlrJ5zPkKtpEh8gdh9LThjGEUQjYC40nhwlivqK80hS0hBSTeW1Oiy104wBgZWIGi7jq5wLxMpGK8Id5_LTkqhtkxxYnRWReurUu7ac_d9Lj7gdmsvlFDohs6mM7lYA_bl4o-ZDogJPys35_bB2CAhmpYntU6RrkLNRkUoz9S4PcIhNU1CWrfN4DK_uKpD9jmYpbXvYu_ABZEtqvzQDDFlJhTBWjBnvVi_BNPPklmiIR3vkg"/>
         </div>
-        <p class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 text-center">© 2024 Taleem_Hub. Institutional Grade Management.</p>
-    </footer>
+      </div>
+
+      <!-- Mobile Brand -->
+      <div class="md:hidden p-6 pb-0 flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary text-3xl">account_balance</span>
+        <span class="text-xl font-headline font-bold tracking-tighter text-on-surface">Taleem_Hub</span>
+      </div>
+
+      <!-- Right Side: Form -->
+      <div class="w-full lg:w-1/2 p-6 md:p-12 lg:p-16 flex flex-col justify-center">
+        <div class="mb-8 md:mb-10">
+          <h2 class="text-2xl md:text-3xl font-headline font-bold tracking-tight text-on-surface mb-2">Create Institution Account</h2>
+          <p class="text-sm md:text-base text-on-surface-variant font-medium">Please provide official school credentials to begin.</p>
+        </div>
+
+        <!-- Global Error Message -->
+        <div *ngIf="errorMessage()" class="mb-4 p-3 rounded-xl bg-error-container text-on-error-container text-sm">
+          {{ errorMessage() }}
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5 md:space-y-6" novalidate>
+          
+          <!-- School Name -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="school_name">
+              School Name
+            </label>
+            <input formControlName="schoolName"
+              class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
+              id="school_name" placeholder="E.g. Heritage International Academy" type="text" autocomplete="organization"/>
+            <div *ngIf="f['schoolName'].touched && f['schoolName'].invalid" class="text-error text-[10px] mt-1">
+              <span *ngIf="f['schoolName'].errors?.['required']">School name is required</span>
+              <span *ngIf="f['schoolName'].errors?.['maxlength']">Maximum 255 characters allowed</span>
+            </div>
+          </div>
+
+          <!-- Owner Name & Email -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+            <div class="space-y-1.5">
+              <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="owner_name">
+                Owner Name
+              </label>
+              <input formControlName="ownerName"
+                class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
+                id="owner_name" placeholder="Full Legal Name" type="text" autocomplete="name"/>
+              <div *ngIf="f['ownerName'].touched && f['ownerName'].invalid" class="text-error text-[10px] mt-1">
+                <span *ngIf="f['ownerName'].errors?.['required']">Owner name is required</span>
+              </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="email">
+                Email
+              </label>
+              <input formControlName="email"
+                class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
+                id="email" placeholder="admin@school.edu.pk" type="email" autocomplete="email"/>
+              <div *ngIf="f['email'].touched && f['email'].invalid" class="text-error text-[10px] mt-1">
+                <span *ngIf="f['email'].errors?.['required']">Email is required</span>
+                <span *ngIf="f['email'].errors?.['email']">Enter a valid email address</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="phone">
+              Phone Number
+            </label>
+            <input formControlName="phone"
+              class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
+              id="phone" placeholder="+923001234567" type="tel" autocomplete="tel"/>
+            <div *ngIf="f['phone'].touched && f['phone'].invalid" class="text-error text-[10px] mt-1">
+              <span *ngIf="f['phone'].errors?.['required']">Phone number is required</span>
+              <span *ngIf="f['phone'].errors?.['pattern']">Format: +92 followed by 10 digits</span>
+            </div>
+          </div>
+
+          <!-- School Address -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="schoolAddress">
+              School Address
+            </label>
+            <textarea formControlName="schoolAddress"
+              class="w-full p-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none text-sm md:text-base"
+              id="schoolAddress" placeholder="Street, City, State, ZIP Code" rows="3"></textarea>
+            <div *ngIf="f['schoolAddress'].touched && f['schoolAddress'].invalid" class="text-error text-[10px] mt-1">
+              <span *ngIf="f['schoolAddress'].errors?.['required']">School address is required</span>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="password">
+              Password
+            </label>
+            <div class="relative group">
+              <input formControlName="password" [type]="showPassword() ? 'text' : 'password'"
+                class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
+                id="password" placeholder="••••••••••••" autocomplete="new-password"/>
+              <span (click)="togglePasswordVisibility()"
+                class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline cursor-pointer hover:text-primary transition-colors">
+                {{ showPassword() ? 'visibility_off' : 'visibility' }}
+              </span>
+            </div>
+            <div *ngIf="f['password'].touched && f['password'].invalid" class="text-error text-[10px] mt-1">
+              <span *ngIf="f['password'].errors?.['required']">Password is required</span>
+              <span *ngIf="f['password'].errors?.['minlength']">Minimum 8 characters required</span>
+              <span *ngIf="f['password'].errors?.['pattern']">Must include uppercase, lowercase and number</span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-4 md:pt-6">
+            <button type="submit"
+              [disabled]="isSubmitting()"
+              class="w-full h-14 md:h-16 primary-gradient text-on-primary font-headline font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-3 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed">
+              <span *ngIf="isSubmitting()" class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
+              {{ isSubmitting() ? 'Registering...' : 'Complete Institutional Registration' }}
+              <span *ngIf="!isSubmitting()" class="material-symbols-outlined text-xl">arrow_forward</span>
+            </button>
+          </div>
+
+        </form>
+
+        <div class="mt-8 md:mt-10 pt-8 md:pt-10 border-t border-outline-variant/10 text-center">
+          <p class="text-sm text-on-surface-variant">
+            Already registered?
+            <a class="text-primary font-bold hover:underline ml-1" routerLink="/auth/login">Administrator Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="flex flex-col items-center gap-4 py-8 md:py-12 w-full mt-auto px-6">
+    <div class="flex flex-wrap justify-center items-center gap-x-8 gap-y-4">
+      <a class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-400 hover:text-primary transition-colors duration-300" href="#">Privacy Policy</a>
+      <a class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-400 hover:text-primary transition-colors duration-300" href="#">Terms of Service</a>
+      <a class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-400 hover:text-primary transition-colors duration-300" href="#">Help Center</a>
+    </div>
+    <p class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-500 text-center">© 2024 Taleem_Hub. Institutional Grade Management.</p>
+  </footer>
 </body>

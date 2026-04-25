@@ -15,6 +15,7 @@ export class RegisterComponent {
   registerForm: FormGroup;
   isSubmitting = signal(false);
   showPassword = signal(false);
+  errorMessage = signal<string | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -22,15 +23,13 @@ export class RegisterComponent {
     private router: Router
   ) {
     this.registerForm = this.fb.group({
-      schoolName: ['', [Validators.required]],
-      ownerName: ['', [Validators.required]],
-      phone: ['', [
-        Validators.required, 
-        Validators.pattern(/^\+92\d{10}$/)
-      ]],
-      address: ['', [Validators.required]],
+      schoolName: ['', [Validators.required, Validators.maxLength(255)]],
+      ownerName: ['', [Validators.required, Validators.maxLength(255)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
+      phone: ['', [Validators.required, Validators.pattern(/^\+92[0-9]{10}$/)]],
+      schoolAddress: ['', [Validators.required, Validators.maxLength(500)]],
       password: ['', [
-        Validators.required, 
+        Validators.required,
         Validators.minLength(8),
         Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)
       ]]
@@ -41,25 +40,37 @@ export class RegisterComponent {
     this.showPassword.update(v => !v);
   }
 
+  get f() {
+    return this.registerForm.controls;
+  }
+
   onSubmit(): void {
-    if (this.registerForm.valid) {
-      this.isSubmitting.set(true);
-      console.log('Register Data:', this.registerForm.value);
-      
-      this.authService.register(this.registerForm.value).subscribe({
-        next: (res) => {
-          this.isSubmitting.set(false);
-          if (res.success) {
-            this.router.navigate(['/auth/verify-otp'], { state: { email: this.registerForm.value.email } });
-          }
-        },
-        error: (err) => {
-          this.isSubmitting.set(false);
-          console.log(err);
-        }
-      });
-    } else {
+    this.errorMessage.set(null);
+
+    if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
+      return;
     }
+
+    this.isSubmitting.set(true);
+
+    this.authService.register(this.registerForm.value).subscribe({
+      next: (res) => {
+        this.isSubmitting.set(false);
+        if (res.success) {
+          this.router.navigate(['/auth/verify-otp'], {
+            state: { email: this.registerForm.value.email }
+          });
+        }
+      },
+      error: (err) => {
+        this.isSubmitting.set(false);
+        this.errorMessage.set(
+          err?.error?.message?.message ||
+          err?.error?.message ||
+          'Registration failed. Please try again.'
+        );
+      }
+    });
   }
 }
