@@ -53,8 +53,9 @@ export class RegisterComponent {
             this.router.navigate(['/auth/verify-otp'], { state: { email: this.registerForm.value.email } });
           }
         },
-        error: () => {
+        error: (err) => {
           this.isSubmitting.set(false);
+          console.log(err);
         }
       });
     } else {

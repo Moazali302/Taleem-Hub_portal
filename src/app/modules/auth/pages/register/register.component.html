@@ -12,7 +12,8 @@
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-10 lg:mb-16">
                         <span class="material-symbols-outlined text-primary text-3xl md:text-4xl">account_balance</span>
-                        <span class="text-xl md:text-2xl font-headline font-bold tracking-tighter text-on-surface">Taleem_Hub</span>
+                        <span class="text-xl md:text-2xl font-headline font-bold tracking-tighter text-on-surface">
+                          Taleem_Hub</span>
                     </div>
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-headline font-extrabold tracking-tight text-on-surface leading-[1.1] mb-6">
                         The Institution's <br class="hidden lg:block"/>Digital Foundation.
@@ -50,41 +51,91 @@
                 </div>
                 <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5 md:space-y-6">
                     <div class="space-y-1.5">
-                        <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="school_name">School Name</label>
-                        <div class="relative">
-                            <input formControlName="schoolName" class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base" id="school_name" placeholder="E.g. Heritage International Academy" type="text"/>
-                            <div *ngIf="registerForm.get('schoolName')?.touched && registerForm.get('schoolName')?.invalid" class="text-error text-[10px] mt-1">School Name is required</div>
+                        <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" 
+                        for="school_name">
+                        School Name 
+                      </label>
+                 
+                  <div class="relative">
+                    <input formControlName="schoolName"
+                       class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
+                       id="school_name"
+                       placeholder="E.g. Heritage International Academy"
+                            type="text"/>
+                          <div *ngIf="registerForm.get('schoolName')?.touched && registerForm.get('schoolName')?.invalid" 
+                            class="text-error text-[10px] mt-1">
+                            School Name is required
+                          </div>
                         </div>
                     </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                         <div class="space-y-1.5">
-                            <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="owner_name">Owner Name</label>
-                            <input formControlName="ownerName" class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base" id="owner_name" placeholder="Full Legal Name" type="text"/>
-                            <div *ngIf="registerForm.get('ownerName')?.touched && registerForm.get('ownerName')?.invalid" class="text-error text-[10px] mt-1">Owner Name is required</div>
+                            <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
+                             for="owner_name">
+                             Owner Name
+                            </label>
+
+                            <input formControlName="ownerName" 
+                            class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
+                             id="owner_name" 
+                             placeholder="Full Legal Name"
+                              type="text"/>
+                            <div *ngIf="registerForm.get('ownerName')?.touched && registerForm.get('ownerName')?.invalid"
+                             class="text-error text-[10px] mt-1">
+                             Owner Name is required
+                            </div>
                         </div>
-                        <div class="space-y-1.5">
-                            <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="phone">Phone Number</label>
-                            <input formControlName="phone" class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base" id="phone" placeholder="+92XXXXXXXXXX" type="tel"/>
-                            <div *ngIf="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid" class="text-error text-[10px] mt-1">
-                                <span *ngIf="registerForm.get('phone')?.errors?.['required']">Phone is required</span>
-                                <span *ngIf="registerForm.get('phone')?.errors?.['pattern']">Format: +92XXXXXXXXXX</span>
+
+                  <div class="space-y-1.5">
+                      <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
+                         for="phone">Phone Number
+                    </label>
+                            <input formControlName="phone"
+                            class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface
+                             placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
+                              id="phone"
+                              placeholder="+92XXXXXXXXXX"
+                              type="tel"/>
+                            <div *ngIf="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid"
+                             class="text-error text-[10px] mt-1">
+                                <span *ngIf="registerForm.get('phone')?.errors?.['required']">
+                                  Phone is required
+                                </span>
+                                <span *ngIf="registerForm.get('phone')?.errors?.['pattern']">
+                                  Format: +92XXXXXXXXXX
+                                </span>
                             </div>
                         </div>
                     </div>
                     <div class="space-y-1.5">
-                        <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="address">School Address</label>
-                        <textarea formControlName="address" class="w-full p-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none text-sm md:text-base" id="address" placeholder="Street, City, State, ZIP Code" rows="3"></textarea>
-                        <div *ngIf="registerForm.get('address')?.touched && registerForm.get('address')?.invalid" class="text-error text-[10px] mt-1">Address is required</div>
+                        <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
+                         for="address">School Address
+                        </label>
+                        <textarea formControlName="address"
+                         class="w-full p-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none text-sm md:text-base" 
+                         id="address"
+                          placeholder="Street, City, State, ZIP Code" 
+                          rows="3">
+                        </textarea>
+
+                        <div *ngIf="registerForm.get('address')?.touched && registerForm.get('address')?.invalid"
+                         class="text-error text-[10px] mt-1">Address is required</div>
                     </div>
                     <div class="space-y-1.5">
-                        <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" for="password">Password</label>
+                        <label class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold" 
+                        for="password">Password</label>
                         <div class="relative group">
-                            <input formControlName="password" [type]="showPassword() ? 'text' : 'password'" class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base" id="password" placeholder="••••••••••••" />
-                            <span (click)="togglePasswordVisibility()" class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline cursor-pointer hover:text-primary transition-colors">
+                            <input formControlName="password" [type]="showPassword() ? 'text' : 'password'"
+                             class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface 
+                             placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base" id="password" placeholder="••••••••••••" />
+                            <span (click)="togglePasswordVisibility()"
+                             class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline cursor-pointer hover:text-primary transition-colors">
                                 {{ showPassword() ? 'visibility_off' : 'visibility' }}
                             </span>
                         </div>
-                        <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid" class="text-error text-[10px] mt-1">
+                        <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid"
+                         class="text-error text-[10px] mt-1">
                             <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</span>
                             <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Minimum 8 characters</span>
                             <span *ngIf="registerForm.get('password')?.errors?.['pattern']">Must have uppercase, lowercase, and number</span>
@@ -100,7 +151,7 @@
                 </form>
                 <div class="mt-8 md:mt-10 pt-8 md:pt-10 border-t border-outline-variant/10 text-center">
                     <p class="text-sm text-on-surface-variant">
-                        Already registered? 
+                        Already registered?
                         <a class="text-primary font-bold hover:underline ml-1" routerLink="/auth/login">Administrator Login</a>
                     </p>
                 </div>
