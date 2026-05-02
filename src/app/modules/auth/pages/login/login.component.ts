@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { Role } from '../../../../core/constants/roles.constants';
 
 @Component({
   selector: 'app-login',
@@ -41,14 +40,15 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.isSubmitting.set(true);
       const { email, password } = this.loginForm.value;
-
+  
       this.authService.login({ email, password }).subscribe({
-        next: (res) => {
-          this.isSubmitting.set(false);
-          if (res.success) {
-            const role = res.data.user.role as Role;
-            this.navigateByRole(role);
-          }
+   next: (res) => {
+  this.isSubmitting.set(false);
+  if (res.success) {
+    this.router.navigate(['/auth/verify-otp'], {
+      state: { email: this.loginForm.value.email }
+    });
+  }
         },
         error: () => {
           this.isSubmitting.set(false);
@@ -58,23 +58,7 @@ export class LoginComponent {
       this.loginForm.markAllAsTouched();
     }
   }
+  
 
-  private navigateByRole(role: Role): void {
-    switch (role) {
-      case Role.SUPER_ADMIN:
-        this.router.navigate(['/super-admin/dashboard']);
-        break;
-      case Role.ADMIN:
-        this.router.navigate(['/admin/dashboard']);
-        break;
-      case Role.TEACHER:
-        this.router.navigate(['/teacher/dashboard']);
-        break;
-      case Role.STUDENT:
-        this.router.navigate(['/parent/dashboard']);
-        break;
-      default:
-        this.router.navigate(['/auth/login']);
-    }
-  }
+
 }

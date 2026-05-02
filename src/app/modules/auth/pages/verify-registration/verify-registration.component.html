@@ -1,0 +1,43 @@
+<div class="wrapper">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="card">
+    <div class="accent-bar"></div>
+    <div class="body">
+
+      <div class="icon-wrap">
+        <div class="ripple"></div>
+        <div class="icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="heading">
+        <h1>Registration Successful!</h1>
+        <p class="urdu">آپ کی رجسٹریشن کامیابی سے موصول ہو گئی</p>
+      </div>
+
+      <div class="info-card">
+        <div class="info-row">
+          <span class="badge email">✉</span>
+          <div><span class="lbl">Email</span><span class="val">{{ email }}</span></div>
+        </div>
+        <div class="sep"></div>
+        <div class="info-row">
+          <span class="badge school">🎓</span>
+          <div><span class="lbl">School</span><span class="val">{{ schoolName }}</span></div>
+        </div>
+      </div>
+
+      <div class="notice">
+        <span>⏱</span>
+<p>Our team will review your registration within <strong>24 hours</strong>. Once approved, your account will be activated and you will be able to log in.</p>      </div>
+
+      <a routerLink="/auth/login" class="back-btn">← Back to Login</a>
+
+    </div>
+  </div>
+</div>

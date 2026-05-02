@@ -13,7 +13,7 @@ export class AuthService {
   login(credentials: any): Observable<ApiResponse<{ token: string, user: User }>> {
     return this.api.post<{ token: string, user: User }>(API.AUTH.LOGIN, credentials).pipe(
       tap(res => {
-        if (res.success) {
+        if (res.success && res.data) {
           this.saveSession(res.data.token, res.data.user);
         }
       })

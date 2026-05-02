@@ -1,8 +1,9 @@
 import { Component, signal, ViewChildren, QueryList, ElementRef, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { Role } from '../../../../core/constants/roles.constants';
 
 @Component({
   selector: 'app-verify-otp',
@@ -19,12 +20,14 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   timer = signal(300); // 5 minutes in seconds
   email: string = localStorage.getItem('taleem_email') || '';
 
+
   private intervalId: any;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route:ActivatedRoute
   ) {
     const group: any = {};
     for (let i = 0; i < 6; i++) {
@@ -39,6 +42,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.getRoleFromRoute()
     this.startTimer();
   }
 
@@ -47,6 +51,15 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
       clearInterval(this.intervalId);
     }
   }
+
+  // role check logic
+  role!: string;
+
+getRoleFromRoute(): void {
+  this.route.queryParams.subscribe(params => {
+    this.role = params['role'];
+  });
+}
 
   startTimer(): void {
     this.timer.set(300);
@@ -90,13 +103,13 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
       this.isSubmitting.set(true);
       const otp = Object.values(this.otpForm.value).join('');
       console.log('Verifying OTP:', otp);
-
       this.authService.verifyOtp({ email: this.email, otp }).subscribe({
         next: (res) => {
           this.isSubmitting.set(false);
-          if (res.success) {
-            this.router.navigate(['/auth/login']);
-          }
+   if (res.success) {
+  const role = (res as any).role as Role;
+  this.navigateByRole(role);
+}
         },
         error: () => {
           this.isSubmitting.set(false);
@@ -104,4 +117,23 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+   private navigateByRole(role: Role): void {
+      switch (role) {
+        case Role.SUPER_ADMIN:
+          this.router.navigate(['/super-admin/dashboard']);
+          break;
+        case Role.ADMIN:
+          this.router.navigate(['/admin/dashboard']);
+          break;
+        case Role.TEACHER:
+          this.router.navigate(['/teacher/dashboard']);
+          break;
+        case Role.STUDENT:
+          this.router.navigate(['/parent/dashboard']);
+          break;
+        default:
+          this.router.navigate(['/auth/login']);
+      }
+    }
 }

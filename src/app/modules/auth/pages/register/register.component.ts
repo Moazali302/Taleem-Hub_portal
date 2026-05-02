@@ -58,8 +58,11 @@ export class RegisterComponent {
       next: (res) => {
         this.isSubmitting.set(false);
         if (res.success) {
-          this.router.navigate(['/auth/verify-otp'], {
-            state: { email: this.registerForm.value.email }
+          this.router.navigate(['/auth/verify-registration'], {
+            state: {
+               email: this.registerForm.value.email,
+               school:this.registerForm.value.schoolName
+            }
           });
         }
       },
