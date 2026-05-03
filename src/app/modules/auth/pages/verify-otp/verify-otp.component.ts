@@ -18,7 +18,9 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   otpForm: FormGroup;
   isSubmitting = signal(false);
   timer = signal(300); // 5 minutes in seconds
-  email: string = localStorage.getItem('taleem_email') || '';
+  email: string = '' ;
+  mode: string = 'login';
+  otp: string = '';
 
 
   private intervalId: any;
@@ -39,6 +41,9 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     if (state?.['email']) {
       this.email = state['email'];
     }
+    if (state?.['mode']) {
+    this.mode = state['mode'];
+  }
   }
 
   ngOnInit(): void {
@@ -99,18 +104,25 @@ getRoleFromRoute(): void {
   }
 
   onVerifyOtp(): void {
-    if (this.otpForm.valid) {
-      this.isSubmitting.set(true);
-      const otp = Object.values(this.otpForm.value).join('');
-      console.log('Verifying OTP:', otp);
+  if (this.otpForm.valid) {
+    this.isSubmitting.set(true);
+    const otp = Object.values(this.otpForm.value).join('');
+
+    if (this.mode === 'reset') {
+      // Reset mode mein sirf OTP validate karo — backend call mat karo
+      // Seedha reset page pe jao with state
+      this.isSubmitting.set(false);
+      this.router.navigate(['/auth/reset-password'], {
+        state: { email: this.email, otp }
+      });
+    } else {
+      // Normal login flow
       this.authService.verifyOtp({ email: this.email, otp }).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           this.isSubmitting.set(false);
-        console.log('Full response:', res);        // ← yeh add karo
-        console.log('Role:', res.role); 
-   if (res.success && res.role) {
-    this.navigateByRole(res.role as Role);
-}
+          if (res.success && res.role) {
+            this.navigateByRole(res.role as Role);
+          }
         },
         error: () => {
           this.isSubmitting.set(false);
@@ -118,6 +130,7 @@ getRoleFromRoute(): void {
       });
     }
   }
+}
 
    private navigateByRole(role: Role): void {
       switch (role) {

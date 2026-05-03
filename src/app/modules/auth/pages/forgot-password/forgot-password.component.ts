@@ -35,7 +35,7 @@ export class ForgotPasswordComponent {
         next: (res) => {
           this.isSubmitting.set(false);
           if (res.success) {
-            this.router.navigate(['/auth/verify-otp'], { state: { email } });
+            this.router.navigate(['/auth/verify-otp'], { state: { email,mode:'reset' } });
           }
         },
         error: () => {

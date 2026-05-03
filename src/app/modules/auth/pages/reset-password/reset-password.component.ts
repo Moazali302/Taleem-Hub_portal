@@ -17,11 +17,24 @@ export class ResetPasswordComponent {
   showNewPassword = signal(false);
   showConfirmPassword = signal(false);
 
+   private email: string = '';
+   private otp: string = '';
+   private newPassword: string = '';
+   private confirmPassword: string = ''; 
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
   ) {
+      const state = this.router.getCurrentNavigation()?.extras.state;
+    if (!state?.['email'] || !state?.['otp']) {
+      // Direct access block karo
+      this.router.navigate(['/auth/forgot-password']);
+    }
+    this.email = state?.['email'] || '';
+    this.otp = state?.['otp'] || '';
+
     this.resetPasswordForm = this.fb.group({
       newPassword: ['', [
         Validators.required,
@@ -53,7 +66,11 @@ export class ResetPasswordComponent {
       this.isSubmitting.set(true);
       console.log('Resetting Password:', this.resetPasswordForm.value);
 
-      this.authService.resetPassword(this.resetPasswordForm.value).subscribe({
+       this.authService.resetPassword({
+        email: this.email,
+        otp: this.otp,
+        newPassword: this.resetPasswordForm.value.newPassword
+      }).subscribe({
         next: (res) => {
           this.isSubmitting.set(false);
           if (res.success) {
