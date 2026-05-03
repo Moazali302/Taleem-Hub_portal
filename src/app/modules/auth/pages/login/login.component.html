@@ -37,6 +37,18 @@
                         </div>
                     </div>
 
+                       <div class="space-y-2">
+                        <label class="block font-label text-sm font-medium text-on-surface-variant" for="school_id">School Name</label>
+                        <input formControlName="school_id" 
+                               class="w-full h-11 sm:h-12 px-4 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant outline-none" 
+                               id="school_id" 
+                               placeholder="Age-High-School" 
+                               type="text"/>
+                        <div *ngIf="loginForm.get('school_id')?.touched && loginForm.get('school_id')?.invalid" class="text-error text-[10px] mt-1">
+                            <span *ngIf="loginForm.get('school_id')?.errors?.['required']">Email is required</span>
+                            <span *ngIf="loginForm.get('school_id')?.errors?.['school_id']">Please enter a valid email</span>
+                        </div>
+                    </div>
                     <!-- Password Field -->
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
@@ -58,6 +70,8 @@
                             <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Minimum 8 characters required</span>
                         </div>
                     </div>
+
+                
 
                     <!-- Remember Session -->
                     <div class="flex items-center gap-3">
