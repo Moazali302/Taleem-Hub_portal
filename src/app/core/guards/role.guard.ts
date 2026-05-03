@@ -7,7 +7,7 @@ export class RoleGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
     const requiredRole = route.data['role'];
-    const user = JSON.parse(localStorage.getItem('taleem_user') || '{}');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     if (user.role === requiredRole) return true;
 

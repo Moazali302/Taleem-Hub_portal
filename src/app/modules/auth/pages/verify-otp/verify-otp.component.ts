@@ -106,9 +106,10 @@ getRoleFromRoute(): void {
       this.authService.verifyOtp({ email: this.email, otp }).subscribe({
         next: (res) => {
           this.isSubmitting.set(false);
-   if (res.success) {
-  const role = (res as any).role as Role;
-  this.navigateByRole(role);
+        console.log('Full response:', res);        // ← yeh add karo
+        console.log('Role:', res.role); 
+   if (res.success && res.role) {
+    this.navigateByRole(res.role as Role);
 }
         },
         error: () => {

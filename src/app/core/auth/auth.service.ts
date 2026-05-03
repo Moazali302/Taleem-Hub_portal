@@ -25,7 +25,16 @@ export class AuthService {
   }
 
   verifyOtp(data: any): Observable<ApiResponse<any>> {
-    return this.api.post(API.AUTH.VERIFY_OTP, data);
+    return this.api.post(API.AUTH.VERIFY_OTP, data).pipe(
+      tap((res:any)=>{
+        if(res.success && res.token){
+          this.tokenService.saveToken(res.token);
+          if(res.user){
+            this.tokenService.saveUser(res.user);
+          }
+        }
+      })
+    );
   }
 
   forgotPassword(email: string): Observable<ApiResponse<any>> {
