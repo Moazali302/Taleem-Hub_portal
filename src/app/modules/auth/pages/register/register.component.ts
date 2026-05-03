@@ -59,7 +59,7 @@ export class RegisterComponent {
         this.isSubmitting.set(false);
         if (res.success) {
           this.router.navigate(['/auth/verify-registration'], {
-            state: {
+            queryParams: {
                email: this.registerForm.value.email,
                school:this.registerForm.value.schoolName
             }

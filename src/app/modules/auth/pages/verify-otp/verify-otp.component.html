@@ -1,71 +1,102 @@
-<div class="absolute inset-0 dot-pattern pointer-events-none"></div>
+<!-- otp-verify.component.html -->
 
-<main class="flex-grow flex items-center justify-center px-4 sm:px-6 md:px-12 py-10 sm:py-16 relative z-10">
-    <div class="w-full max-w-[480px]">
-        <!-- OTP Card -->
-        <div class="bg-surface-container-lowest rounded-xl shadow-[0px_12px_40px_rgba(43,52,55,0.08)] p-6 sm:p-8 md:p-12 transition-all">
-            <!-- Brand Header -->
-            <div class="flex flex-col items-center mb-8 md:mb-10">
-                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-surface-container-high rounded-full flex items-center justify-center mb-4 sm:mb-6">
-                    <span class="material-symbols-outlined text-primary text-2xl sm:text-3xl">verified_user</span>
-                </div>
-                <div class="text-center">
-                    <h1 class="font-headline font-extrabold text-2xl sm:text-3xl text-on-surface tracking-tighter">
-                      Verify Account
-                    </h1>
-                    <p class="text-on-surface-variant text-sm mt-2">
-                      
-                      We've sent a 6-digit code to <br><span class="font-semibold text-primary">{{ email }}
-                      </span>
-                    </p>
-                </div>
-            </div>
+<div class="page-wrapper">
 
-            <!-- Form Section -->
-            <div class="space-y-6 sm:space-y-8">
-                <form [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="space-y-6 sm:space-y-8">
-                    <!-- OTP Inputs -->
-                    <div class="flex justify-between gap-2 sm:gap-4">
-                        <input *ngFor="let i of [0,1,2,3,4,5]"
-                               #otpInput
-                               type="text"
-                               maxlength="1"
-                               (input)="onInput($event, i)"
-                               (keydown.backspace)="onBackspace($event, i)"
-                               class="w-10 h-12 sm:w-12 sm:h-14 text-center text-xl font-bold bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface outline-none"
-                               [formControlName]="'digit' + i">
-                    </div>
+  <main class="main-content">
+    <div class="otp-card">
 
-                    <!-- Timer & Resend -->
-                    <div class="text-center space-y-4">
-                        <div class="text-sm text-on-surface-variant">
-                            Resend code in <span class="font-mono font-bold text-primary">{{ formatTime(timer()) }}</span>
-                        </div>
-                        <button type="button"
-                                [disabled]="timer() > 0"
-                                (click)="onResendOtp()"
-                                class="text-sm font-bold text-primary hover:text-primary-dim transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            Resend Verification Code
-                        </button>
-                    </div>
+      <!-- Logo Icon -->
+      <div class="logo-icon">
+        <span class="material-symbols-outlined">verified_user</span>
+      </div>
 
-                    <!-- Submit Button -->
-                    <button [disabled]="otpForm.invalid || isSubmitting()"
-                            class="w-full h-12 sm:h-14 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center justify-center gap-2 hover:opacity-95 active:scale-[0.98] transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                            type="submit">
-                        <span *ngIf="isSubmitting()" class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
-                        {{ isSubmitting() ? 'Verifying...' : 'Verify & Proceed' }}
-                        <span *ngIf="!isSubmitting()" class="material-symbols-outlined text-xl">check_circle</span>
-                    </button>
-                </form>
+      <!-- Brand -->
+      <div class="brand-label">
+        <span class="brand-super">VERIFY</span>
+        <span class="brand-sub"> ACCOUNT ACCESS</span>
+      </div>
+      <h1 class="brand-name">Taleem_Hub</h1>
 
-                <div class="text-center">
-                    <a routerLink="/auth/login" class="text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-lg">arrow_back</span>
-                        Back to Login
-                    </a>
-                </div>
-            </div>
+      <!-- Heading -->
+      <div class="card-heading">
+        <h2 class="card-title">Check Your Email</h2>
+        <p class="card-desc">
+          We've sent a 6-digit verification code to<br>
+          <span class="email-highlight">{{ email }}</span>
+        </p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="otp-form">
+
+        <!-- OTP Label -->
+        <div class="field-label">Verification Code</div>
+
+        <!-- OTP Inputs -->
+        <div class="otp-inputs">
+          <ng-container *ngFor="let i of [0,1,2,3,4,5]">
+            <input
+              #otpInput
+              class="otp-box"
+              type="text"
+              inputmode="numeric"
+              maxlength="1"
+              [formControlName]="'digit' + i"
+              (input)="onInput($event, i)"
+              (keydown.backspace)="onBackspace($event, i)"
+            />
+            <span *ngIf="i === 2" class="otp-sep">—</span>
+          </ng-container>
         </div>
+
+        <!-- Timer -->
+        <div class="timer-row">
+          <span class="timer-text">
+            Resend code in
+            <span class="timer-value">{{ formatTime(timer()) }}</span>
+          </span>
+          <button
+            type="button"
+            class="resend-btn"
+            [disabled]="timer() > 0"
+            (click)="onResendOtp()"
+          >
+            Resend Code
+          </button>
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="otpForm.invalid || isSubmitting()"
+        >
+          <span *ngIf="isSubmitting()" class="spinner"></span>
+          {{ isSubmitting() ? 'Verifying...' : 'Verify Account' }}
+          <span *ngIf="!isSubmitting()" class="material-symbols-outlined btn-icon">arrow_forward</span>
+        </button>
+
+      </form>
+
+      <!-- Back -->
+      <div class="back-row">
+        <a routerLink="/auth/login" class="back-link">
+          <span class="material-symbols-outlined back-icon">arrow_back</span>
+          Back to Login
+        </a>
+      </div>
+
     </div>
-</main>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Help Center</a>
+    </div>
+    <p class="footer-copy">© 2024 TALEEM_HUB. ALL RIGHTS RESERVED.</p>
+  </footer>
+
+</div>

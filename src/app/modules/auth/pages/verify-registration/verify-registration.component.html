@@ -1,43 +1,111 @@
-<div class="wrapper">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
+<!-- registration-success.component.html -->
 
-  <div class="card">
-    <div class="accent-bar"></div>
-    <div class="body">
+<div class="page-wrapper">
 
-      <div class="icon-wrap">
-        <div class="ripple"></div>
-        <div class="icon">
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+  <main class="main-content">
+    <div class="success-card">
+
+      <!-- Logo Icon -->
+      <div class="logo-icon">
+        <span class="material-symbols-outlined">school</span>
+      </div>
+
+      <!-- Brand -->
+      <div class="brand-label">
+        <span class="brand-super">REGISTRATION</span>
+        <span class="brand-sub"> SUCCESS</span>
+      </div>
+      <h1 class="brand-name">Taleem_Hub</h1>
+
+      <!-- Success Icon -->
+      <div class="success-icon-wrap">
+        <div class="success-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none"
+               stroke="#1a56db" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
         </div>
       </div>
 
-      <div class="heading">
-        <h1>Registration Successful!</h1>
-        <p class="urdu">آپ کی رجسٹریشن کامیابی سے موصول ہو گئی</p>
+      <!-- Heading -->
+      <div class="card-heading">
+        <h2 class="card-title">Registration Successful!</h2>
+        <p class="card-urdu">آپ کی رجسٹریشن کامیابی سے موصول ہو گئی</p>
+        <p class="card-desc">Your information has been received. Please wait while our team reviews your registration.</p>
       </div>
 
-      <div class="info-card">
+      <!-- Info Block -->
+      <div class="info-block">
+
         <div class="info-row">
-          <span class="badge email">✉</span>
-          <div><span class="lbl">Email</span><span class="val">{{ email }}</span></div>
+          <div class="info-icon email-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="#1a56db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <div class="info-text">
+            <span class="info-label">Email Address</span>
+            <span class="info-value">{{ email }}</span>
+          </div>
         </div>
-        <div class="sep"></div>
+
+        <div class="info-divider"></div>
+
         <div class="info-row">
-          <span class="badge school">🎓</span>
-          <div><span class="lbl">School</span><span class="val">{{ schoolName }}</span></div>
+          <div class="info-icon school-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="#1a56db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div class="info-text">
+            <span class="info-label">School</span>
+            <span class="info-value">{{ schoolName }}</span>
+          </div>
         </div>
+
       </div>
 
-      <div class="notice">
-        <span>⏱</span>
-<p>Our team will review your registration within <strong>24 hours</strong>. Once approved, your account will be activated and you will be able to log in.</p>      </div>
+      <!-- Notice -->
+      <div class="notice-box">
+        <div class="notice-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <p class="notice-text">
+          Our team will review your registration within <strong>24 hours</strong>.
+          Once approved, your account will be activated and you will be able to log in.
+        </p>
+      </div>
 
-      <a routerLink="/auth/login" class="back-btn">← Back to Login</a>
+      <!-- Back Button -->
+      <a routerLink="/auth/login" class="back-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to Login
+      </a>
 
     </div>
-  </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Help Center</a>
+    </div>
+    <p class="footer-copy">© 2024 TALEEM_HUB. ALL RIGHTS RESERVED.</p>
+  </footer>
+
 </div>
