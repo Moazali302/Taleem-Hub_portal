@@ -47,3 +47,18 @@ button[type="submit"] {
 .border-t {
   border-top: 1.5px solid #e5e7eb !important;
 }
+.form-error {
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+}
+
+.form-error-text {
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 500;
+  display: block;
+  line-height: 1.4;
+}

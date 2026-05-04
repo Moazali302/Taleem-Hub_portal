@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register-page',
@@ -20,7 +21,8 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toaster:ToastrService
   ) {
     this.registerForm = this.fb.group({
       schoolName: ['', [Validators.required, Validators.maxLength(255)]],
@@ -46,11 +48,11 @@ export class RegisterComponent {
 
   onSubmit(): void {
     this.errorMessage.set(null);
-
-    if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
-      return;
-    }
+if (this.registerForm.invalid) {
+  this.toaster.error('Please fill all fields correctly');
+  this.registerForm.markAllAsTouched();
+  return;
+}
 
     this.isSubmitting.set(true);
 
@@ -58,6 +60,7 @@ export class RegisterComponent {
       next: (res) => {
         this.isSubmitting.set(false);
         if (res.success) {
+          this.toaster.success('Registration Succesfull ')
           this.router.navigate(['/auth/verify-registration'], {
             queryParams: {
               email: this.registerForm.value.email,
@@ -67,6 +70,7 @@ export class RegisterComponent {
         }
       },
       error: (err) => {
+        this.toaster.error('Registration failed. Please try again.')
         this.isSubmitting.set(false);
         this.errorMessage.set(
           err?.error?.message?.message ||

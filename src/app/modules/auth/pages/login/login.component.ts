@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +20,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toaster:ToastrService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -45,6 +47,7 @@ export class LoginComponent {
         next: (res) => {
           this.isSubmitting.set(false);
           if (res.success) {
+            this.toaster.success('Login Successfull ')
             this.router.navigate(['/auth/verify-otp'], {
               state: { email: this.loginForm.value.email }
             });
@@ -52,6 +55,7 @@ export class LoginComponent {
 
         },
         error: () => {
+          this.toaster.warning('inavlid credientals')
           this.isSubmitting.set(false);
         }
       });

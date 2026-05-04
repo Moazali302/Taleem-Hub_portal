@@ -1,124 +1,194 @@
 <div class="absolute inset-0 dot-pattern pointer-events-none"></div>
 
-<main class="flex-grow flex items-center justify-center px-4 sm:px-6 md:px-12 py-10 sm:py-16 relative z-10">
-    <div class="w-full max-w-[480px]">
+<main
+  class="flex-grow flex items-center justify-center px-4 sm:px-6 md:px-12 py-10 sm:py-16 relative z-10"
+>
+  <div class="w-full max-w-[480px]">
+    <div
+      class="bg-surface-container-lowest rounded-xl shadow-[0px_12px_40px_rgba(43,52,55,0.08)] p-6 sm:p-8 md:p-12 transition-all"
+    >
+      <div class="flex flex-col items-center mb-8 md:mb-10">
         <div
-            class="bg-surface-container-lowest rounded-xl shadow-[0px_12px_40px_rgba(43,52,55,0.08)] p-6 sm:p-8 md:p-12 transition-all">
-            <div class="flex flex-col items-center mb-8 md:mb-10">
-                <div
-                    class="w-12 h-12 sm:w-14 sm:h-14 bg-surface-container-high rounded-full flex items-center justify-center mb-4 sm:mb-6">
-                    <span class="material-symbols-outlined text-primary text-2xl sm:text-3xl">school</span>
-                </div>
-                <div class="text-center">
-                    <span
-                        class="bg-secondary-container text-on-secondary-container text-[10px] font-bold tracking-[0.15em] px-3 py-1 rounded-full inline-block mb-3 uppercase">Super
-                        Admin Access</span>
-                    <h1 class="font-headline font-extrabold text-2xl sm:text-3xl text-on-surface tracking-tighter">
-                        Taleem_Hub</h1>
-                </div>
-            </div>
-
-            <div class="space-y-6 sm:space-y-8">
-                <div class="space-y-2">
-                    <h2 class="text-lg sm:text-xl font-semibold font-headline text-on-surface">Welcome Back</h2>
-                    <p class="text-on-surface-variant text-sm">Please enter your credentials to access the
-                        administration suite.</p>
-                </div>
-
-                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5 sm:space-y-6">
-                    <div class="space-y-2">
-                        <label class="block font-label text-sm font-medium text-on-surface-variant" for="email">Email
-                            Address</label>
-                        <input formControlName="email"
-                            class="w-full h-11 sm:h-12 px-4 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant outline-none"
-                            id="email" placeholder="admin@taleemhub.edu" type="email" />
-                        <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid"
-                            class="text-error text-[10px] mt-1">
-                            <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
-                            <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="block font-label text-sm font-medium text-on-surface-variant"
-                            for="schoolId">School Name</label>
-                        <input formControlName="schoolId"
-                            class="w-full h-11 sm:h-12 px-4 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant outline-none"
-                            id="schoolId" placeholder="Age-High-School" type="text" />
-                        <div *ngIf="loginForm.get('schoolId')?.touched && loginForm.get('schoolId')?.invalid"
-                            class="text-error text-[10px] mt-1">
-                            <span *ngIf="loginForm.get('schoolId')?.errors?.['required']">Email is required</span>
-                            <span *ngIf="loginForm.get('schoolId')?.errors?.['schoolId']">Please enter a valid
-                                email</span>
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-center">
-                            <label class="block font-label text-sm font-medium text-on-surface-variant"
-                                for="password">Password</label>
-                            <a (click)="onForgotPassword()"
-                                class="text-xs font-semibold text-primary hover:text-primary-dim transition-colors cursor-pointer">Forgot
-                                Password?</a>
-                        </div>
-                        <div class="relative">
-                            <input formControlName="password" [type]="showPassword() ? 'text' : 'password'"
-                                class="w-full h-11 sm:h-12 px-4 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant outline-none"
-                                id="password" placeholder="••••••••" />
-                            <span (click)="togglePasswordVisibility()"
-                                class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant cursor-pointer hover:text-primary transition-colors">
-                                {{ showPassword() ? 'visibility_off' : 'visibility' }}
-                            </span>
-                        </div>
-                        <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
-                            class="text-error text-[10px] mt-1">
-                            <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
-                            <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Minimum 8 characters
-                                required</span>
-                        </div>
-                    </div>
-
-
-
-                    <div class="flex items-center gap-3">
-                        <input formControlName="remember"
-                            class="w-5 h-5 rounded bg-surface-container-high border-none text-primary focus:ring-0 focus:ring-offset-0 cursor-pointer"
-                            id="remember" type="checkbox" />
-                        <label class="text-sm text-on-surface-variant cursor-pointer select-none"
-                            for="remember">Remember this session</label>
-                    </div>
-
-                    <button [disabled]="loginForm.invalid || isSubmitting()"
-                        class="w-full h-12 sm:h-14 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center justify-center gap-2 hover:opacity-95 active:scale-[0.98] transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                        type="submit">
-                        <span *ngIf="isSubmitting()"
-                            class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
-                        {{ isSubmitting() ? 'Signing in...' : 'Sign In to Dashboard' }}
-                        <span *ngIf="!isSubmitting()" class="material-symbols-outlined text-xl">arrow_forward</span>
-                    </button>
-                </form>
-
-                <div class="text-center">
-                    <p class="text-on-surface-variant text-sm">
-                        Don't have an account?
-                        <a routerLink="/auth/register"
-                            class="text-primary font-semibold hover:text-primary-dim transition-colors">Register
-                            here</a>
-                    </p>
-                </div>
-            </div>
+          class="w-12 h-12 sm:w-14 sm:h-14 bg-surface-container-high rounded-full flex items-center justify-center mb-4 sm:mb-6"
+        >
+          <span class="material-symbols-outlined text-primary text-2xl sm:text-3xl">school</span>
         </div>
+        <div class="text-center">
+          <span
+            class="bg-secondary-container text-on-secondary-container text-[10px] font-bold tracking-[0.15em] px-3 py-1 rounded-full inline-block mb-3 uppercase"
+            >Super Admin Access</span
+          >
+          <h1
+            class="font-headline font-extrabold text-2xl sm:text-3xl text-on-surface tracking-tighter"
+          >
+            Taleem_Hub
+          </h1>
+        </div>
+      </div>
+
+      <div class="space-y-6 sm:space-y-8">
+        <div class="space-y-2">
+          <h2 class="text-lg sm:text-xl font-semibold font-headline text-on-surface">
+            Welcome Back
+          </h2>
+          <p class="text-on-surface-variant text-sm">
+            Please enter your credentials to access the administration suite.
+          </p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5 sm:space-y-6">
+          <div class="space-y-2">
+            <label class="block font-label text-sm font-medium text-on-surface-variant" for="email"
+              >Email Address</label
+            >
+            <input
+              formControlName="email"
+              class="w-full h-11 sm:h-12 px-4 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant outline-none"
+              id="email"
+              placeholder="admin@taleemhub.edu"
+              type="email"
+            />
+            <div
+              *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid"
+              class="form-error"
+            >
+              <span class="form-error-text" *ngIf="loginForm.get('email')?.errors?.['required']"
+                >Email is required</span
+              >
+              <span class="form-error-text" *ngIf="loginForm.get('email')?.errors?.['email']"
+                >Please enter a valid email</span
+              >
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label
+              class="block font-label text-sm font-medium text-on-surface-variant"
+              for="schoolId"
+              >School Name</label
+            >
+            <input
+              formControlName="schoolId"
+              class="w-full h-11 sm:h-12 px-4 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant outline-none"
+              id="schoolId"
+              placeholder="Age-High-School"
+              type="text"
+            />
+            <div
+              *ngIf="loginForm.get('schoolId')?.touched && loginForm.get('schoolId')?.invalid"
+              class="form-error"
+            >
+              <span class="form-error-text" *ngIf="loginForm.get('schoolId')?.errors?.['required']"
+                >SchoolName is required</span
+              >
+              <span class="form-error-text" *ngIf="loginForm.get('schoolId')?.errors?.['schoolId']"
+                >Please enter a valid SchoolName</span
+              >
+            </div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <label
+                class="block font-label text-sm font-medium text-on-surface-variant"
+                for="password"
+                >Password</label
+              >
+              <a
+                (click)="onForgotPassword()"
+                class="text-xs font-semibold text-primary hover:text-primary-dim transition-colors cursor-pointer"
+                >Forgot Password?</a
+              >
+            </div>
+            <div class="relative">
+              <input
+                formControlName="password"
+                [type]="showPassword() ? 'text' : 'password'"
+                class="w-full h-11 sm:h-12 px-4 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant outline-none"
+                id="password"
+                placeholder="••••••••"
+              />
+              <span
+                (click)="togglePasswordVisibility()"
+                class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant cursor-pointer hover:text-primary transition-colors"
+              >
+                {{ showPassword() ? 'visibility_off' : 'visibility' }}
+              </span>
+            </div>
+            <div
+              *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
+              class="form-error"
+            >
+              <span class="form-error-text" *ngIf="loginForm.get('password')?.errors?.['required']"
+                >Password is required</span
+              >
+              <span class="form-error-text" *ngIf="loginForm.get('password')?.errors?.['minlength']"
+                >Minimum 8 characters required</span
+              >
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <input
+              formControlName="remember"
+              class="w-5 h-5 rounded bg-surface-container-high border-none text-primary focus:ring-0 focus:ring-offset-0 cursor-pointer"
+              id="remember"
+              type="checkbox"
+            />
+            <label class="text-sm text-on-surface-variant cursor-pointer select-none" for="remember"
+              >Remember this session</label
+            >
+          </div>
+
+          <button
+            [disabled]="loginForm.invalid || isSubmitting()"
+            class="w-full h-12 sm:h-14 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center justify-center gap-2 hover:opacity-95 active:scale-[0.98] transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
+            type="submit"
+          >
+            <span
+              *ngIf="isSubmitting()"
+              class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"
+            ></span>
+            {{ isSubmitting() ? 'Signing in...' : 'Sign In to Dashboard' }}
+            <span *ngIf="!isSubmitting()" class="material-symbols-outlined text-xl"
+              >arrow_forward</span
+            >
+          </button>
+        </form>
+
+        <div class="text-center">
+          <p class="text-on-surface-variant text-sm">
+            Don't have an account?
+            <a
+              routerLink="/auth/register"
+              class="text-primary font-semibold hover:text-primary-dim transition-colors"
+              >Register here</a
+            >
+          </p>
+        </div>
+      </div>
     </div>
+  </div>
 </main>
 
 <footer class="flex flex-col items-center gap-4 py-8 sm:py-12 w-full bg-transparent relative z-10">
-    <div class="flex flex-wrap justify-center gap-6 sm:gap-12 px-4">
-        <a class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 hover:text-slate-700 transition-opacity duration-300"
-            href="#">Privacy Policy</a>
-        <a class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 hover:text-slate-700 transition-opacity duration-300"
-            href="#">Terms of Service</a>
-        <a class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 hover:text-slate-700 transition-opacity duration-300"
-            href="#">Help Center</a>
-    </div>
-    <p class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500">© 2026 Taleem_Hub. All
-        rights reserved.</p>
+  <div class="flex flex-wrap justify-center gap-6 sm:gap-12 px-4">
+    <a
+      class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 hover:text-slate-700 transition-opacity duration-300"
+      href="#"
+      >Privacy Policy</a
+    >
+    <a
+      class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 hover:text-slate-700 transition-opacity duration-300"
+      href="#"
+      >Terms of Service</a
+    >
+    <a
+      class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 hover:text-slate-700 transition-opacity duration-300"
+      href="#"
+      >Help Center</a
+    >
+  </div>
+  <p class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500">
+    © 2026 Taleem_Hub. All rights reserved.
+  </p>
 </footer>

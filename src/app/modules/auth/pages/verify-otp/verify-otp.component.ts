@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } 
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { Role } from '../../../../core/constants/roles.constants';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-verify-otp',
@@ -29,7 +30,8 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toaster:ToastrService
   ) {
     const group: any = {};
     for (let i = 0; i < 6; i++) {
@@ -98,6 +100,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   }
 
   onResendOtp(): void {
+    this.toaster.success('OTP Resend Successfully')
     console.log('Resending OTP for:', this.email);
     this.startTimer();
   }
@@ -117,10 +120,12 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
           next: (res: any) => {
             this.isSubmitting.set(false);
             if (res.success && res.role) {
+              this.toaster.success('otp verification succesfull')
               this.navigateByRole(res.role as Role);
             }
           },
           error: () => {
+            this.toaster.error('Enter a valid otp Try Again')
             this.isSubmitting.set(false);
           }
         });
