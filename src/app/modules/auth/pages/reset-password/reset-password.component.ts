@@ -96,7 +96,7 @@ export class ResetPasswordComponent {
             }
           },
           error: () => {
-            this.toaster.error('enter password minimum 8 digits using alphabets and numbers');
+            this.toaster.error('Enter password minimum 8 digits using alphabets and numbers');
             this.isSubmitting.set(false);
           },
         });

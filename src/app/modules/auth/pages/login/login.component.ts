@@ -55,7 +55,7 @@ export class LoginComponent {
 
         },
         error: () => {
-          this.toaster.warning('inavlid credientals! kindly Check your email,password or schoolID')
+          this.toaster.warning('Inavlid credientals! kindly Check your email,password or schoolID')
           this.isSubmitting.set(false);
         }
       });

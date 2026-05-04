@@ -8,15 +8,18 @@ import { ApiResponse } from '../models/api-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private api: ApiService, private tokenService: TokenService) {}
+  constructor(
+    private api: ApiService,
+    private tokenService: TokenService,
+  ) {}
 
-  login(credentials: any): Observable<ApiResponse<{ token: string, user: User }>> {
-    return this.api.post<{ token: string, user: User,  }>(API.AUTH.LOGIN, credentials).pipe(
-      tap(res => {
+  login(credentials: any): Observable<ApiResponse<{ token: string; user: User }>> {
+    return this.api.post<{ token: string; user: User }>(API.AUTH.LOGIN, credentials).pipe(
+      tap((res) => {
         if (res.success && res.data) {
           this.saveSession(res.data.token, res.data.user);
         }
-      })
+      }),
     );
   }
 
@@ -26,15 +29,18 @@ export class AuthService {
 
   verifyOtp(data: any): Observable<ApiResponse<any>> {
     return this.api.post(API.AUTH.VERIFY_OTP, data).pipe(
-      tap((res:any)=>{
-        if(res.success && res.token){
+      tap((res: any) => {
+        if (res.success && res.token) {
           this.tokenService.saveToken(res.token);
-          if(res.user){
+          if (res.user) {
             this.tokenService.saveUser(res.user);
           }
         }
-      })
+      }),
     );
+  }
+  resendOtp(data: { email: string }): Observable<ApiResponse<any>> {
+    return this.api.post(API.AUTH.RESEND_OTP, data);
   }
 
   forgotPassword(email: string): Observable<ApiResponse<any>> {

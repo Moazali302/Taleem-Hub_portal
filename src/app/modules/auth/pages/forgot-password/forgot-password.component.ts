@@ -35,12 +35,12 @@ export class ForgotPasswordComponent {
         next: (res) => {
           this.isSubmitting.set(false);
           if (res.success) {
-            this.toaster.success('enter otp for verification')
+            this.toaster.success('Enter Otp for Verification')
             this.router.navigate(['/auth/verify-otp'], { state: { email, mode: 'reset' } });
           }
         },
         error: () => {
-          this.toaster.error('email not found')
+          this.toaster.error('Email Not Found')
           this.isSubmitting.set(false);
         }
       });

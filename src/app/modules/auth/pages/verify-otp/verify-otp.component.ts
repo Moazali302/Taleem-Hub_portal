@@ -99,11 +99,17 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     }
   }
 
-  onResendOtp(): void {
-    this.toaster.success('OTP Resend Successfully')
-    console.log('Resending OTP for:', this.email);
-    this.startTimer();
-  }
+ onResendOtp(): void {
+  this.authService.resendOtp({ email: this.email }).subscribe({
+    next: () => {
+      this.toaster.success('OTP Resend Successfully');
+      this.startTimer();
+    },
+    error: () => {
+      this.toaster.error('OTP resend failed. Please try again.');
+    }
+  });
+}
 
   onVerifyOtp(): void {
     if (this.otpForm.valid) {
@@ -125,7 +131,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
             }
           },
           error: () => {
-            this.toaster.error('Enter a valid otp Try Again')
+            this.toaster.error('Enter a valid otp! Try Again')
             this.isSubmitting.set(false);
           }
         });
