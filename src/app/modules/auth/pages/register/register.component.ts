@@ -49,7 +49,7 @@ export class RegisterComponent {
   onSubmit(): void {
     this.errorMessage.set(null);
 if (this.registerForm.invalid) {
-  this.toaster.error('Please fill all fields correctly');
+  this.toaster.error('Please fill all  required fields correctly');
   this.registerForm.markAllAsTouched();
   return;
 }
@@ -60,7 +60,7 @@ if (this.registerForm.invalid) {
       next: (res) => {
         this.isSubmitting.set(false);
         if (res.success) {
-          this.toaster.success('Registration Succesfull ')
+          this.toaster.success('Your School Registration Request has been successfully submit! kindly check your Email')
           this.router.navigate(['/auth/verify-registration'], {
             queryParams: {
               email: this.registerForm.value.email,
@@ -70,12 +70,12 @@ if (this.registerForm.invalid) {
         }
       },
       error: (err) => {
-        this.toaster.error('Registration failed. Please try again.')
+        this.toaster.error('your Registration Request has been failed! Please Try Again')
         this.isSubmitting.set(false);
         this.errorMessage.set(
           err?.error?.message?.message ||
           err?.error?.message ||
-          'Registration failed. Please try again.'
+          'Something went Wrong! Please Try Again'
         );
       }
     });

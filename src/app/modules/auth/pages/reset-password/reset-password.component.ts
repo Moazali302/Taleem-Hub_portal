@@ -91,17 +91,17 @@ export class ResetPasswordComponent {
           next: (res) => {
             this.isSubmitting.set(false);
             if (res.success) {
-              this.toaster.success('password reset successfully');
+              this.toaster.success(' your password has been Changed successfully');
               this.router.navigate(['/auth/login']);
             }
           },
           error: () => {
-            this.toaster.error('enter password correctly');
+            this.toaster.error('enter password minimum 8 digits using alphabets and numbers');
             this.isSubmitting.set(false);
           },
         });
     } else {
-      this.toaster.error('Password Not Changed! Try Again');
+      this.toaster.error('Something went Wrong! Please Try Again');
       this.resetPasswordForm.markAllAsTouched();
     }
   }

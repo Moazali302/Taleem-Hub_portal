@@ -47,7 +47,7 @@ export class LoginComponent {
         next: (res) => {
           this.isSubmitting.set(false);
           if (res.success) {
-            this.toaster.success('Login Successfull ')
+            this.toaster.success('Login Successfully! kindly verify the Otp that is send to your given email')
             this.router.navigate(['/auth/verify-otp'], {
               state: { email: this.loginForm.value.email }
             });
@@ -55,7 +55,7 @@ export class LoginComponent {
 
         },
         error: () => {
-          this.toaster.warning('inavlid credientals')
+          this.toaster.warning('inavlid credientals! kindly Check your email,password or schoolID')
           this.isSubmitting.set(false);
         }
       });
