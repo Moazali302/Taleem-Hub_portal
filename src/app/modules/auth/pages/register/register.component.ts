@@ -60,8 +60,8 @@ export class RegisterComponent {
         if (res.success) {
           this.router.navigate(['/auth/verify-registration'], {
             queryParams: {
-               email: this.registerForm.value.email,
-               school:this.registerForm.value.schoolName
+              email: this.registerForm.value.email,
+              school: this.registerForm.value.schoolName
             }
           });
         }

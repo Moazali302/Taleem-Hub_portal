@@ -24,7 +24,7 @@ export class LoginComponent {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      school_id: ['', [Validators.required, Validators.maxLength(255)]],
+      schoolId: ['', [Validators.required, Validators.maxLength(255)]],
       remember: [false]
     });
   }
@@ -40,16 +40,16 @@ export class LoginComponent {
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.isSubmitting.set(true);
-      const { email, password, school_id } = this.loginForm.value; 
-      console.log(school_id) 
-      this.authService.login({ email, password, school_id }).subscribe({
-   next: (res) => {
-  this.isSubmitting.set(false);
-  if (res.success) {
-    this.router.navigate(['/auth/verify-otp'], {
-      state: { email: this.loginForm.value.email }
-    });
-  }
+      const { email, password, schoolId } = this.loginForm.value;
+      this.authService.login({ email, password, schoolId }).subscribe({
+        next: (res) => {
+          this.isSubmitting.set(false);
+          if (res.success) {
+            this.router.navigate(['/auth/verify-otp'], {
+              state: { email: this.loginForm.value.email }
+            });
+          }
+
         },
         error: () => {
           this.isSubmitting.set(false);
@@ -59,7 +59,5 @@ export class LoginComponent {
       this.loginForm.markAllAsTouched();
     }
   }
-  
-
 
 }

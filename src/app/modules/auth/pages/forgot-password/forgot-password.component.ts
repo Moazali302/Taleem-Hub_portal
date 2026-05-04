@@ -30,12 +30,12 @@ export class ForgotPasswordComponent {
       this.isSubmitting.set(true);
       const email = this.forgotPasswordForm.value.email;
       console.log('Forgot Password for:', email);
-      
+
       this.authService.forgotPassword(email).subscribe({
         next: (res) => {
           this.isSubmitting.set(false);
           if (res.success) {
-            this.router.navigate(['/auth/verify-otp'], { state: { email,mode:'reset' } });
+            this.router.navigate(['/auth/verify-otp'], { state: { email, mode: 'reset' } });
           }
         },
         error: () => {

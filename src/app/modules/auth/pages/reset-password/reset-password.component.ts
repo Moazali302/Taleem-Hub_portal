@@ -17,17 +17,17 @@ export class ResetPasswordComponent {
   showNewPassword = signal(false);
   showConfirmPassword = signal(false);
 
-   private email: string = '';
-   private otp: string = '';
-   private newPassword: string = '';
-   private confirmPassword: string = ''; 
+  private email: string = '';
+  private otp: string = '';
+  private newPassword: string = '';
+  private confirmPassword: string = '';
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
   ) {
-      const state = this.router.getCurrentNavigation()?.extras.state;
+    const state = this.router.getCurrentNavigation()?.extras.state;
     if (!state?.['email'] || !state?.['otp']) {
       // Direct access block karo
       this.router.navigate(['/auth/forgot-password']);
@@ -66,7 +66,7 @@ export class ResetPasswordComponent {
       this.isSubmitting.set(true);
       console.log('Resetting Password:', this.resetPasswordForm.value);
 
-       this.authService.resetPassword({
+      this.authService.resetPassword({
         email: this.email,
         otp: this.otp,
         newPassword: this.resetPasswordForm.value.newPassword

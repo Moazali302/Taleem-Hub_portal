@@ -1,41 +1,17 @@
-/* registration-success.component.css */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
-
-/* ─── Reset ──────────────────────────────── */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* ─── Variables ──────────────────────────── */
 :host {
-  --bg:            #f4f6f9;
-  --card-bg:       #ffffff;
-  --primary:       #1a56db;
-  --primary-dark:  #1e429f;
-  --primary-light: #e8effc;
-  --primary-border:#c3d3f7;
-  --text-dark:     #111928;
-  --text-mid:      #374151;
-  --text-muted:    #6b7280;
-  --border:        #e5e7eb;
-  --border-inner:  #d1d5db;
-  --amber-bg:      #fffbeb;
-  --amber-border:  #fde68a;
-  --amber-text:    #92400e;
-  --success-bg:    #ecfdf5;
-  --success-border:#a7f3d0;
-  --success-text:  #065f46;
-  --radius:        8px;
-  --card-shadow:   0 4px 24px rgba(0,0,0,0.08);
   display: block;
   min-height: 100vh;
 }
 
-/* ─── Page Wrapper ───────────────────────── */
 .page-wrapper {
   min-height: 100vh;
-  background: var(--bg);
+  background: #f4f6f9;
   font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
@@ -43,7 +19,6 @@
   overflow-y: auto;
 }
 
-/* ─── Main Content ───────────────────────── */
 .main-content {
   flex: 1;
   width: 100%;
@@ -53,14 +28,13 @@
   padding: 40px 16px;
 }
 
-/* ─── Card ───────────────────────────────── */
 .success-card {
   width: 100%;
   max-width: 480px;
-  background: var(--card-bg);
-  border: 1.5px solid var(--border);
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
   border-radius: 16px;
-  box-shadow: var(--card-shadow);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   padding: 40px 36px 32px;
   display: flex;
   flex-direction: column;
@@ -68,12 +42,11 @@
   text-align: center;
 }
 
-/* ─── Logo Icon ──────────────────────────── */
 .logo-icon {
   width: 52px;
   height: 52px;
-  background: var(--primary-light);
-  border: 1.5px solid var(--primary-border);
+  background: #e8effc;
+  border: 1.5px solid #c3d3f7;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -83,10 +56,9 @@
 
 .logo-icon .material-symbols-outlined {
   font-size: 26px;
-  color: var(--primary);
+  color: #1a56db;
 }
 
-/* ─── Brand ──────────────────────────────── */
 .brand-label {
   font-size: 11px;
   letter-spacing: 2px;
@@ -94,18 +66,24 @@
   margin-bottom: 4px;
 }
 
-.brand-super { color: var(--primary); font-weight: 700; }
-.brand-sub   { color: var(--text-muted); font-weight: 500; }
+.brand-super {
+  color: #1a56db;
+  font-weight: 700;
+}
+
+.brand-sub {
+  color: #6b7280;
+  font-weight: 500;
+}
 
 .brand-name {
   font-size: 26px;
   font-weight: 700;
-  color: var(--text-dark);
+  color: #111928;
   letter-spacing: -0.5px;
   margin-bottom: 24px;
 }
 
-/* ─── Success Icon ───────────────────────── */
 .success-icon-wrap {
   margin-bottom: 20px;
 }
@@ -113,8 +91,8 @@
 .success-icon {
   width: 72px;
   height: 72px;
-  background: var(--primary-light);
-  border: 2px solid var(--primary-border);
+  background: #e8effc;
+  border: 2px solid #c3d3f7;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -123,11 +101,17 @@
 }
 
 @keyframes popIn {
-  from { transform: scale(0); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-/* ─── Heading ────────────────────────────── */
 .card-heading {
   margin-bottom: 24px;
   width: 100%;
@@ -136,14 +120,14 @@
 .card-title {
   font-size: 20px;
   font-weight: 700;
-  color: var(--text-dark);
+  color: #111928;
   margin-bottom: 8px;
 }
 
 .card-urdu {
   font-family: 'Noto Nastaliq Urdu', serif;
   font-size: 15px;
-  color: var(--primary);
+  color: #1a56db;
   direction: rtl;
   margin-bottom: 10px;
   line-height: 1.8;
@@ -151,15 +135,14 @@
 
 .card-desc {
   font-size: 14px;
-  color: var(--text-muted);
+  color: #6b7280;
   line-height: 1.6;
 }
 
-/* ─── Info Block ─────────────────────────── */
 .info-block {
   width: 100%;
   background: #f9fafb;
-  border: 1.5px solid var(--border-inner);
+  border: 1.5px solid #d1d5db;
   border-radius: 10px;
   padding: 4px 0;
   margin-bottom: 20px;
@@ -181,13 +164,13 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: var(--primary-light);
-  border: 1px solid var(--primary-border);
+  background: #e8effc;
+  border: 1px solid #c3d3f7;
 }
 
 .info-divider {
   height: 1px;
-  background: var(--border-inner);
+  background: #d1d5db;
   margin: 0 16px;
 }
 
@@ -201,7 +184,7 @@
 .info-label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
@@ -209,17 +192,16 @@
 .info-value {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-dark);
+  color: #111928;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* ─── Notice Box ─────────────────────────── */
 .notice-box {
   width: 100%;
-  background: var(--amber-bg);
-  border: 1.5px solid var(--amber-border);
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
   border-radius: 10px;
   padding: 14px 16px;
   display: flex;
@@ -229,14 +211,9 @@
   margin-bottom: 28px;
 }
 
-.notice-icon {
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
 .notice-text {
   font-size: 13px;
-  color: var(--amber-text);
+  color: #92400e;
   line-height: 1.6;
 }
 
@@ -245,21 +222,20 @@
   color: #78350f;
 }
 
-/* ─── Back Button ────────────────────────── */
 .back-btn {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-muted);
+  color: #6b7280;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  transition: color 0.15s;
 }
 
-.back-btn:hover { color: var(--primary); }
+.back-btn:hover {
+  color: #1a56db;
+}
 
-/* ─── Footer ─────────────────────────────── */
 .footer {
   width: 100%;
   padding: 24px 16px 28px;
@@ -278,14 +254,15 @@
 .footer-links a {
   font-size: 12px;
   font-weight: 500;
-  color: var(--text-muted);
+  color: #6b7280;
   text-decoration: none;
   letter-spacing: 0.3px;
   text-transform: uppercase;
-  transition: color 0.15s;
 }
 
-.footer-links a:hover { color: var(--primary); }
+.footer-links a:hover {
+  color: #1a56db;
+}
 
 .footer-copy {
   font-size: 11px;
@@ -294,15 +271,20 @@
   text-transform: uppercase;
 }
 
-/* ─── Responsive ─────────────────────────── */
+/* Responsive */
 @media (max-width: 520px) {
   .success-card {
     padding: 28px 18px 24px;
     border-radius: 12px;
   }
 
-  .card-title  { font-size: 18px; }
-  .brand-name  { font-size: 22px; }
+  .card-title {
+    font-size: 18px;
+  }
+
+  .brand-name {
+    font-size: 22px;
+  }
 
   .success-icon {
     width: 60px;
@@ -311,5 +293,7 @@
 }
 
 @media (min-width: 768px) {
-  .main-content { padding: 60px 24px; }
+  .main-content {
+    padding: 60px 24px;
+  }
 }

@@ -1,23 +1,18 @@
-<!-- otp-verify.component.html -->
-
 <div class="page-wrapper">
 
   <main class="main-content">
     <div class="otp-card">
 
-      <!-- Logo Icon -->
       <div class="logo-icon">
         <span class="material-symbols-outlined">verified_user</span>
       </div>
 
-      <!-- Brand -->
       <div class="brand-label">
         <span class="brand-super">VERIFY</span>
         <span class="brand-sub"> ACCOUNT ACCESS</span>
       </div>
       <h1 class="brand-name">Taleem_Hub</h1>
 
-      <!-- Heading -->
       <div class="card-heading">
         <h2 class="card-title">Check Your Email</h2>
         <p class="card-desc">
@@ -26,51 +21,30 @@
         </p>
       </div>
 
-      <!-- Form -->
       <form [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="otp-form">
 
-        <!-- OTP Label -->
         <div class="field-label">Verification Code</div>
 
-        <!-- OTP Inputs -->
         <div class="otp-inputs">
           <ng-container *ngFor="let i of [0,1,2,3,4,5]">
-            <input
-              #otpInput
-              class="otp-box"
-              type="text"
-              inputmode="numeric"
-              maxlength="1"
-              [formControlName]="'digit' + i"
-              (input)="onInput($event, i)"
-              (keydown.backspace)="onBackspace($event, i)"
-            />
+            <input #otpInput class="otp-box" type="text" inputmode="numeric" maxlength="1"
+              [formControlName]="'digit' + i" (input)="onInput($event, i)"
+              (keydown.backspace)="onBackspace($event, i)" />
             <span *ngIf="i === 2" class="otp-sep">—</span>
           </ng-container>
         </div>
 
-        <!-- Timer -->
         <div class="timer-row">
           <span class="timer-text">
             Resend code in
             <span class="timer-value">{{ formatTime(timer()) }}</span>
           </span>
-          <button
-            type="button"
-            class="resend-btn"
-            [disabled]="timer() > 0"
-            (click)="onResendOtp()"
-          >
+          <button type="button" class="resend-btn" [disabled]="timer() > 0" (click)="onResendOtp()">
             Resend Code
           </button>
         </div>
 
-        <!-- Submit -->
-        <button
-          type="submit"
-          class="submit-btn"
-          [disabled]="otpForm.invalid || isSubmitting()"
-        >
+        <button type="submit" class="submit-btn" [disabled]="otpForm.invalid || isSubmitting()">
           <span *ngIf="isSubmitting()" class="spinner"></span>
           {{ isSubmitting() ? 'Verifying...' : 'Verify Account' }}
           <span *ngIf="!isSubmitting()" class="material-symbols-outlined btn-icon">arrow_forward</span>
@@ -78,7 +52,6 @@
 
       </form>
 
-      <!-- Back -->
       <div class="back-row">
         <a routerLink="/auth/login" class="back-link">
           <span class="material-symbols-outlined back-icon">arrow_back</span>
@@ -89,14 +62,13 @@
     </div>
   </main>
 
-  <!-- Footer -->
   <footer class="footer">
     <div class="footer-links">
       <a href="#">Privacy Policy</a>
       <a href="#">Terms of Service</a>
       <a href="#">Help Center</a>
     </div>
-    <p class="footer-copy">© 2024 TALEEM_HUB. ALL RIGHTS RESERVED.</p>
+    <p class="footer-copy">© 2026 TALEEM_HUB. ALL RIGHTS RESERVED.</p>
   </footer>
 
 </div>

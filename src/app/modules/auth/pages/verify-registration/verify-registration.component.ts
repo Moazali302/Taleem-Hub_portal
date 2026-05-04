@@ -10,15 +10,15 @@ import { CommonModule } from '@angular/common';
   styleUrl: './verify-registration.component.css'
 })
 export class VerifyRegistrationComponent implements OnInit {
- email = '';
+  email = '';
   schoolName = '';
- 
-  constructor(private route: ActivatedRoute) {}
- 
-   ngOnInit(): void {
+
+  constructor(private route: ActivatedRoute) { }
+
+  ngOnInit(): void {
     this.route.queryParams.subscribe(({ email, school }) => {
       this.email = email || '—';
-      this.schoolName = school|| '—';
+      this.schoolName = school || '—';
     });
   }
 }

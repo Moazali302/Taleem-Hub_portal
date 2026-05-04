@@ -11,7 +11,7 @@ export class AuthService {
   constructor(private api: ApiService, private tokenService: TokenService) {}
 
   login(credentials: any): Observable<ApiResponse<{ token: string, user: User }>> {
-    return this.api.post<{ token: string, user: User }>(API.AUTH.LOGIN, credentials).pipe(
+    return this.api.post<{ token: string, user: User,  }>(API.AUTH.LOGIN, credentials).pipe(
       tap(res => {
         if (res.success && res.data) {
           this.saveSession(res.data.token, res.data.user);

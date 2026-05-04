@@ -17,8 +17,8 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
 
   otpForm: FormGroup;
   isSubmitting = signal(false);
-  timer = signal(300); // 5 minutes in seconds
-  email: string = '' ;
+  timer = signal(90);
+  email: string = '';
   mode: string = 'login';
   otp: string = '';
 
@@ -29,7 +29,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private route:ActivatedRoute
+    private route: ActivatedRoute
   ) {
     const group: any = {};
     for (let i = 0; i < 6; i++) {
@@ -42,8 +42,8 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
       this.email = state['email'];
     }
     if (state?.['mode']) {
-    this.mode = state['mode'];
-  }
+      this.mode = state['mode'];
+    }
   }
 
   ngOnInit(): void {
@@ -57,17 +57,16 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     }
   }
 
-  // role check logic
   role!: string;
 
-getRoleFromRoute(): void {
-  this.route.queryParams.subscribe(params => {
-    this.role = params['role'];
-  });
-}
+  getRoleFromRoute(): void {
+    this.route.queryParams.subscribe(params => {
+      this.role = params['role'];
+    });
+  }
 
   startTimer(): void {
-    this.timer.set(300);
+    this.timer.set(90);
     this.intervalId = setInterval(() => {
       this.timer.update(t => {
         if (t <= 0) {
@@ -104,50 +103,47 @@ getRoleFromRoute(): void {
   }
 
   onVerifyOtp(): void {
-  if (this.otpForm.valid) {
-    this.isSubmitting.set(true);
-    const otp = Object.values(this.otpForm.value).join('');
+    if (this.otpForm.valid) {
+      this.isSubmitting.set(true);
+      const otp = Object.values(this.otpForm.value).join('');
 
-    if (this.mode === 'reset') {
-      // Reset mode mein sirf OTP validate karo — backend call mat karo
-      // Seedha reset page pe jao with state
-      this.isSubmitting.set(false);
-      this.router.navigate(['/auth/reset-password'], {
-        state: { email: this.email, otp }
-      });
-    } else {
-      // Normal login flow
-      this.authService.verifyOtp({ email: this.email, otp }).subscribe({
-        next: (res: any) => {
-          this.isSubmitting.set(false);
-          if (res.success && res.role) {
-            this.navigateByRole(res.role as Role);
+      if (this.mode === 'reset') {
+        this.isSubmitting.set(false);
+        this.router.navigate(['/auth/reset-password'], {
+          state: { email: this.email, otp }
+        });
+      } else {
+        this.authService.verifyOtp({ email: this.email, otp }).subscribe({
+          next: (res: any) => {
+            this.isSubmitting.set(false);
+            if (res.success && res.role) {
+              this.navigateByRole(res.role as Role);
+            }
+          },
+          error: () => {
+            this.isSubmitting.set(false);
           }
-        },
-        error: () => {
-          this.isSubmitting.set(false);
-        }
-      });
-    }
-  }
-}
-
-   private navigateByRole(role: Role): void {
-      switch (role) {
-        case Role.SUPER_ADMIN:
-          this.router.navigate(['/super-admin/dashboard']);
-          break;
-        case Role.ADMIN:
-          this.router.navigate(['/admin/dashboard']);
-          break;
-        case Role.TEACHER:
-          this.router.navigate(['/teacher/dashboard']);
-          break;
-        case Role.STUDENT:
-          this.router.navigate(['/parent/dashboard']);
-          break;
-        default:
-          this.router.navigate(['/auth/login']);
+        });
       }
     }
+  }
+
+  private navigateByRole(role: Role): void {
+    switch (role) {
+      case Role.SUPER_ADMIN:
+        this.router.navigate(['/super-admin/dashboard']);
+        break;
+      case Role.ADMIN:
+        this.router.navigate(['/admin/dashboard']);
+        break;
+      case Role.TEACHER:
+        this.router.navigate(['/teacher/dashboard']);
+        break;
+      case Role.STUDENT:
+        this.router.navigate(['/parent/dashboard']);
+        break;
+      default:
+        this.router.navigate(['/auth/login']);
+    }
+  }
 }
