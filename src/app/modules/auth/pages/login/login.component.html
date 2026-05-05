@@ -1,194 +1,244 @@
-<div class="absolute inset-0 dot-pattern pointer-events-none"></div>
+<main class="login-root">
 
-<main
-  class="flex-grow flex items-center justify-center px-4 sm:px-6 md:px-12 py-10 sm:py-16 relative z-10"
->
-  <div class="w-full max-w-[480px]">
-    <div
-      class="bg-surface-container-lowest rounded-xl shadow-[0px_12px_40px_rgba(43,52,55,0.08)] p-6 sm:p-8 md:p-12 transition-all"
-    >
-      <div class="flex flex-col items-center mb-8 md:mb-10">
-        <div
-          class="w-12 h-12 sm:w-14 sm:h-14 bg-surface-container-high rounded-full flex items-center justify-center mb-4 sm:mb-6"
-        >
-          <span class="material-symbols-outlined text-primary text-2xl sm:text-3xl">school</span>
-        </div>
-        <div class="text-center">
-          <span
-            class="bg-secondary-container text-on-secondary-container text-[10px] font-bold tracking-[0.15em] px-3 py-1 rounded-full inline-block mb-3 uppercase"
-            >Super Admin Access</span
-          >
-          <h1
-            class="font-headline font-extrabold text-2xl sm:text-3xl text-on-surface tracking-tighter"
-          >
-            Taleem_Hub
-          </h1>
-        </div>
+  <!-- Left Column: Branding -->
+  <section class="branding-panel">
+    <div class="branding-logo">Taleem_Hub</div>
+
+    <div class="branding-content">
+      <h1 class="branding-headline">
+        The Gateway to <span class="gold-text">Institutional Excellence.</span>
+      </h1>
+      <p class="branding-subtext">
+        Access your secure portal to manage academic data and administrative
+        operations with precision and authority.
+      </p>
+    </div>
+
+    <div class="branding-footer-tags">
+      <span>Precision</span>
+      <span class="dot">•</span>
+      <span>Security</span>
+      <span class="dot">•</span>
+      <span>Legacy</span>
+    </div>
+
+    <div class="branding-watermark" aria-hidden="true">
+      <span class="material-symbols-outlined">account_balance</span>
+    </div>
+  </section>
+
+  <!-- Right Column: Login Form -->
+  <section class="form-panel">
+    <!-- Background decorative blobs -->
+    <div class="blob blob-top-right" aria-hidden="true"></div>
+    <div class="blob blob-bottom-left" aria-hidden="true"></div>
+
+    <div class="form-card">
+
+      <!-- Mobile Branding (visible only on mobile) -->
+      <div class="mobile-branding" aria-hidden="true">
+        <div class="mobile-branding-title">Taleem_Hub</div>
+        <div class="mobile-branding-bar"></div>
       </div>
 
-      <div class="space-y-6 sm:space-y-8">
-        <div class="space-y-2">
-          <h2 class="text-lg sm:text-xl font-semibold font-headline text-on-surface">
-            Welcome Back
-          </h2>
-          <p class="text-on-surface-variant text-sm">
-            Please enter your credentials to access the administration suite.
-          </p>
+      <!-- Form Header -->
+      <header class="form-header">
+        <h2 class="form-title">Institutional Login</h2>
+        <div class="title-bar"></div>
+        <p class="form-subtitle">Enter your official credentials to access the portal.</p>
+      </header>
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate autocomplete="off">
+
+        <!-- School ID Field -->
+        <div class="field-group">
+          <label class="field-label" for="school-id">
+            School ID
+            <span class="field-tag">REQUIRED</span>
+          </label>
+          <div class="input-wrapper">
+            <input
+              id="school-id"
+              type="text"
+              class="field-input"
+              [class.field-input--error]="isFieldInvalid('schoolId')"
+              formControlName="schoolId"
+              placeholder="TH-PK-001"
+              autocomplete="off"
+              aria-describedby="schoolId-error"
+            />
+          </div>
+          <span
+            id="schoolId-error"
+            class="field-error"
+            role="alert"
+            *ngIf="isFieldInvalid('schoolId')"
+          >
+            <ng-container *ngIf="loginForm.get('schoolId')?.errors?.['required']">
+              School ID is required.
+            </ng-container>
+            <ng-container *ngIf="loginForm.get('schoolId')?.errors?.['maxlength']">
+              School ID cannot exceed 255 characters.
+            </ng-container>
+          </span>
         </div>
 
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5 sm:space-y-6">
-          <div class="space-y-2">
-            <label class="block font-label text-sm font-medium text-on-surface-variant" for="email"
-              >Email Address</label
-            >
+        <!-- Email Field -->
+        <div class="field-group">
+          <label class="field-label" for="email">
+            Institutional Email
+            <span class="field-tag">OFFICIAL</span>
+          </label>
+          <div class="input-wrapper">
             <input
-              formControlName="email"
-              class="w-full h-11 sm:h-12 px-4 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant outline-none"
               id="email"
-              placeholder="admin@taleemhub.edu"
               type="email"
+              class="field-input"
+              [class.field-input--error]="isFieldInvalid('email')"
+              formControlName="email"
+              placeholder="admin@school.edu.pk"
+              autocomplete="off"
+              aria-describedby="email-error"
             />
-            <div
-              *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid"
-              class="form-error"
-            >
-              <span class="form-error-text" *ngIf="loginForm.get('email')?.errors?.['required']"
-                >Email is required</span
-              >
-              <span class="form-error-text" *ngIf="loginForm.get('email')?.errors?.['email']"
-                >Please enter a valid email</span
-              >
-            </div>
           </div>
+          <span
+            id="email-error"
+            class="field-error"
+            role="alert"
+            *ngIf="isFieldInvalid('email')"
+          >
+            <ng-container *ngIf="loginForm.get('email')?.errors?.['required']">
+              Institutional email is required.
+            </ng-container>
+            <ng-container *ngIf="loginForm.get('email')?.errors?.['email']">
+              Please enter a valid email address.
+            </ng-container>
+          </span>
+        </div>
 
-          <div class="space-y-2">
-            <label
-              class="block font-label text-sm font-medium text-on-surface-variant"
-              for="schoolId"
-              >School Name</label
-            >
+        <!-- Password Field -->
+        <div class="field-group">
+          <label class="field-label" for="password">
+            Password
+            <span class="field-tag">ENCRYPTED</span>
+          </label>
+          <div class="input-wrapper input-wrapper--password">
             <input
-              formControlName="schoolId"
-              class="w-full h-11 sm:h-12 px-4 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant outline-none"
-              id="schoolId"
-              placeholder="Age-High-School"
-              type="text"
+              id="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              class="field-input field-input--padded-right"
+              [class.field-input--error]="isFieldInvalid('password')"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              aria-describedby="password-error"
             />
-            <div
-              *ngIf="loginForm.get('schoolId')?.touched && loginForm.get('schoolId')?.invalid"
-              class="form-error"
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+              [attr.aria-pressed]="showPassword()"
             >
-              <span class="form-error-text" *ngIf="loginForm.get('schoolId')?.errors?.['required']"
-                >SchoolName is required</span
-              >
-              <span class="form-error-text" *ngIf="loginForm.get('schoolId')?.errors?.['schoolId']"
-                >Please enter a valid SchoolName</span
-              >
-            </div>
-          </div>
-          <div class="space-y-2">
-            <div class="flex justify-between items-center">
-              <label
-                class="block font-label text-sm font-medium text-on-surface-variant"
-                for="password"
-                >Password</label
-              >
-              <a
-                (click)="onForgotPassword()"
-                class="text-xs font-semibold text-primary hover:text-primary-dim transition-colors cursor-pointer"
-                >Forgot Password?</a
-              >
-            </div>
-            <div class="relative">
-              <input
-                formControlName="password"
-                [type]="showPassword() ? 'text' : 'password'"
-                class="w-full h-11 sm:h-12 px-4 bg-surface-container-high border-none rounded-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline-variant outline-none"
-                id="password"
-                placeholder="••••••••"
-              />
-              <span
-                (click)="togglePasswordVisibility()"
-                class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline-variant cursor-pointer hover:text-primary transition-colors"
-              >
+              <span class="material-symbols-outlined">
                 {{ showPassword() ? 'visibility_off' : 'visibility' }}
               </span>
-            </div>
-            <div
-              *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
-              class="form-error"
-            >
-              <span class="form-error-text" *ngIf="loginForm.get('password')?.errors?.['required']"
-                >Password is required</span
-              >
-              <span class="form-error-text" *ngIf="loginForm.get('password')?.errors?.['minlength']"
-                >Minimum 8 characters required</span
-              >
-            </div>
+            </button>
           </div>
+          <span
+            id="password-error"
+            class="field-error"
+            role="alert"
+            *ngIf="isFieldInvalid('password')"
+          >
+            <ng-container *ngIf="loginForm.get('password')?.errors?.['required']">
+              Password is required.
+            </ng-container>
+            <ng-container *ngIf="loginForm.get('password')?.errors?.['minlength']">
+              Password must be at least 8 characters.
+            </ng-container>
+          </span>
+        </div>
 
-          <div class="flex items-center gap-3">
-            <input
-              formControlName="remember"
-              class="w-5 h-5 rounded bg-surface-container-high border-none text-primary focus:ring-0 focus:ring-offset-0 cursor-pointer"
-              id="remember"
-              type="checkbox"
-            />
-            <label class="text-sm text-on-surface-variant cursor-pointer select-none" for="remember"
-              >Remember this session</label
-            >
-          </div>
+        <!-- Remember Me & Forgot Password -->
+        <div class="form-options">
+          <label class="remember-label">
+            <div class="checkbox-wrapper">
+              <input
+                type="checkbox"
+                class="checkbox-input"
+                formControlName="remember"
+              />
+              <span class="material-symbols-outlined checkbox-check">check</span>
+            </div>
+            <span class="remember-text">Remember Me</span>
+          </label>
 
           <button
-            [disabled]="loginForm.invalid || isSubmitting()"
-            class="w-full h-12 sm:h-14 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-semibold rounded-lg flex items-center justify-center gap-2 hover:opacity-95 active:scale-[0.98] transition-all shadow-lg shadow-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
-            type="submit"
+            type="button"
+            class="forgot-password-btn"
+            (click)="onForgotPassword()"
           >
-            <span
-              *ngIf="isSubmitting()"
-              class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"
-            ></span>
-            {{ isSubmitting() ? 'Signing in...' : 'Sign In to Dashboard' }}
-            <span *ngIf="!isSubmitting()" class="material-symbols-outlined text-xl"
-              >arrow_forward</span
-            >
+            Forgot Password?
           </button>
-        </form>
-
-        <div class="text-center">
-          <p class="text-on-surface-variant text-sm">
-            Don't have an account?
-            <a
-              routerLink="/auth/register"
-              class="text-primary font-semibold hover:text-primary-dim transition-colors"
-              >Register here</a
-            >
-          </p>
         </div>
+
+        <!-- Submit Button -->
+        <div class="submit-wrapper">
+          <button
+            type="submit"
+            class="submit-btn"
+            [class.submit-btn--loading]="isSubmitting()"
+            [disabled]="isSubmitting()"
+            aria-live="polite"
+          >
+            <span *ngIf="!isSubmitting()" class="submit-btn-content">
+              <span class="submit-btn-label">Secure Portal Login</span>
+              <span class="material-symbols-outlined submit-btn-icon">shield_lock</span>
+            </span>
+            <span *ngIf="isSubmitting()" class="submit-btn-content">
+              <span class="spinner" aria-hidden="true"></span>
+              <span class="submit-btn-label">Authenticating...</span>
+            </span>
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Footer -->
+      <footer class="card-footer">
+        <p>
+          Need an institutional account?
+          <a routerLink="/auth/register" class="card-footer-link">Register Now</a>
+        </p>
+      </footer>
+
+      <!-- Decorative Seal -->
+      <div class="card-seal" aria-hidden="true">
+        <span class="material-symbols-outlined">verified</span>
       </div>
+
     </div>
-  </div>
+  </section>
+
 </main>
 
-<footer class="flex flex-col items-center gap-4 py-8 sm:py-12 w-full bg-transparent relative z-10">
-  <div class="flex flex-wrap justify-center gap-6 sm:gap-12 px-4">
-    <a
-      class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 hover:text-slate-700 transition-opacity duration-300"
-      href="#"
-      >Privacy Policy</a
-    >
-    <a
-      class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 hover:text-slate-700 transition-opacity duration-300"
-      href="#"
-      >Terms of Service</a
-    >
-    <a
-      class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 hover:text-slate-700 transition-opacity duration-300"
-      href="#"
-      >Help Center</a
-    >
+<!-- Shared Footer -->
+<footer class="site-footer">
+  <div class="site-footer-brand">
+    <span class="site-footer-bar"></span>
+    Taleem_Hub
   </div>
-  <p class="font-['Inter'] text-[10px] sm:text-xs uppercase tracking-widest text-slate-500">
-    © 2026 Taleem_Hub. All rights reserved.
-  </p>
+
+  <nav class="site-footer-nav" aria-label="Footer navigation">
+    <a href="#" class="site-footer-link">Security Protocol</a>
+    <a href="#" class="site-footer-link">Privacy Policy</a>
+    <a href="#" class="site-footer-link">Compliance</a>
+    <a href="#" class="site-footer-link">Contact Support</a>
+  </nav>
+
+  <div class="site-footer-copy">
+    © 2024 Taleem_Hub Institutional Portal.<br /> All rights reserved.
+  </div>
 </footer>
