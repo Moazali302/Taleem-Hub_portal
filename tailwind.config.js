@@ -56,18 +56,31 @@ module.exports = {
         "on-primary-container": "#4a5168",
         "on-primary-fixed-variant": "#545b72",
         "on-error-container": "#752121",
-        "secondary-dim": "#61503c"
+        "secondary-dim": "#61503c",
+         "primary":    "#0F172A", // Midnight Navy
+        "accent":     "#B4975A", // Prestigious Gold
+        "on-primary": "#ffffff",
+        "surface":    "#f9f9f9",
+        "background": "#0F172A",
       },
       borderRadius: {
         "DEFAULT": "0.25rem",
         "lg": "0.5rem",
         "xl": "0.75rem",
-        "full": "9999px"
+        "full": "9999px",
+           "DEFAULT": "0.125rem",
+        "lg":      "0.25rem",
+        "xl":      "0.5rem",
+        "2xl":     "1rem",
+        "3xl":     "1.5rem",
+        "full":     "9999px",
       },
       fontFamily: {
         "headline": ["Manrope"],
         "body": ["Inter"],
-        "label": ["Inter"]
+        "label": ["Inter"],
+        "serif": ["Noto Serif", "serif"],
+        "sans":  ["Inter", "sans-serif"],
       }
     },
   },

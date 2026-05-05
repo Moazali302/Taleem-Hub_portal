@@ -1,327 +1,247 @@
-<body
-  class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col"
->
-  <main
-    class="flex-grow flex items-center justify-center p-4 md:p-6 lg:p-12 relative overflow-hidden"
-  >
-    <div class="absolute inset-0 pointer-events-none opacity-5">
-      <div
-        class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-surface-tint blur-[120px]"
-      ></div>
-      <div
-        class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-tertiary blur-[120px]"
-      ></div>
+<main class="register-page">
+
+  <!-- Hero Branding Section -->
+  <section class="hero-section">
+    <div class="hero-bg-overlay"></div>
+
+    <div class="hero-content">
+      <!-- Logo -->
+      <div class="brand-logo">
+        <div class="logo-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+          </svg>
+        </div>
+        <span class="brand-name">Taleem_Hub</span>
+      </div>
+
+      <!-- Hero Text -->
+      <div class="hero-text">
+        <h1 class="hero-heading">
+          The Institution's <br />
+          <span class="accent-text">Digital Foundation.</span>
+        </h1>
+        <p class="hero-subtext">
+          Join the elite network of academic institutions leveraging secure,
+          authoritative data management for the modern era.
+        </p>
+      </div>
     </div>
 
-    <div
-      class="w-full max-w-[1200px] flex flex-col lg:flex-row bg-surface-container-lowest rounded-2xl lg:rounded-3xl shadow-[0px_12px_40px_rgba(43,52,55,0.08)] overflow-hidden relative z-10"
-    >
-      <div
-        class="hidden md:flex lg:w-1/2 flex-col justify-between p-8 md:p-12 lg:p-16 bg-surface-container-low relative overflow-hidden"
-      >
-        <div class="relative z-10">
-          <div class="flex items-center gap-3 mb-10 lg:mb-16">
-            <span class="material-symbols-outlined text-primary text-3xl md:text-4xl"
-              >account_balance</span
-            >
-            <span
-              class="text-xl md:text-2xl font-headline font-bold tracking-tighter text-on-surface"
-              >Taleem_Hub</span
-            >
-          </div>
-          <h1
-            class="text-4xl md:text-5xl lg:text-6xl font-headline font-extrabold tracking-tight text-on-surface leading-[1.1] mb-6"
-          >
-            The Institution's <br class="hidden lg:block" />Digital Foundation.
-          </h1>
-          <p class="text-base md:text-lg text-on-surface-variant max-w-sm leading-relaxed">
-            Join the elite network of academic institutions leveraging secure, authoritative data
-            management for the modern era.
-          </p>
+    <!-- Security Badge -->
+    <div class="security-badge">
+      <div class="badge-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+      </div>
+      <div class="badge-text">
+        <p class="badge-title">Taleem Administrative Core</p>
+        <p class="badge-subtitle">Validated Educational Security</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Registration Form Section -->
+  <section class="form-section">
+    <div class="form-card">
+
+      <!-- Header -->
+      <div class="form-header">
+        <h2 class="form-title">Create Institution Account</h2>
+        <p class="form-subtitle">Please provide official school credentials to begin.</p>
+      </div>
+
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="error-banner" role="alert">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+              stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+          </svg>
+          <span>{{ errorMessage() }}</span>
         </div>
-        <div class="relative z-10 mt-12 lg:mt-0">
-          <div
-            class="inline-flex items-center gap-4 p-4 rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant/10"
-          >
-            <div
-              class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0"
-            >
-              <span class="material-symbols-outlined text-on-secondary-container text-xl"
-                >verified</span
-              >
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-on-surface">Taleem Administrative Core</p>
-              <p class="text-xs text-on-surface-variant">Validated Educational Security</p>
-            </div>
-          </div>
-        </div>
-        <div
-          class="absolute bottom-0 right-0 w-[50%] h-[40%] opacity-15 grayscale pointer-events-none"
-        >
-          <img
-            alt="academic architecture"
-            class="object-cover w-full h-full object-bottom"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCph_Y9LQUbYg3dMABHvmpTsh-WA59SlrJ5zPkKtpEh8gdh9LThjGEUQjYC40nhwlivqK80hS0hBSTeW1Oiy104wBgZWIGi7jq5wLxMpGK8Id5_LTkqhtkxxYnRWReurUu7ac_d9Lj7gdmsvlFDohs6mM7lYA_bl4o-ZDogJPys35_bB2CAhmpYntU6RrkLNRkUoz9S4PcIhNU1CWrfN4DK_uKpD9jmYpbXvYu_ABZEtqvzQDDFlJhTBWjBnvVi_BNPPklmiIR3vkg"
+      }
+
+      <!-- Registration Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form" novalidate>
+
+        <!-- School Name -->
+        <div class="field-group">
+          <label class="field-label" for="school-name">School Name</label>
+          <input
+            class="field-input"
+            [class.field-input--error]="f['schoolName'].invalid && f['schoolName'].touched"
+            id="school-name"
+            formControlName="schoolName"
+            placeholder="E.g. Heritage International Academy"
+            type="text"
+            autocomplete="organization"
           />
-        </div>
-      </div>
-
-      <div class="md:hidden p-6 pb-0 flex items-center gap-3">
-        <span class="material-symbols-outlined text-primary text-3xl">account_balance</span>
-        <span class="text-xl font-headline font-bold tracking-tighter text-on-surface"
-          >Taleem_Hub</span
-        >
-      </div>
-
-      <div class="w-full lg:w-1/2 p-6 md:p-12 lg:p-16 flex flex-col justify-center">
-        <div class="mb-8 md:mb-10">
-          <h2
-            class="text-2xl md:text-3xl font-headline font-bold tracking-tight text-on-surface mb-2"
-          >
-            Create Institution Account
-          </h2>
-          <p class="text-sm md:text-base text-on-surface-variant font-medium">
-            Please provide official school credentials to begin.
-          </p>
+          @if (f['schoolName'].invalid && f['schoolName'].touched) {
+            <span class="field-error">
+              @if (f['schoolName'].errors?.['required']) { School name is required. }
+              @else if (f['schoolName'].errors?.['maxlength']) { Maximum 255 characters allowed. }
+            </span>
+          }
         </div>
 
-        <div
-          *ngIf="errorMessage()"
-          class="mb-4 p-3 rounded-xl bg-error-container text-on-error-container text-sm"
-        >
-          {{ errorMessage() }}
-        </div>
-
-        <form
-          [formGroup]="registerForm"
-          (ngSubmit)="onSubmit()"
-          class="space-y-5 md:space-y-6"
-          novalidate
-        >
-          <div class="space-y-1.5">
-            <label
-              class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
-              for="school_name"
-            >
-              School Name
-            </label>
+        <!-- Owner Name & Email Row -->
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label" for="owner-name">Owner Name</label>
             <input
-              formControlName="schoolName"
-              class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
-              id="school_name"
-              placeholder="E.g. Heritage International Academy"
+              class="field-input"
+              [class.field-input--error]="f['ownerName'].invalid && f['ownerName'].touched"
+              id="owner-name"
+              formControlName="ownerName"
+              placeholder="Full Legal Name"
               type="text"
-              autocomplete="organization"
+              autocomplete="name"
             />
-            <div *ngIf="f['schoolName'].touched && f['schoolName'].invalid" class="form-error">
-              <span class="form-error-text" *ngIf="f['schoolName'].errors?.['required']"
-                >School name is required</span
-              >
-              <span class="form-error-text" *ngIf="f['schoolName'].errors?.['maxlength']"
-                >Maximum 255 characters allowed</span
-              >
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
-            <div class="space-y-1.5">
-              <label
-                class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
-                for="owner_name"
-              >
-                Owner Name
-              </label>
-              <input
-                formControlName="ownerName"
-                class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
-                id="owner_name"
-                placeholder="Full Legal Name"
-                type="text"
-                autocomplete="name"
-              />
-              <div
-                *ngIf="f['ownerName'].touched && f['ownerName'].invalid"
-                class="text-error text-[10px] mt-1 form-error"
-              >
-                <span class="form-error-text" *ngIf="f['ownerName'].errors?.['required']"
-                  >Owner name is required</span
-                >
-              </div>
-            </div>
-
-            <div class="space-y-1.5">
-              <label
-                class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
-                for="email"
-              >
-                Email
-              </label>
-              <input
-                formControlName="email"
-                class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
-                id="email"
-                placeholder="admin@school.edu.pk"
-                type="email"
-                autocomplete="email"
-              />
-              <div
-                *ngIf="f['email'].touched && f['email'].invalid"
-                class="text-error text-[10px] mt-1 form-error"
-              >
-                <span class="form-error-text" *ngIf="f['email'].errors?.['required']"
-                  >Email is required</span
-                >
-                <span class="form-error-text" *ngIf="f['email'].errors?.['email']"
-                  >Enter a valid email address</span
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="space-y-1.5">
-            <label
-              class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
-              for="phone"
-            >
-              Phone Number
-            </label>
-            <input
-              formControlName="phone"
-              class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
-              id="phone"
-              placeholder="+923001234567"
-              type="tel"
-              autocomplete="tel"
-            />
-            <div
-              *ngIf="f['phone'].touched && f['phone'].invalid"
-              class="text-error text-[10px] mt-1 form-error"
-            >
-              <span class="form-error-text" *ngIf="f['phone'].errors?.['required']"
-                >Phone number is required</span
-              >
-              <span class="form-error-text" *ngIf="f['phone'].errors?.['pattern']"
-                >Format: +92 followed by 10 digits</span
-              >
-            </div>
-          </div>
-
-          <div class="space-y-1.5">
-            <label
-              class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
-              for="schoolAddress"
-            >
-              School Address
-            </label>
-            <textarea
-              formControlName="schoolAddress"
-              class="w-full p-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-none text-sm md:text-base"
-              id="schoolAddress"
-              placeholder="Street, City, State, ZIP Code"
-              rows="2"
-            ></textarea>
-            <div
-              *ngIf="f['schoolAddress'].touched && f['schoolAddress'].invalid"
-              class="text-error text-[10px] mt-1 form-error"
-            >
-              <span class="form-error-text" *ngIf="f['schoolAddress'].errors?.['required']"
-                >School address is required</span
-              >
-            </div>
-          </div>
-
-          <div class="space-y-1.5">
-            <label
-              class="text-[10px] md:text-xs font-label uppercase tracking-widest text-on-surface-variant font-bold"
-              for="password"
-            >
-              Password
-            </label>
-            <div class="relative group">
-              <input
-                formControlName="password"
-                [type]="showPassword() ? 'text' : 'password'"
-                class="w-full h-12 md:h-14 px-4 bg-surface-container-high border-none rounded-xl text-on-surface placeholder:text-outline focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all duration-200 text-sm md:text-base"
-                id="password"
-                placeholder="••••••••••••"
-                autocomplete="new-password"
-              />
-              <span
-                (click)="togglePasswordVisibility()"
-                class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline cursor-pointer hover:text-primary transition-colors"
-              >
-                {{ showPassword() ? 'visibility_off' : 'visibility' }}
+            @if (f['ownerName'].invalid && f['ownerName'].touched) {
+              <span class="field-error">
+                @if (f['ownerName'].errors?.['required']) { Owner name is required. }
+                @else if (f['ownerName'].errors?.['maxlength']) { Maximum 255 characters allowed. }
               </span>
-            </div>
-            <div
-              *ngIf="f['password'].touched && f['password'].invalid"
-              class="text-error text-[10px] mt-1 form-error"
-            >
-              <span class="form-error-text" *ngIf="f['password'].errors?.['required']"
-                >Password is required</span
-              >
-              <span class="form-error-text" *ngIf="f['password'].errors?.['minlength']"
-                >Minimum 8 characters required</span
-              >
-              <span class="form-error-text" *ngIf="f['password'].errors?.['pattern']"
-                >Must include uppercase, lowercase and number</span
-              >
-            </div>
+            }
           </div>
 
-          <div class="pt-4 md:pt-6">
+          <div class="field-group">
+            <label class="field-label" for="email">Email</label>
+            <input
+              class="field-input"
+              [class.field-input--error]="f['email'].invalid && f['email'].touched"
+              id="email"
+              formControlName="email"
+              placeholder="admin@school.edu.pk"
+              type="email"
+              autocomplete="email"
+            />
+            @if (f['email'].invalid && f['email'].touched) {
+              <span class="field-error">
+                @if (f['email'].errors?.['required']) { Email is required. }
+                @else if (f['email'].errors?.['email']) { Enter a valid email address. }
+                @else if (f['email'].errors?.['maxlength']) { Maximum 255 characters allowed. }
+              </span>
+            }
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="field-group">
+          <label class="field-label" for="phone">Phone Number</label>
+          <input
+            class="field-input"
+            [class.field-input--error]="f['phone'].invalid && f['phone'].touched"
+            id="phone"
+            formControlName="phone"
+            placeholder="+923001234567"
+            type="tel"
+            autocomplete="tel"
+          />
+          @if (f['phone'].invalid && f['phone'].touched) {
+            <span class="field-error">
+              @if (f['phone'].errors?.['required']) { Phone number is required. }
+              @else if (f['phone'].errors?.['pattern']) { Enter a valid Pakistani number (e.g. +923001234567). }
+            </span>
+          }
+        </div>
+
+        <!-- School Address -->
+        <div class="field-group">
+          <label class="field-label" for="address">School Address</label>
+          <textarea
+            class="field-input field-textarea"
+            [class.field-input--error]="f['schoolAddress'].invalid && f['schoolAddress'].touched"
+            id="address"
+            formControlName="schoolAddress"
+            placeholder="Street, City, State, ZIP Code"
+            rows="2"
+          ></textarea>
+          @if (f['schoolAddress'].invalid && f['schoolAddress'].touched) {
+            <span class="field-error">
+              @if (f['schoolAddress'].errors?.['required']) { Address is required. }
+              @else if (f['schoolAddress'].errors?.['maxlength']) { Maximum 500 characters allowed. }
+            </span>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="field-group">
+          <label class="field-label" for="password">Password</label>
+          <div class="password-wrapper">
+            <input
+              class="field-input"
+              [class.field-input--error]="f['password'].invalid && f['password'].touched"
+              id="password"
+              formControlName="password"
+              placeholder="••••••••••••"
+              [type]="showPassword() ? 'text' : 'password'"
+              autocomplete="new-password"
+            />
             <button
-              type="submit"
-              [disabled]="isSubmitting()"
-              class="w-full h-14 md:h-16 primary-gradient text-on-primary font-headline font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 flex items-center justify-center gap-3 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+              class="password-toggle"
+              type="button"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
             >
-              <span
-                *ngIf="isSubmitting()"
-                class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"
-              ></span>
-              {{ isSubmitting() ? 'Registering...' : 'Complete Institutional Registration' }}
-              <span *ngIf="!isSubmitting()" class="material-symbols-outlined text-xl"
-                >arrow_forward</span
-              >
+              @if (!showPassword()) {
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+              } @else {
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                </svg>
+              }
             </button>
           </div>
-        </form>
-
-        <div class="mt-8 md:mt-10 pt-8 md:pt-10 border-t border-outline-variant/10 text-center">
-          <p class="text-sm text-on-surface-variant">
-            Already registered?
-            <a class="text-primary font-bold hover:underline ml-1" routerLink="/auth/login">
-              Login</a
-            >
-          </p>
+          @if (f['password'].invalid && f['password'].touched) {
+            <span class="field-error">
+              @if (f['password'].errors?.['required']) { Password is required. }
+              @else if (f['password'].errors?.['minlength']) { Minimum 8 characters required. }
+              @else if (f['password'].errors?.['pattern']) { Must include uppercase, lowercase and a number. }
+            </span>
+          }
         </div>
-      </div>
-    </div>
-  </main>
 
-  <footer class="flex flex-col items-center gap-4 py-8 md:py-12 w-full mt-auto px-6">
-    <div class="flex flex-wrap justify-center items-center gap-x-8 gap-y-4">
-      <a
-        class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-400 hover:text-primary transition-colors duration-300"
-        href="#"
-        >Privacy Policy</a
-      >
-      <a
-        class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-400 hover:text-primary transition-colors duration-300"
-        href="#"
-        >Terms of Service</a
-      >
-      <a
-        class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-400 hover:text-primary transition-colors duration-300"
-        href="#"
-        >Help Center</a
-      >
+        <!-- Submit Button -->
+        <div class="submit-wrapper">
+          <button
+            class="submit-btn"
+            type="submit"
+            [disabled]="isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              <svg class="spinner" fill="none" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12" />
+              </svg>
+              <span>Processing...</span>
+            } @else {
+              <span>Complete Institutional Registration</span>
+              <svg class="btn-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+              </svg>
+            }
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Footer -->
+      <div class="form-footer">
+        <p>
+          Already registered?
+          <a [routerLink]="['/auth/login']" class="login-link">Login</a>
+        </p>
+      </div>
+
     </div>
-    <p
-      class="font-['Inter'] text-[10px] md:text-xs uppercase tracking-widest text-slate-500 text-center"
-    >
-      © 2026 Taleem_Hub. Institutional Grade Management.
-    </p>
-  </footer>
-</body>
+  </section>
+
+</main>

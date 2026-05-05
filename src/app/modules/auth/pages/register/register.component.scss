@@ -1,58 +1,610 @@
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-}
+// ============================================================
+// Taleem_Hub — Register Page Styles
+// Angular SCSS — BEM-like, no Tailwind dependency
+// ============================================================
 
-.primary-gradient {
-  background: linear-gradient(145deg, #575e75 0%, #4b5268 100%);
-}
+// ── Design Tokens ────────────────────────────────────────────
+:host {
+  --color-primary:    #0F172A;
+  --color-accent:     #B4975A;
+  --color-surface:    #f9f9f9;
+  --color-slate-50:   #f8fafc;
+  --color-slate-100:  #f1f5f9;
+  --color-slate-200:  #e2e8f0;
+  --color-slate-300:  #cbd5e1;
+  --color-slate-400:  #94a3b8;
+  --color-slate-500:  #64748b;
+  --color-slate-900:  #0f172a;
+  --color-error:      #ef4444;
+  --color-error-bg:   #fef2f2;
+  --color-error-border: #fecaca;
 
-.w-full.max-w-\[1200px\] {
-  border: 1.5px solid #e5e7eb !important;
-}
+  --font-serif:       'Noto Serif', Georgia, serif;
+  --font-sans:        'Inter', system-ui, sans-serif;
 
-.lg\:w-1\/2.bg-surface-container-low {
-  border-right: 1.5px solid #e5e7eb;
-}
+  --fluid-h1:         clamp(2rem, 5vw + 1rem, 3.75rem);
+  --fluid-h2:         clamp(1.5rem, 3vw + 1rem, 2rem);
+  --fluid-padding:    clamp(1.5rem, 5vw, 4rem);
 
-input[formControlName],
-textarea[formControlName] {
-  border: 1.5px solid #d1d5db !important;
-}
+  --radius-card:      2rem;
+  --radius-input:     0.75rem;
+  --radius-btn:       0.75rem;
+  --shadow-card:
+    0 4px 6px -1px rgba(0,0,0,.10),
+    0 2px 4px -1px rgba(0,0,0,.06),
+    0 20px 25px -5px rgba(0,0,0,.10),
+    0 10px 10px -5px rgba(0,0,0,.04);
 
-input[formControlName]:focus,
-textarea[formControlName]:focus {
-  border-color: #1a56db !important;
-  outline: none;
-}
-
-input[formControlName]:hover,
-textarea[formControlName]:hover {
-  border-color: #9ca3af !important;
-}
-
-button[type="submit"] {
-  border: 1.5px solid transparent !important;
-}
-
-.inline-flex.items-center.gap-4.p-4.rounded-xl {
-  border: 1.5px solid #e5e7eb !important;
-}
-
-.border-t {
-  border-top: 1.5px solid #e5e7eb !important;
-}
-.form-error {
-  margin-top: 6px;
-  padding: 6px 10px;
-  background: #fff5f5;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-}
-
-.form-error-text {
-  color: #dc2626;
-  font-size: 13px;
-  font-weight: 500;
   display: block;
-  line-height: 1.4;
+  height: 100%;
+}
+
+// ── Page Layout ───────────────────────────────────────────────
+.register-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+
+  @media (min-width: 1024px) {
+    flex-direction: row;
+  }
+}
+
+// ── Hero Section ─────────────────────────────────────────────
+.hero-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--fluid-padding);
+  background: var(--color-primary);
+  overflow: hidden;
+
+  @media (min-width: 1024px) {
+    width: 41.666%;   // lg:w-5/12
+    min-height: 100vh;
+  }
+
+  @media (min-width: 1280px) {
+    width: 50%;       // xl:w-1/2
+  }
+}
+
+.hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to top, rgba(15,23,42,1) 0%, rgba(15,23,42,0.8) 40%, rgba(15,23,42,0) 100%),
+    url('https://lh3.googleusercontent.com/aida/ADBb0ujSBDK25aS0wuVgaaB2d9qiEXxeBd8N-NbjAAXNFroZ6Td10hb0atSvLC3fdLze0DJc_1eGD-7zMrLN0UVTanaXnY9ui-utbWW_Dj3MB0VADEnYFv51SMe1Rg7WABC1KZjrxE4eMMlxl2dNNyF6ttrRKVbnaxIkmFbvUyVwhasjTIW9d_nRn2U_JywTKbJ-_IYTGZ271-WthFYlcZxbu1QWT8UFZSpf0u_TdFgDSYZbjiq2q1o9pU9hfR69H6AbeF3HRx_UlBavWE4');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  mix-blend-mode: overlay;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 2rem;
+
+  @media (min-width: 1024px) {
+    margin-bottom: 0;
+  }
+}
+
+// ── Brand Logo ────────────────────────────────────────────────
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+
+  @media (min-width: 1024px) {
+    margin-bottom: 5rem;
+  }
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--color-accent);
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.25);
+  flex-shrink: 0;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-primary);
+  }
+
+  @media (min-width: 1024px) {
+    width: 3rem;
+    height: 3rem;
+
+    svg {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+  }
+}
+
+.brand-name {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #fff;
+
+  @media (min-width: 1024px) {
+    font-size: 1.5rem;
+  }
+}
+
+// ── Hero Text ─────────────────────────────────────────────────
+.hero-text {
+  max-width: 36rem;
+}
+
+.hero-heading {
+  font-family: var(--font-serif);
+  font-size: var(--fluid-h1);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  margin: 0 0 1rem;
+
+  @media (min-width: 1024px) {
+    margin-bottom: 2rem;
+  }
+}
+
+.accent-text {
+  color: var(--color-accent);
+}
+
+.hero-subtext {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--color-slate-300);
+  font-weight: 300;
+  margin: 0;
+
+  @media (min-width: 1024px) {
+    font-size: 1.25rem;
+  }
+}
+
+// ── Security Badge ────────────────────────────────────────────
+.security-badge {
+  position: relative;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.25);
+  margin-top: 2rem;
+
+  @media (min-width: 1024px) {
+    margin-top: 0;
+  }
+}
+
+.badge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(180,151,90,0.20);
+  border: 1px solid rgba(180,151,90,0.30);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-accent);
+  }
+
+  @media (min-width: 1024px) {
+    padding: 0.75rem;
+
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+}
+
+.badge-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: #fff;
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 0 0 0.125rem;
+
+  @media (min-width: 1024px) {
+    font-size: 0.75rem;
+  }
+}
+
+.badge-subtitle {
+  font-size: 0.625rem;
+  color: var(--color-slate-400);
+  font-weight: 500;
+  margin: 0;
+
+  @media (min-width: 1024px) {
+    font-size: 0.75rem;
+  }
+}
+
+// ── Form Section ──────────────────────────────────────────────
+.form-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: var(--color-slate-50);
+  position: relative;
+
+  @media (min-width: 640px) {
+    padding: 2rem 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 3rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding: 3rem 6rem;
+  }
+}
+
+// ── Glass Card ────────────────────────────────────────────────
+.form-card {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.20);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem;
+
+  @media (min-width: 640px) {
+    padding: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    background: rgba(255,255,255,0.98);
+    padding: 3rem;
+  }
+}
+
+// ── Form Header ───────────────────────────────────────────────
+.form-header {
+  margin-bottom: 2rem;
+  text-align: center;
+
+  @media (min-width: 1024px) {
+    text-align: left;
+  }
+}
+
+.form-title {
+  font-family: var(--font-serif);
+  font-size: var(--fluid-h2);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--color-primary);
+  margin: 0 0 0.5rem;
+}
+
+.form-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-slate-500);
+  font-weight: 500;
+  margin: 0;
+
+  @media (min-width: 640px) {
+    font-size: 1rem;
+  }
+}
+
+// ── Error Banner ──────────────────────────────────────────────
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-input);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  color: var(--color-error);
+  font-size: 0.8125rem;
+  font-weight: 500;
+
+  svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+  }
+}
+
+// ── Form Layout ───────────────────────────────────────────────
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  @media (min-width: 640px) {
+    gap: 1.5rem;
+  }
+}
+
+// ── Field Group ───────────────────────────────────────────────
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+}
+
+// ── Label ─────────────────────────────────────────────────────
+.field-label {
+  display: block;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+
+  @media (min-width: 640px) {
+    font-size: 0.75rem;
+  }
+}
+
+// ── Input / Textarea ─────────────────────────────────────────
+.field-input {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--color-slate-200);
+  border-radius: var(--radius-input);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  color: var(--color-primary);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  min-height: 48px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: var(--color-slate-400);
+    font-weight: 400;
+  }
+
+  &:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(180,151,90,0.20);
+  }
+
+  &--error {
+    border-color: var(--color-error);
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
+    }
+  }
+
+  @media (min-width: 640px) {
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+.field-textarea {
+  resize: none;
+  min-height: unset;
+}
+
+// ── Field Error Message ───────────────────────────────────────
+.field-error {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-error);
+  font-weight: 500;
+  margin-top: 0.125rem;
+}
+
+// ── Password Wrapper ──────────────────────────────────────────
+.password-wrapper {
+  position: relative;
+
+  .field-input {
+    padding-right: 3rem;
+  }
+}
+
+.password-toggle {
+  position: absolute;
+  inset: 0;
+  left: auto;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-slate-400);
+  min-height: unset;
+  transition: color 0.2s ease;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    pointer-events: none;
+  }
+
+  &:hover {
+    color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+}
+
+// ── Submit Button ─────────────────────────────────────────────
+.submit-wrapper {
+  padding-top: 1rem;
+
+  @media (min-width: 640px) {
+    padding-top: 1.5rem;
+  }
+}
+
+.submit-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-btn);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  cursor: pointer;
+  box-shadow: 0 20px 25px -5px rgba(15,23,42,0.20), 0 10px 10px -5px rgba(15,23,42,0.04);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 48px;
+
+  @media (min-width: 640px) {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: #1e293b;
+    transform: translateY(-2px);
+    box-shadow: 0 25px 30px -5px rgba(15,23,42,0.25);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  &:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+  }
+}
+
+.btn-arrow {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+
+  .submit-btn:hover:not(:disabled) & {
+    transform: translateX(4px);
+  }
+}
+
+// ── Spinner ───────────────────────────────────────────────────
+.spinner {
+  width: 1.125rem;
+  height: 1.125rem;
+  animation: spin 0.9s linear infinite;
+  flex-shrink: 0;
+  color: var(--color-accent);
+
+  circle {
+    stroke-linecap: round;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ── Form Footer ───────────────────────────────────────────────
+.form-footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-slate-100);
+  text-align: center;
+
+  p {
+    font-size: 0.75rem;
+    color: var(--color-slate-500);
+    font-weight: 500;
+    margin: 0;
+
+    @media (min-width: 640px) {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+.login-link {
+  font-weight: 700;
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-primary);
+  }
 }
