@@ -1,11 +1,9 @@
 <main class="register-page">
 
-  <!-- Hero Branding Section -->
   <section class="hero-section">
     <div class="hero-bg-overlay"></div>
 
     <div class="hero-content">
-      <!-- Logo -->
       <div class="brand-logo">
         <div class="logo-icon">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -16,7 +14,6 @@
         <span class="brand-name">Taleem_Hub</span>
       </div>
 
-      <!-- Hero Text -->
       <div class="hero-text">
         <h1 class="hero-heading">
           The Institution's <br />
@@ -29,7 +26,6 @@
       </div>
     </div>
 
-    <!-- Security Badge -->
     <div class="security-badge">
       <div class="badge-icon">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,17 +40,14 @@
     </div>
   </section>
 
-  <!-- Registration Form Section -->
   <section class="form-section">
     <div class="form-card">
 
-      <!-- Header -->
       <div class="form-header">
         <h2 class="form-title">Create Institution Account</h2>
         <p class="form-subtitle">Please provide official school credentials to begin.</p>
       </div>
 
-      <!-- Error Message -->
       @if (errorMessage()) {
         <div class="error-banner" role="alert">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,10 +58,8 @@
         </div>
       }
 
-      <!-- Registration Form -->
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form" novalidate>
 
-        <!-- School Name -->
         <div class="field-group">
           <label class="field-label" for="school-name">School Name</label>
           <input
@@ -88,7 +79,6 @@
           }
         </div>
 
-        <!-- Owner Name & Email Row -->
         <div class="field-row">
           <div class="field-group">
             <label class="field-label" for="owner-name">Owner Name</label>
@@ -130,7 +120,6 @@
           </div>
         </div>
 
-        <!-- Phone -->
         <div class="field-group">
           <label class="field-label" for="phone">Phone Number</label>
           <input
@@ -150,7 +139,6 @@
           }
         </div>
 
-        <!-- School Address -->
         <div class="field-group">
           <label class="field-label" for="address">School Address</label>
           <textarea
@@ -169,7 +157,6 @@
           }
         </div>
 
-        <!-- Password -->
         <div class="field-group">
           <label class="field-label" for="password">Password</label>
           <div class="password-wrapper">
@@ -210,7 +197,6 @@
           }
         </div>
 
-        <!-- Submit Button -->
         <div class="submit-wrapper">
           <button
             class="submit-btn"
@@ -233,7 +219,6 @@
 
       </form>
 
-      <!-- Footer -->
       <div class="form-footer">
         <p>
           Already registered?

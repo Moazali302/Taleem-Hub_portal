@@ -1,8 +1,4 @@
-// ─────────────────────────────────────────────
-// Design Tokens (mirroring Tailwind config)
-// ─────────────────────────────────────────────
 :host {
-  // Colors
   --color-gold-accent: #e2b859;
   --color-midnight-navy: #0f172a;
   --color-surface: #f9f9f9;
@@ -15,11 +11,9 @@
   --color-error: #ba1a1a;
   --color-white: #ffffff;
 
-  // Typography
   --font-display: 'Noto Serif', serif;
   --font-body: 'Inter', sans-serif;
 
-  // Spacing
   --space-unit: 4px;
   --space-sm: 12px;
   --space-md: 24px;
@@ -27,24 +21,24 @@
   --space-gutter: 32px;
   --space-margin: 64px;
 
-  // Shadows
-  --shadow-luxe:
-    0 10px 40px -10px rgba(0, 0, 0, 0.1),
-    0 20px 25px -5px rgba(0, 0, 0, 0.05);
+  --shadow-luxe: 0 10px 40px -10px rgba(0, 0, 0, 0.1), 0 20px 25px -5px rgba(0, 0, 0, 0.05);
 
   display: block;
 }
 
-// ─────────────────────────────────────────────
-// Mixins
-// ─────────────────────────────────────────────
 @mixin respond-to($breakpoint) {
   @if $breakpoint == 'sm' {
-    @media (min-width: 640px) { @content; }
+    @media (min-width: 640px) {
+      @content;
+    }
   } @else if $breakpoint == 'md' {
-    @media (min-width: 768px) { @content; }
+    @media (min-width: 768px) {
+      @content;
+    }
   } @else if $breakpoint == 'lg' {
-    @media (min-width: 1024px) { @content; }
+    @media (min-width: 1024px) {
+      @content;
+    }
   }
 }
 
@@ -55,9 +49,6 @@
   background: rgba(255, 255, 255, 0.7);
 }
 
-// ─────────────────────────────────────────────
-// Root Layout
-// ─────────────────────────────────────────────
 .login-root {
   display: flex;
   flex-direction: column;
@@ -68,10 +59,6 @@
     flex-direction: row;
   }
 }
-
-// ─────────────────────────────────────────────
-// Left Branding Panel
-// ─────────────────────────────────────────────
 .branding-panel {
   display: none;
   position: relative;
@@ -176,13 +163,12 @@
     font-size: 300px;
     color: var(--color-gold-accent);
     user-select: none;
-    font-variation-settings: 'FILL' 0, 'wght' 100;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 100;
   }
 }
 
-// ─────────────────────────────────────────────
-// Right Form Panel
-// ─────────────────────────────────────────────
 .form-panel {
   position: relative;
   overflow: hidden;
@@ -204,7 +190,7 @@
   }
 
   @include respond-to('lg') {
-    width: 58.333333%; // 7/12
+    width: 58.333333%;
   }
 }
 
@@ -231,9 +217,6 @@
   }
 }
 
-// ─────────────────────────────────────────────
-// Form Card
-// ─────────────────────────────────────────────
 .form-card {
   position: relative;
   width: 100%;
@@ -244,12 +227,10 @@
   border-radius: 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.4);
 
-  // Glass effect
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(32px);
   -webkit-backdrop-filter: blur(32px);
 
-  // Luxe shadow
   box-shadow: var(--shadow-luxe);
 
   @include respond-to('sm') {
@@ -262,7 +243,6 @@
   }
 }
 
-// Mobile Branding
 .mobile-branding {
   display: flex;
   flex-direction: column;
@@ -290,7 +270,6 @@
   border-radius: 9999px;
 }
 
-// Form Header
 .form-header {
   margin-bottom: var(--space-lg);
 }
@@ -322,10 +301,6 @@
   line-height: 1.6;
   color: var(--color-on-surface-variant);
 }
-
-// ─────────────────────────────────────────────
-// Form Fields
-// ─────────────────────────────────────────────
 .field-group {
   display: flex;
   flex-direction: column;
@@ -359,7 +334,6 @@
   position: relative;
 
   &--password {
-    // Ensure button doesn't overflow
     overflow: hidden;
     border-radius: 0.125rem;
   }
@@ -376,7 +350,10 @@
   background: rgba(255, 255, 255, 0.4);
   border: 1px solid rgba(198, 198, 205, 0.3);
   border-radius: 0.125rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
   box-sizing: border-box;
 
   &::placeholder {
@@ -445,10 +422,6 @@
     line-height: 1;
   }
 }
-
-// ─────────────────────────────────────────────
-// Form Options Row
-// ─────────────────────────────────────────────
 .form-options {
   display: flex;
   flex-direction: column;
@@ -486,7 +459,9 @@
   border-radius: 0.125rem;
   background: transparent;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 
   @include respond-to('sm') {
     width: 16px;
@@ -518,7 +493,9 @@
   top: 50%;
   transform: translate(-50%, -50%);
   transition: opacity 0.15s ease;
-  font-variation-settings: 'FILL' 1, 'wght' 700;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 700;
 }
 
 .remember-text {
@@ -559,10 +536,6 @@
     border-radius: 0.125rem;
   }
 }
-
-// ─────────────────────────────────────────────
-// Submit Button
-// ─────────────────────────────────────────────
 .submit-wrapper {
   padding-top: var(--space-sm);
 }
@@ -585,7 +558,9 @@
     border-color 0.2s ease,
     transform 0.1s ease,
     opacity 0.2s ease;
-  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15), 0 10px 10px -5px rgba(0,0,0,0.1);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.15),
+    0 10px 10px -5px rgba(0, 0, 0, 0.1);
 
   &:hover:not(:disabled) {
     background-color: #000000;
@@ -632,7 +607,6 @@
   }
 }
 
-// Loading Spinner
 .spinner {
   display: inline-block;
   width: 16px;
@@ -645,12 +619,11 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-// ─────────────────────────────────────────────
-// Card Footer
-// ─────────────────────────────────────────────
 .card-footer {
   margin-top: var(--space-lg);
   padding-top: var(--space-lg);
@@ -697,10 +670,6 @@
     color: var(--color-midnight-navy);
   }
 }
-
-// ─────────────────────────────────────────────
-// Site Footer
-// ─────────────────────────────────────────────
 .site-footer {
   width: 100%;
   padding: var(--space-lg) 1.5rem;
