@@ -30,14 +30,11 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
       phone: ['', [Validators.required, Validators.pattern(/^\+92[0-9]{10}$/)]],
       schoolAddress: ['', [Validators.required, Validators.maxLength(500)]],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/),
-        ],
-      ],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/),
+      ]],
     });
   }
 
@@ -51,8 +48,9 @@ export class RegisterComponent {
 
   onSubmit(): void {
     this.errorMessage.set(null);
+
     if (this.registerForm.invalid) {
-      this.toaster.error('Please fill all  required fields correctly');
+      this.toaster.error('Please fill all required fields correctly');
       this.registerForm.markAllAsTouched();
       return;
     }
@@ -63,9 +61,7 @@ export class RegisterComponent {
       next: (res) => {
         this.isSubmitting.set(false);
         if (res.success) {
-          this.toaster.success(
-            'Your School Registration Request has been successfully submit! kindly check your Email',
-          );
+          this.toaster.success('Registration successful! Please check your email');
           this.router.navigate(['/auth/verify-registration'], {
             queryParams: {
               email: this.registerForm.value.email,
@@ -75,13 +71,17 @@ export class RegisterComponent {
         }
       },
       error: (err) => {
-        this.toaster.error('your Registration Request has been failed! Please Try Again');
         this.isSubmitting.set(false);
-        this.errorMessage.set(
-          err?.error?.message?.message ||
-            err?.error?.message ||
-            'Something went Wrong! Please Try Again',
-        );
+        const raw = err?.error?.message?.message
+          || err?.error?.message
+          || null;
+        const message = Array.isArray(raw)
+          ? raw[0]
+          : typeof raw === 'string'
+          ? raw
+          : 'Registration failed! Please try again';
+        this.toaster.error(message);
+        this.errorMessage.set(message);
       },
     });
   }

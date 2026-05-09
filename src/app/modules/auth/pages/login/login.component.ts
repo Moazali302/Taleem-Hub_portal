@@ -27,7 +27,6 @@ export class LoginComponent implements OnDestroy, OnInit {
   private timerInterval: any;
 
   readonly loginForm: FormGroup;
-
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -113,8 +112,8 @@ export class LoginComponent implements OnDestroy, OnInit {
         next: (res) => {
           this.isSubmitting.set(false);
           if (res.success) {
-                      this.ratelimiting.resetLogin(); 
-            this.toaster.success('Login Successful! Please verify the OTP sent to your email.');
+            this.ratelimiting.resetLogin(); 
+            this.toaster.success('Login successful! Please verify the OTP sent to your email.');
             this.router.navigate(['/auth/verify-otp'], {
               state: { email },
             });
@@ -122,31 +121,35 @@ export class LoginComponent implements OnDestroy, OnInit {
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          this.toaster.warning(
-            'Invalid credentials! Please check your email, password, or School ID.',
-          );
-           if (err.status === 429) {
-          this.ratelimiting.recordLoginFailure();
-          this.isBlocked.set(true);
-          this.blockTimer.set(900);
-          this.startTimer();
-          return;
-        }
-          this.ratelimiting.recordLoginFailure();
-        this.attemptsLeft.set(this.ratelimiting.getLoginAttemptsLeft());
+          
+          if (err.status === 429) {
+            this.ratelimiting.recordLoginFailure();
+            this.isBlocked.set(true);
+            this.blockTimer.set(900);
+            this.startTimer();
+            this.toaster.warning('Too many login attempts. Please try again later.');
+            return;
+          }
 
-        // 5th attempt tha — block karo
-        if (this.ratelimiting.isLoginBlocked()) {
-          this.isBlocked.set(true);
-          this.blockTimer.set(this.ratelimiting.getLoginRemaining());
-          this.startTimer();
-        } else {
-          this.toaster.show(
-            `Invalid credentials. ${this.attemptsLeft()} attempt(s) remaining.`
-          );
-        }
-      },
-        
+          this.ratelimiting.recordLoginFailure();
+          this.attemptsLeft.set(this.ratelimiting.getLoginAttemptsLeft());
+
+          if (this.ratelimiting.isLoginBlocked()) {
+            this.isBlocked.set(true);
+            this.blockTimer.set(this.ratelimiting.getLoginRemaining());
+            this.startTimer();
+          } else {
+            const raw = err?.error?.message?.message
+              || err?.error?.message
+              || null;
+            const message = Array.isArray(raw)
+              ? raw[0]
+              : typeof raw === 'string'
+              ? raw
+              : 'Invalid credentials! Please check your email, password, or School ID.';
+            this.toaster.warning(message);
+          }
+        },
       });
   }
 

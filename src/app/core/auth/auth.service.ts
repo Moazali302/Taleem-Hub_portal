@@ -42,6 +42,9 @@ export class AuthService {
   resendOtp(data: { email: string; mode: string }): Observable<ApiResponse<any>> {
     return this.api.post(API.AUTH.RESEND_OTP, data);
   }
+verifyResetOtp(data: { email: string; otp: string }): Observable<ApiResponse<any>> {
+  return this.api.post(API.AUTH.VERIFY_RESET_OTP, data);
+}
 
   forgotPassword(email: string): Observable<ApiResponse<any>> {
     return this.api.post(API.AUTH.FORGOT_PASSWORD, { email });
