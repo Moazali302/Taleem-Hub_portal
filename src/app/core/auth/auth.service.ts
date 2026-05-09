@@ -39,7 +39,7 @@ export class AuthService {
       }),
     );
   }
-  resendOtp(data: { email: string }): Observable<ApiResponse<any>> {
+  resendOtp(data: { email: string; mode: string }): Observable<ApiResponse<any>> {
     return this.api.post(API.AUTH.RESEND_OTP, data);
   }
 

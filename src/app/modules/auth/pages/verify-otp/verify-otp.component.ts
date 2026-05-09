@@ -100,7 +100,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   }
 
  onResendOtp(): void {
-  this.authService.resendOtp({ email: this.email }).subscribe({
+  this.authService.resendOtp({ email: this.email, mode:this.mode }).subscribe({
     next: () => {
       this.toaster.success('OTP Resend Successfully');
       this.startTimer();
