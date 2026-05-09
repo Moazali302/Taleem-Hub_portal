@@ -1,6 +1,4 @@
 <main class="login-root">
-
-  <!-- Left Column: Branding -->
   <section class="branding-panel">
     <div class="branding-logo">Taleem_Hub</div>
 
@@ -9,8 +7,8 @@
         The Gateway to <span class="gold-text">Institutional Excellence.</span>
       </h1>
       <p class="branding-subtext">
-        Access your secure portal to manage academic data and administrative
-        operations with precision and authority.
+        Access your secure portal to manage academic data and administrative operations with
+        precision and authority.
       </p>
     </div>
 
@@ -27,31 +25,23 @@
     </div>
   </section>
 
-  <!-- Right Column: Login Form -->
   <section class="form-panel">
-    <!-- Background decorative blobs -->
     <div class="blob blob-top-right" aria-hidden="true"></div>
     <div class="blob blob-bottom-left" aria-hidden="true"></div>
 
     <div class="form-card">
-
-      <!-- Mobile Branding (visible only on mobile) -->
       <div class="mobile-branding" aria-hidden="true">
         <div class="mobile-branding-title">Taleem_Hub</div>
         <div class="mobile-branding-bar"></div>
       </div>
 
-      <!-- Form Header -->
       <header class="form-header">
         <h2 class="form-title">Institutional Login</h2>
         <div class="title-bar"></div>
         <p class="form-subtitle">Enter your official credentials to access the portal.</p>
       </header>
 
-      <!-- Login Form -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate autocomplete="off">
-
-        <!-- School ID Field -->
         <div class="field-group">
           <label class="field-label" for="school-id">
             School ID
@@ -84,10 +74,9 @@
           </span>
         </div>
 
-        <!-- Email Field -->
         <div class="field-group">
           <label class="field-label" for="email">
-            Institutional Email
+            Email
             <span class="field-tag">OFFICIAL</span>
           </label>
           <div class="input-wrapper">
@@ -102,14 +91,9 @@
               aria-describedby="email-error"
             />
           </div>
-          <span
-            id="email-error"
-            class="field-error"
-            role="alert"
-            *ngIf="isFieldInvalid('email')"
-          >
+          <span id="email-error" class="field-error" role="alert" *ngIf="isFieldInvalid('email')">
             <ng-container *ngIf="loginForm.get('email')?.errors?.['required']">
-              Institutional email is required.
+              email is required.
             </ng-container>
             <ng-container *ngIf="loginForm.get('email')?.errors?.['email']">
               Please enter a valid email address.
@@ -117,7 +101,6 @@
           </span>
         </div>
 
-        <!-- Password Field -->
         <div class="field-group">
           <label class="field-label" for="password">
             Password
@@ -161,30 +144,20 @@
           </span>
         </div>
 
-        <!-- Remember Me & Forgot Password -->
         <div class="form-options">
           <label class="remember-label">
             <div class="checkbox-wrapper">
-              <input
-                type="checkbox"
-                class="checkbox-input"
-                formControlName="remember"
-              />
+              <input type="checkbox" class="checkbox-input" formControlName="remember" />
               <span class="material-symbols-outlined checkbox-check">check</span>
             </div>
             <span class="remember-text">Remember Me</span>
           </label>
 
-          <button
-            type="button"
-            class="forgot-password-btn"
-            (click)="onForgotPassword()"
-          >
+          <button type="button" class="forgot-password-btn" (click)="onForgotPassword()">
             Forgot Password?
           </button>
         </div>
 
-        <!-- Submit Button -->
         <div class="submit-wrapper">
           <button
             type="submit"
@@ -203,10 +176,8 @@
             </span>
           </button>
         </div>
-
       </form>
 
-      <!-- Footer -->
       <footer class="card-footer">
         <p>
           Need an institutional account?
@@ -214,31 +185,9 @@
         </p>
       </footer>
 
-      <!-- Decorative Seal -->
       <div class="card-seal" aria-hidden="true">
         <span class="material-symbols-outlined">verified</span>
       </div>
-
     </div>
   </section>
-
 </main>
-
-<!-- Shared Footer -->
-<footer class="site-footer">
-  <div class="site-footer-brand">
-    <span class="site-footer-bar"></span>
-    Taleem_Hub
-  </div>
-
-  <nav class="site-footer-nav" aria-label="Footer navigation">
-    <a href="#" class="site-footer-link">Security Protocol</a>
-    <a href="#" class="site-footer-link">Privacy Policy</a>
-    <a href="#" class="site-footer-link">Compliance</a>
-    <a href="#" class="site-footer-link">Contact Support</a>
-  </nav>
-
-  <div class="site-footer-copy">
-    © 2024 Taleem_Hub Institutional Portal.<br /> All rights reserved.
-  </div>
-</footer>

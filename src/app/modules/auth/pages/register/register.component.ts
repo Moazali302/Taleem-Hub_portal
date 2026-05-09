@@ -10,7 +10,7 @@ import { ToastrService } from 'ngx-toastr';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
   registerForm: FormGroup;
@@ -22,7 +22,7 @@ export class RegisterComponent {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toaster:ToastrService
+    private toaster: ToastrService,
   ) {
     this.registerForm = this.fb.group({
       schoolName: ['', [Validators.required, Validators.maxLength(255)]],
@@ -30,16 +30,19 @@ export class RegisterComponent {
       email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
       phone: ['', [Validators.required, Validators.pattern(/^\+92[0-9]{10}$/)]],
       schoolAddress: ['', [Validators.required, Validators.maxLength(500)]],
-      password: ['', [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)
-      ]]
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/),
+        ],
+      ],
     });
   }
 
   togglePasswordVisibility(): void {
-    this.showPassword.update(v => !v);
+    this.showPassword.update((v) => !v);
   }
 
   get f() {
@@ -48,11 +51,11 @@ export class RegisterComponent {
 
   onSubmit(): void {
     this.errorMessage.set(null);
-if (this.registerForm.invalid) {
-  this.toaster.error('Please fill all  required fields correctly');
-  this.registerForm.markAllAsTouched();
-  return;
-}
+    if (this.registerForm.invalid) {
+      this.toaster.error('Please fill all  required fields correctly');
+      this.registerForm.markAllAsTouched();
+      return;
+    }
 
     this.isSubmitting.set(true);
 
@@ -60,24 +63,26 @@ if (this.registerForm.invalid) {
       next: (res) => {
         this.isSubmitting.set(false);
         if (res.success) {
-          this.toaster.success('Your School Registration Request has been successfully submit! kindly check your Email')
+          this.toaster.success(
+            'Your School Registration Request has been successfully submit! kindly check your Email',
+          );
           this.router.navigate(['/auth/verify-registration'], {
             queryParams: {
               email: this.registerForm.value.email,
-              school: this.registerForm.value.schoolName
-            }
+              school: this.registerForm.value.schoolName,
+            },
           });
         }
       },
       error: (err) => {
-        this.toaster.error('your Registration Request has been failed! Please Try Again')
+        this.toaster.error('your Registration Request has been failed! Please Try Again');
         this.isSubmitting.set(false);
         this.errorMessage.set(
           err?.error?.message?.message ||
-          err?.error?.message ||
-          'Something went Wrong! Please Try Again'
+            err?.error?.message ||
+            'Something went Wrong! Please Try Again',
         );
-      }
+      },
     });
   }
 }
