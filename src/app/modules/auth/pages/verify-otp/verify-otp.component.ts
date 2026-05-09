@@ -110,35 +110,45 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     }
   });
 }
+    onVerifyOtp(): void {
+  if (this.otpForm.valid) {
+    this.isSubmitting.set(true);
+    const otp = Object.values(this.otpForm.value).join('');
 
-  onVerifyOtp(): void {
-    if (this.otpForm.valid) {
-      this.isSubmitting.set(true);
-      const otp = Object.values(this.otpForm.value).join('');
-
-      if (this.mode === 'reset') {
-        this.isSubmitting.set(false);
-        this.router.navigate(['/auth/reset-password'], {
-          state: { email: this.email, otp }
-        });
-      } else {
-        this.authService.verifyOtp({ email: this.email, otp }).subscribe({
-          next: (res: any) => {
-            this.isSubmitting.set(false);
-            if (res.success && res.role) {
-              this.toaster.success('otp verification succesfull')
-              this.navigateByRole(res.role as Role);
-            }
-          },
-          error: () => {
-            this.toaster.error('Enter a valid otp! Try Again')
-            this.isSubmitting.set(false);
+    if (this.mode === 'reset') {
+      this.authService.verifyOtp({ email: this.email, otp }).subscribe({
+        next: (res: any) => {
+          this.isSubmitting.set(false);
+          if (res.success) {
+            this.toaster.success('OTP verified successfully');
+            this.router.navigate(['/auth/reset-password'], {
+              state: { email: this.email, otp }
+            });
           }
-        });
-      }
+        },
+        error: () => {
+          this.toaster.error('Invalid or expired OTP! Try Again');
+          this.isSubmitting.set(false);
+        }
+      });
+    } else {
+      // login flow — pehle se theek hai
+      this.authService.verifyOtp({ email: this.email, otp }).subscribe({
+        next: (res: any) => {
+          this.isSubmitting.set(false);
+          if (res.success && res.role) {
+            this.toaster.success('OTP verification successful');
+            this.navigateByRole(res.role as Role);
+          }
+        },
+        error: () => {
+          this.toaster.error('Enter a valid OTP! Try Again');
+          this.isSubmitting.set(false);
+        }
+      });
     }
   }
-
+}
   private navigateByRole(role: Role): void {
     switch (role) {
       case Role.SUPER_ADMIN:
