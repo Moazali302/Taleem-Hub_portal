@@ -116,7 +116,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     const otp = Object.values(this.otpForm.value).join('');
 
     if (this.mode === 'reset') {
-      this.authService.verifyOtp({ email: this.email, otp }).subscribe({
+      this.authService.verifyResetOtp({ email: this.email, otp }).subscribe({
         next: (res: any) => {
           this.isSubmitting.set(false);
           if (res.success) {

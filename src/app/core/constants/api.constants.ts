@@ -3,6 +3,7 @@ export const API = {
     REGISTER: '/auth/register',
     LOGIN: '/auth/login',
     VERIFY_OTP: '/auth/verify-otp',
+    VERIFY_RESET_OTP: '/auth/verify-reset-otp',
    RESEND_OTP: '/auth/resend-otp',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
