@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { Role } from '../../../../core/constants/roles.constants';
 import { ToastrService } from 'ngx-toastr';
+import { RateLimitService } from '../../../../core/services/rate-limit.service';
 
 @Component({
   selector: 'app-verify-otp',
@@ -24,6 +25,12 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   otp: string = '';
 
 
+  isOtpBlocked    = signal(false);
+  otpBlockTimer   = signal(0);
+  otpResendLeft   = signal(5);
+  private blockInterval: any;
+
+
   private intervalId: any;
 
   constructor(
@@ -31,7 +38,8 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private toaster:ToastrService
+    private toaster:ToastrService,
+    private rateLimiting:RateLimitService
   ) {
     const group: any = {};
     for (let i = 0; i < 6; i++) {
@@ -51,12 +59,33 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.getRoleFromRoute()
     this.startTimer();
+        if (this.rateLimiting.isOtpBlocked()) {
+      this.isOtpBlocked.set(true);
+      this.otpBlockTimer.set(this.rateLimiting.getOtpRemaining());
+      this.startOtpTimer();
+    } else {
+      this.otpResendLeft.set(this.rateLimiting.getOtpAttemptsLeft());
+    }
   }
 
   ngOnDestroy(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+    clearInterval(this.blockInterval);
+
+  }
+
+    private startOtpTimer(): void {
+    this.blockInterval = setInterval(() => {
+      const rem = this.rateLimiting.getOtpRemaining();
+      this.otpBlockTimer.set(rem);
+      if (rem <= 0) {
+        clearInterval(this.blockInterval);
+        this.isOtpBlocked.set(false);
+        this.otpResendLeft.set(5);
+      }
+    }, 1000);
   }
 
   role!: string;
@@ -100,6 +129,22 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   }
 
  onResendOtp(): void {
+      // ✅ Block check
+    if (this.rateLimiting.isOtpBlocked()) return;
+
+    // ✅ Record attempt pehle
+    this.rateLimiting.recordOtpResend();
+    this.otpResendLeft.set(this.rateLimiting.getOtpAttemptsLeft());
+
+    // 5th resend tha — block karo
+    if (this.rateLimiting.isOtpBlocked()) {
+      this.isOtpBlocked.set(true);
+      this.otpBlockTimer.set(this.rateLimiting.getOtpRemaining());
+      this.startOtpTimer();
+      this.toaster.error('Too many resend attempts. Try again in 15 minutes.');
+      return;
+    }
+
   this.authService.resendOtp({ email: this.email, mode:this.mode }).subscribe({
     next: () => {
       this.toaster.success('OTP Resend Successfully');

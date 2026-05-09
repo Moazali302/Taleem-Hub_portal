@@ -41,7 +41,9 @@
         <p class="form-subtitle">Enter your official credentials to access the portal.</p>
       </header>
 
+
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate autocomplete="off">
+        
         <div class="field-group">
           <label class="field-label" for="school-id">
             School ID
@@ -170,6 +172,7 @@
               <span class="submit-btn-label">Secure Portal Login</span>
               <span class="material-symbols-outlined submit-btn-icon">shield_lock</span>
             </span>
+      
             <span *ngIf="isSubmitting()" class="submit-btn-content">
               <span class="spinner" aria-hidden="true"></span>
               <span class="submit-btn-label">Authenticating...</span>
@@ -177,6 +180,26 @@
           </button>
         </div>
       </form>
+
+
+ <ng-container *ngIf="isBlocked()">
+  <div class="lock-screen">
+    <mat-icon>lock_clock</mat-icon>
+    <div class="text">
+      <div class="title">Account Locked</div>
+      <div class="desc">Too many failed attempts</div>
+    </div>
+    <div class="timer">{{ formatTimer(blockTimer()) }}</div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="attemptsLeft() < 5 && attemptsLeft() > 0">
+  <div class="warn-box">
+    <mat-icon>warning</mat-icon>
+    <span>{{ attemptsLeft() }} attempts left</span>
+  </div>
+</ng-container>
+
 
       <footer class="card-footer">
         <p>
