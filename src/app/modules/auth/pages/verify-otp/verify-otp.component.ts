@@ -1,6 +1,14 @@
-import { Component, signal, ViewChildren, QueryList, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  signal,
+  ViewChildren,
+  QueryList,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { Role } from '../../../../core/constants/roles.constants';
@@ -12,7 +20,7 @@ import { RateLimitService } from '../../../../core/services/rate-limit.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './verify-otp.component.html',
-  styleUrl: './verify-otp.component.scss'
+  styleUrl: './verify-otp.component.scss',
 })
 export class VerifyOtpComponent implements OnInit, OnDestroy {
   @ViewChildren('otpInput') inputs!: QueryList<ElementRef>;
@@ -20,26 +28,25 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   otpForm: FormGroup;
   isSubmitting = signal(false);
   timer = signal(90);
+  isOtpBlocked = signal(false);
+  otpBlockTimer = signal(0);
+  otpResendLeft = signal(5);
+
   email: string = '';
   mode: string = 'login';
-  otp: string = '';
-
-
-  isOtpBlocked    = signal(false);
-  otpBlockTimer   = signal(0);
-  otpResendLeft   = signal(5);
-  private blockInterval: any;
-
+  flow: 'login' | 'reset' = 'login';
+  role!: string;
 
   private intervalId: any;
+  private blockInterval: any;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private toaster:ToastrService,
-    private rateLimiting:RateLimitService
+    private toaster: ToastrService,
+    private rateLimiting: RateLimitService,
   ) {
     const group: any = {};
     for (let i = 0; i < 6; i++) {
@@ -48,64 +55,70 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     this.otpForm = this.fb.group(group);
 
     const state = this.router.getCurrentNavigation()?.extras.state;
-    if (state?.['email']) {
-      this.email = state['email'];
+
+    if (!state?.['email']) {
+      this.router.navigate(['/auth/login']);
+      return;
     }
-    if (state?.['mode']) {
-      this.mode = state['mode'];
-    }
+
+    this.email = state['email'];
+    this.mode = state['mode'] || 'login';
+    this.flow = this.mode === 'reset' ? 'reset' : 'login';
   }
 
   ngOnInit(): void {
-    this.getRoleFromRoute()
-    this.startTimer();
-        if (this.rateLimiting.isOtpBlocked()) {
+    this.getRoleFromRoute();
+
+    if (this.rateLimiting.isOtpBlocked(this.flow)) {
       this.isOtpBlocked.set(true);
-      this.otpBlockTimer.set(this.rateLimiting.getOtpRemaining());
-      this.startOtpTimer();
+      this.otpBlockTimer.set(this.rateLimiting.getOtpRemaining(this.flow));
+      this.otpResendLeft.set(0);
+      this.startOtpBlockTimer();
     } else {
-      this.otpResendLeft.set(this.rateLimiting.getOtpAttemptsLeft());
+      this.otpResendLeft.set(this.rateLimiting.getOtpAttemptsLeft(this.flow));
+      this.startTimer();
     }
   }
 
   ngOnDestroy(): void {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
+    clearInterval(this.intervalId);
     clearInterval(this.blockInterval);
-
   }
-
-    private startOtpTimer(): void {
-    this.blockInterval = setInterval(() => {
-      const rem = this.rateLimiting.getOtpRemaining();
-      this.otpBlockTimer.set(rem);
-      if (rem <= 0) {
-        clearInterval(this.blockInterval);
-        this.isOtpBlocked.set(false);
-        this.otpResendLeft.set(5);
-      }
-    }, 1000);
-  }
-
-  role!: string;
 
   getRoleFromRoute(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.role = params['role'];
     });
   }
 
   startTimer(): void {
+    clearInterval(this.intervalId);
     this.timer.set(90);
+
     this.intervalId = setInterval(() => {
-      this.timer.update(t => {
+      this.timer.update((t) => {
         if (t <= 0) {
           clearInterval(this.intervalId);
           return 0;
         }
         return t - 1;
       });
+    }, 1000);
+  }
+
+  private startOtpBlockTimer(): void {
+    clearInterval(this.blockInterval);
+
+    this.blockInterval = setInterval(() => {
+      const rem = this.rateLimiting.getOtpRemaining(this.flow);
+      this.otpBlockTimer.set(rem);
+
+      if (rem <= 0) {
+        clearInterval(this.blockInterval);
+        this.isOtpBlocked.set(false);
+        this.otpResendLeft.set(5);
+        this.startTimer();
+      }
     }, 1000);
   }
 
@@ -128,72 +141,86 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     }
   }
 
- onResendOtp(): void {
-      // ✅ Block check
-    if (this.rateLimiting.isOtpBlocked()) return;
+  onResendOtp(): void {
+    if (this.rateLimiting.isOtpBlocked(this.flow)) return;
 
-    // ✅ Record attempt pehle
-    this.rateLimiting.recordOtpResend();
-    this.otpResendLeft.set(this.rateLimiting.getOtpAttemptsLeft());
+    this.rateLimiting.recordOtpResend(this.flow);
+    this.otpResendLeft.set(this.rateLimiting.getOtpAttemptsLeft(this.flow));
 
-    // 5th resend tha — block karo
-    if (this.rateLimiting.isOtpBlocked()) {
+    if (this.rateLimiting.isOtpBlocked(this.flow)) {
       this.isOtpBlocked.set(true);
-      this.otpBlockTimer.set(this.rateLimiting.getOtpRemaining());
-      this.startOtpTimer();
-      this.toaster.error('Too many resend attempts. Try again in 15 minutes.');
+      this.otpBlockTimer.set(this.rateLimiting.getOtpRemaining(this.flow));
+      clearInterval(this.intervalId);
+      this.startOtpBlockTimer();
+      this.toaster.error('Too many resend attempts. Try again in 5 minutes.');
       return;
     }
+    this.authService
+      .resendOtp({
+        email: this.email,
+        mode: this.flow,
+      })
+      .subscribe({
+        next: () => {
+          this.toaster.success('OTP Resend Successfully');
+          this.startTimer();
+        },
+        error: (err) => {
+          if (err.status === 429) {
+            this.isOtpBlocked.set(true);
+            this.otpBlockTimer.set(300);
+            clearInterval(this.intervalId);
+            this.startOtpBlockTimer();
+          } else {
+            this.toaster.error('OTP resend failed. Please try again.');
+          }
+        },
+      });
+  }
 
-  this.authService.resendOtp({ email: this.email, mode:this.mode }).subscribe({
-    next: () => {
-      this.toaster.success('OTP Resend Successfully');
-      this.startTimer();
-    },
-    error: () => {
-      this.toaster.error('OTP resend failed. Please try again.');
+  onVerifyOtp(): void {
+    if (this.otpForm.invalid) {
+      this.toaster.error('Please enter a valid 6-digit OTP');
     }
-  });
-}
-    onVerifyOtp(): void {
-  if (this.otpForm.valid) {
+
     this.isSubmitting.set(true);
     const otp = Object.values(this.otpForm.value).join('');
 
-    if (this.mode === 'reset') {
+    if (this.flow === 'reset') {
       this.authService.verifyResetOtp({ email: this.email, otp }).subscribe({
         next: (res: any) => {
           this.isSubmitting.set(false);
           if (res.success) {
             this.toaster.success('OTP verified successfully');
+            this.rateLimiting.resetOtp('reset');
             this.router.navigate(['/auth/reset-password'], {
-              state: { email: this.email, otp }
+              state: { email: this.email, otp },
             });
           }
         },
         error: () => {
-          this.toaster.error('Invalid or expired OTP! Try Again');
           this.isSubmitting.set(false);
-        }
+          this.toaster.error('Invalid or expired OTP! Try Again');
+        },
       });
     } else {
-      // login flow — pehle se theek hai
       this.authService.verifyOtp({ email: this.email, otp }).subscribe({
         next: (res: any) => {
           this.isSubmitting.set(false);
           if (res.success && res.role) {
             this.toaster.success('OTP verification successful');
+            this.rateLimiting.resetOtp('login');
             this.navigateByRole(res.role as Role);
           }
         },
         error: () => {
-          this.toaster.error('Enter a valid OTP! Try Again');
           this.isSubmitting.set(false);
-        }
+          this.toaster.error('Enter a valid OTP! Try Again');
+        },
       });
     }
   }
-}
+
   private navigateByRole(role: Role): void {
     switch (role) {
       case Role.SUPER_ADMIN:

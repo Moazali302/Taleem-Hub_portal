@@ -10,7 +10,7 @@ import { ToastrService } from 'ngx-toastr';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss'
+  styleUrl: './forgot-password.component.scss',
 })
 export class ForgotPasswordComponent {
   forgotPasswordForm: FormGroup;
@@ -20,10 +20,10 @@ export class ForgotPasswordComponent {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toaster:ToastrService
+    private toaster: ToastrService,
   ) {
     this.forgotPasswordForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
     });
   }
 
@@ -35,14 +35,14 @@ export class ForgotPasswordComponent {
         next: (res) => {
           this.isSubmitting.set(false);
           if (res.success) {
-            this.toaster.success('Enter Otp for Verification')
+            this.toaster.success('Enter Otp for Verification');
             this.router.navigate(['/auth/verify-otp'], { state: { email, mode: 'reset' } });
           }
         },
         error: () => {
-          this.toaster.error('Email Not Found')
+          this.toaster.error('Email Not Found');
           this.isSubmitting.set(false);
-        }
+        },
       });
     } else {
       this.forgotPasswordForm.markAllAsTouched();

@@ -11,8 +11,7 @@ import { RateLimitService } from '../../../../core/services/rate-limit.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink,   MatIconModule
-],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatIconModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -20,8 +19,8 @@ export class LoginComponent implements OnDestroy, OnInit {
   readonly isSubmitting = signal<boolean>(false);
   readonly showPassword = signal<boolean>(false);
 
-  isBlocked    = signal(false);
-  blockTimer   = signal(0);
+  isBlocked = signal(false);
+  blockTimer = signal(0);
   attemptsLeft = signal(5);
 
   private timerInterval: any;
@@ -34,19 +33,18 @@ export class LoginComponent implements OnDestroy, OnInit {
     private readonly authService: AuthService,
     private readonly router: Router,
     private readonly toaster: ToastrService,
-    private readonly ratelimiting:RateLimitService
+    private readonly ratelimiting: RateLimitService,
   ) {
     this.loginForm = this.buildForm();
   }
 
-   ngOnInit(): void {
+  ngOnInit(): void {
     this.syncBlockState();
   }
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
     clearInterval(this.timerInterval);
-
   }
 
   togglePasswordVisibility(): void {
@@ -87,7 +85,7 @@ export class LoginComponent implements OnDestroy, OnInit {
   }
 
   onSubmit(): void {
-      if (this.ratelimiting.isLoginBlocked()) {
+    if (this.ratelimiting.isLoginBlocked()) {
       this.syncBlockState();
       return;
     }
@@ -112,7 +110,7 @@ export class LoginComponent implements OnDestroy, OnInit {
         next: (res) => {
           this.isSubmitting.set(false);
           if (res.success) {
-            this.ratelimiting.resetLogin(); 
+            this.ratelimiting.resetLogin();
             this.toaster.success('Login successful! Please verify the OTP sent to your email.');
             this.router.navigate(['/auth/verify-otp'], {
               state: { email },
@@ -121,7 +119,7 @@ export class LoginComponent implements OnDestroy, OnInit {
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          
+
           if (err.status === 429) {
             this.ratelimiting.recordLoginFailure();
             this.isBlocked.set(true);
@@ -139,14 +137,12 @@ export class LoginComponent implements OnDestroy, OnInit {
             this.blockTimer.set(this.ratelimiting.getLoginRemaining());
             this.startTimer();
           } else {
-            const raw = err?.error?.message?.message
-              || err?.error?.message
-              || null;
+            const raw = err?.error?.message?.message || err?.error?.message || null;
             const message = Array.isArray(raw)
               ? raw[0]
               : typeof raw === 'string'
-              ? raw
-              : 'Invalid credentials! Please check your email, password, or School ID.';
+                ? raw
+                : 'Invalid credentials! Please check your email, password, or School ID.';
             this.toaster.warning(message);
           }
         },

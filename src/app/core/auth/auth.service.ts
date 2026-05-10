@@ -13,15 +13,36 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  login(credentials: any): Observable<ApiResponse<{ token: string; user: User }>> {
-    return this.api.post<{ token: string; user: User }>(API.AUTH.LOGIN, credentials).pipe(
-      tap((res) => {
-        if (res.success && res.data) {
-          this.saveSession(res.data.token, res.data.user);
-        }
-      }),
-    );
-  }
+  // login(credentials: any): Observable<ApiResponse<{ token: string; user: User }>> {
+  //   return this.api.post<{ token: string; user: User }>(API.AUTH.LOGIN, credentials).pipe(
+  //     tap((res) => {
+  //       if (res.success && res.data) {
+  //         this.saveSession(res.data.token, res.data.user);
+  //       }
+  //     }),
+  //   );
+  // }
+
+  login(credentials: any): Observable<ApiResponse<{ 
+  token: string; 
+  user: User;
+  requiresOtp?: boolean;
+  redirectTo?: string;
+}>> {
+  return this.api.post<{ 
+    token: string; 
+    user: User;
+    requiresOtp?: boolean;
+    redirectTo?: string;
+  }>(API.AUTH.LOGIN, credentials).pipe(
+    tap((res) => {
+      // sirf token hone pe session save karo
+      if (res.success && res.data?.token) {
+        this.saveSession(res.data.token, res.data.user);
+      }
+    }),
+  );
+}
 
   register(data: any): Observable<ApiResponse<any>> {
     return this.api.post(API.AUTH.REGISTER, data);

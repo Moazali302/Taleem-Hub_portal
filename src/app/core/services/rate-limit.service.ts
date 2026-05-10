@@ -1,4 +1,3 @@
-// src/app/core/services/rate-limit.service.ts
 import { Injectable } from '@angular/core';
 
 interface RateLimitState {
@@ -10,7 +9,9 @@ interface RateLimitState {
 export class RateLimitService {
 
   private readonly MAX_ATTEMPTS = 5;
-  private readonly BLOCK_MS     = 15 * 60 * 1000; // 15 min
+  private readonly BLOCK_MS     = 5 * 60 * 1000; // 5 min
+
+  // ══ PRIVATE HELPERS ════════════════════════════════
 
   private getState(key: string): RateLimitState {
     const raw = localStorage.getItem(key);
@@ -28,15 +29,12 @@ export class RateLimitService {
   private isBlocked(key: string): boolean {
     const state = this.getState(key);
     if (state.attempts < this.MAX_ATTEMPTS) return false;
-
     if (!state.blockedAt) return false;
-
     if (Date.now() - state.blockedAt >= this.BLOCK_MS) {
       this.clearState(key);
       return false;
     }
-
-    return true; 
+    return true;
   }
 
   private getRemainingSeconds(key: string): number {
@@ -54,24 +52,43 @@ export class RateLimitService {
   private recordFailure(key: string): void {
     const state = this.getState(key);
     state.attempts++;
-
     if (state.attempts >= this.MAX_ATTEMPTS && !state.blockedAt) {
       state.blockedAt = Date.now();
     }
-
     this.saveState(key, state);
   }
 
-  isLoginBlocked         = ()  => this.isBlocked('login_rl');
-  getLoginRemaining      = ()  => this.getRemainingSeconds('login_rl');
-  getLoginAttemptsLeft   = ()  => this.getAttemptsLeft('login_rl');
-  recordLoginFailure     = ()  => this.recordFailure('login_rl');
-  resetLogin             = ()  => this.clearState('login_rl');
+  private getOtpKey(flow: 'login' | 'reset'): string {
+    return flow === 'reset' ? 'reset_otp_rl' : 'login_otp_rl';
+  }
 
-  
-  isOtpBlocked           = ()  => this.isBlocked('otp_rl');
-  getOtpRemaining        = ()  => this.getRemainingSeconds('otp_rl');
-  getOtpAttemptsLeft     = ()  => this.getAttemptsLeft('otp_rl');
-  recordOtpResend        = ()  => this.recordFailure('otp_rl');
-  resetOtp               = ()  => this.clearState('otp_rl');
+  // ══ LOGIN ═══════════════════════════════════════════
+
+  isLoginBlocked       = () => this.isBlocked('login_rl');
+  getLoginRemaining    = () => this.getRemainingSeconds('login_rl');
+  getLoginAttemptsLeft = () => this.getAttemptsLeft('login_rl');
+  recordLoginFailure   = () => this.recordFailure('login_rl');
+  resetLogin           = () => this.clearState('login_rl');
+
+  // ══ OTP — login aur reset alag ══════════════════════
+
+  isOtpBlocked(flow: 'login' | 'reset' = 'login'): boolean {
+    return this.isBlocked(this.getOtpKey(flow));
+  }
+
+  getOtpRemaining(flow: 'login' | 'reset' = 'login'): number {
+    return this.getRemainingSeconds(this.getOtpKey(flow));
+  }
+
+  getOtpAttemptsLeft(flow: 'login' | 'reset' = 'login'): number {
+    return this.getAttemptsLeft(this.getOtpKey(flow));
+  }
+
+  recordOtpResend(flow: 'login' | 'reset' = 'login'): void {
+    this.recordFailure(this.getOtpKey(flow));
+  }
+
+  resetOtp(flow: 'login' | 'reset' = 'login'): void {
+    this.clearState(this.getOtpKey(flow));
+  }
 }

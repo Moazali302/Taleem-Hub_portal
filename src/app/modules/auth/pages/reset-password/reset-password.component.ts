@@ -37,11 +37,10 @@ export class ResetPasswordComponent {
     private toaster: ToastrService,
   ) {
     const state = this.router.getCurrentNavigation()?.extras.state;
-      console.log('OTP from state:', state?.['otp']);
-       this.email = state?.['email'] || '';
-      this.otp = state?.['otp'] || '';
+    console.log('OTP from state:', state?.['otp']);
+    this.email = state?.['email'] || '';
+    this.otp = state?.['otp'] || '';
     if (!state?.['email'] || !state?.['otp']) {
-      // Direct access block karo
       this.router.navigate(['/auth/forgot-password']);
     }
     this.email = state?.['email'] || '';
@@ -98,37 +97,36 @@ export class ResetPasswordComponent {
               this.router.navigate(['/auth/login']);
             }
           },
-        error: (err) => {
-          this.isSubmitting.set(false);
-          const message = err?.error?.message;
-          // ✅ Backend ka message dikhao
-          if (message) {
-            this.toaster.error(message);
-          } else {
-            this.toaster.error('Something went wrong! Please try again');
-          }
+          error: (err) => {
+            this.isSubmitting.set(false);
+            const message = err?.error?.message;
+            if (message) {
+              this.toaster.error(message);
+            } else {
+              this.toaster.error('Something went wrong! Please try again');
+            }
             console.log('Full error:', err);
-           console.log('Error body:', err?.error);
-             console.log('Message:', err?.error?.message);
-              console.log('Submitting with OTP:', this.otp); 
-        },
-      });
-  } else {
-    this.resetPasswordForm.markAllAsTouched();
-    const pwd = this.resetPasswordForm.get('newPassword');
-    const confirm = this.resetPasswordForm.get('confirmPassword');
-
-    if (pwd?.errors?.['required']) {
-      this.toaster.error('Password is required');
-    } else if (pwd?.errors?.['minlength']) {
-      this.toaster.error('Password must be at least 8 characters');
-    } else if (pwd?.errors?.['pattern']) {
-      this.toaster.error('Password must have uppercase, lowercase and number');
-    } else if (this.resetPasswordForm.errors?.['passwordMismatch']) {
-      this.toaster.error('Passwords do not match');
+            console.log('Error body:', err?.error);
+            console.log('Message:', err?.error?.message);
+            console.log('Submitting with OTP:', this.otp);
+          },
+        });
     } else {
-      this.toaster.error('Please fill all fields correctly');
+      this.resetPasswordForm.markAllAsTouched();
+      const pwd = this.resetPasswordForm.get('newPassword');
+      const confirm = this.resetPasswordForm.get('confirmPassword');
+
+      if (pwd?.errors?.['required']) {
+        this.toaster.error('Password is required');
+      } else if (pwd?.errors?.['minlength']) {
+        this.toaster.error('Password must be at least 8 characters');
+      } else if (pwd?.errors?.['pattern']) {
+        this.toaster.error('Password must have uppercase, lowercase and number');
+      } else if (this.resetPasswordForm.errors?.['passwordMismatch']) {
+        this.toaster.error('Passwords do not match');
+      } else {
+        this.toaster.error('Please fill all fields correctly');
+      }
     }
   }
-}
 }
