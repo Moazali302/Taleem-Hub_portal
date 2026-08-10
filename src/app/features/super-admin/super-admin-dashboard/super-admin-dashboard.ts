@@ -14,13 +14,13 @@ import {User, LanguageOption } from '../../../core/models/user.model';
 })
 export class SuperAdminDashboardComponent {
   // TODO: replace with data from a DashboardService (API call) once backend endpoint is ready
-  statCards: StatCardData[] = [
-    { icon: 'ti-building', label: 'Total Schools/Institutes', value: 24 },
-    { icon: 'ti-user', label: 'Active Students', value: '5,842' },
-    { icon: 'ti-users', label: 'Total Teachers', value: 412 },
-    { icon: 'ti-credit-card', label: 'Expiring Subscriptions', value: 6, variant: 'warning' },
-    { icon: 'ti-alert-triangle', label: 'Open Complaints', value: 18, variant: 'danger' },
-  ];
+ statCards: StatCardData[] = [
+  { icon: '/svg/school.svg', label: 'Total Schools/Institutes', value: 24 },
+  { icon: '/svg/student.svg', label: 'Active Students', value: '5,842' },
+  { icon: '/svg/teacher.svg', label: 'Total Teachers', value: 412 },
+  { icon: '/svg/subscription.svg', label: 'Expiring Subscriptions', value: 6, variant: 'warning' },
+  { icon: '/svg/complaint.svg', label: 'Open Complaints', value: 18, variant: 'danger' },
+];
 
   pendingApprovals = 156;
 

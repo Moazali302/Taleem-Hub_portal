@@ -1,6 +1,6 @@
 <div class="stat-card" [class]="'stat-card--' + (data.variant ?? 'default')">
   <div class="stat-card__icon">
-    <i class="ti" [class]="data.icon" aria-hidden="true"></i>
+    <img [src]="data.icon" [alt]="data.label" width="20" height="20" />
   </div>
   <p class="stat-card__label">{{ data.label }}</p>
   <p class="stat-card__value">{{ data.value }}</p>
