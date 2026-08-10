@@ -1,0 +1,118 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6b7280;
+  }
+
+  &__search-icon {
+    font-size: 18px;
+  }
+
+  &__search-input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: #111827;
+    width: 220px;
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  &__language {
+    position: relative;
+  }
+
+  &__language-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+    padding: 4px;
+  }
+
+  &__language-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 140px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+    z-index: 20;
+  }
+
+  &__language-option {
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #374151;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+
+    &[aria-selected='true'] {
+      color: #0f2a5e;
+      font-weight: 600;
+    }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #e0e7ff;
+    color: #0f2a5e;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__user-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+  }
+}

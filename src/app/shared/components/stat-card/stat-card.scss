@@ -1,0 +1,53 @@
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2ff;
+    color: #0f2a5e;
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  &__label {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  &__value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+  }
+
+  &--warning &__icon {
+    background: #fef3e2;
+    color: #d97706;
+  }
+
+  &--warning &__value {
+    color: #d97706;
+  }
+
+  &--danger &__icon {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  &--danger &__value {
+    color: #dc2626;
+  }
+}

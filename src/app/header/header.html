@@ -1,0 +1,53 @@
+<header class="app-header">
+  <div class="app-header__search">
+    <i class="ti ti-search app-header__search-icon" aria-hidden="true"></i>
+    <input
+      type="text"
+      class="app-header__search-input"
+      [placeholder]="searchPlaceholder"
+      (input)="onSearchInput($any($event.target).value)"
+      aria-label="Search"
+    />
+  </div>
+
+  <div class="app-header__actions">
+    <div class="app-header__language">
+      <button
+        type="button"
+        class="app-header__language-trigger"
+        (click)="toggleLanguageMenu()"
+        [attr.aria-expanded]="isLanguageMenuOpen"
+        aria-haspopup="listbox"
+      >
+        <i class="ti ti-world" aria-hidden="true"></i>
+        <span>{{ activeLanguageLabel }}</span>
+      </button>
+
+      @if (isLanguageMenuOpen) {
+        <ul class="app-header__language-menu" role="listbox">
+          @for (language of languages; track language.code) {
+            <li
+              role="option"
+              [attr.aria-selected]="language.code === activeLanguage"
+              class="app-header__language-option"
+              (click)="selectLanguage(language)"
+            >
+              {{ language.label }}
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <div class="app-header__user">
+      <div class="app-header__avatar">
+        @if (currentUser.avatarUrl) {
+          <img [src]="currentUser.avatarUrl" [alt]="currentUser.name" />
+        } @else {
+          <span>{{ currentUser.initials }}</span>
+        }
+      </div>
+      <span class="app-header__user-name">{{ currentUser.name }}</span>
+    </div>
+  </div>
+</header>

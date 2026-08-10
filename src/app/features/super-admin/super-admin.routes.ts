@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { SuperAdminDashboardComponent } from './pages/dashboard/super-admin-dashboard.component';
+import { SuperAdminLayoutComponent } from '@app/shared/layouts/super-admin-layout/super-admin-layout.component';
 
 export const superAdminRoutes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: SuperAdminDashboardComponent },
+  { path: 'dashboard', component: SuperAdminLayoutComponent },
 ];

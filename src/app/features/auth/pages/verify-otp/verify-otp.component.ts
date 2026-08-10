@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@core/auth/auth.service';
-import { Role } from '@core/constants/roles.constants';
 import { ToastrService } from 'ngx-toastr';
 import { RateLimitService } from '@core/services/rate-limit.service';
 
@@ -181,6 +180,7 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
   onVerifyOtp(): void {
     if (this.otpForm.invalid) {
       this.toaster.error('Please enter a valid 6-digit OTP');
+      return;
     }
 
     this.isSubmitting.set(true);
@@ -188,9 +188,10 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
 
     if (this.flow === 'reset') {
       this.authService.verifyResetOtp({ email: this.email, otp }).subscribe({
-        next: (res: any) => {
+        next: (res) => {
           this.isSubmitting.set(false);
-          if (res.success) {
+
+          if (res.data?.success) {
             this.toaster.success('OTP verified successfully');
             this.rateLimiting.resetOtp('reset');
             this.router.navigate(['/auth/reset-password'], {
@@ -205,12 +206,14 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
       });
     } else {
       this.authService.verifyOtp({ email: this.email, otp }).subscribe({
-        next: (res: any) => {
+        next: (res) => {
           this.isSubmitting.set(false);
-          if (res.success && res.role) {
+
+          const result = res.data;
+          if (result?.success && result.role) {
             this.toaster.success('OTP verification successful');
             this.rateLimiting.resetOtp('login');
-            this.navigateByRole(res.role as Role);
+            this.router.navigate(this.authService.getDashboardRoute(result.role));
           }
         },
         error: () => {
@@ -218,25 +221,6 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
           this.toaster.error('Enter a valid OTP! Try Again');
         },
       });
-    }
-  }
-
-  private navigateByRole(role: Role): void {
-    switch (role) {
-      case Role.SUPER_ADMIN:
-        this.router.navigate(['/super-admin/dashboard']);
-        break;
-      case Role.ADMIN:
-        this.router.navigate(['/admin/dashboard']);
-        break;
-      case Role.TEACHER:
-        this.router.navigate(['/teacher/dashboard']);
-        break;
-      case Role.STUDENT:
-        this.router.navigate(['/parent/dashboard']);
-        break;
-      default:
-        this.router.navigate(['/auth/login']);
     }
   }
 }

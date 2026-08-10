@@ -109,12 +109,27 @@ export class LoginComponent implements OnDestroy, OnInit {
       .subscribe({
         next: (res) => {
           this.isSubmitting.set(false);
-          if (res.success) {
-            this.ratelimiting.resetLogin();
+
+          const result = res.data;
+          if (!result?.success) {
+            return;
+          }
+
+          this.ratelimiting.resetLogin();
+
+          // Case 1: OTP required (normal login on this device/session)
+          if (result.requiresOtp) {
             this.toaster.success('Login successful! Please verify the OTP sent to your email.');
             this.router.navigate(['/auth/verify-otp'], {
               state: { email },
             });
+            return;
+          }
+
+          // Case 2: valid session cookie already existed -> backend skipped OTP
+          if (result.token && result.role) {
+            this.toaster.success('Login successful!');
+            this.router.navigate(this.authService.getDashboardRoute(result.role));
           }
         },
         error: (err) => {
@@ -156,7 +171,7 @@ export class LoginComponent implements OnDestroy, OnInit {
 
   private buildForm(): FormGroup {
     return this.fb.group({
-      schoolId: ['', [Validators.required, Validators.maxLength(255)]],
+      schoolId: ['', [Validators.maxLength(255)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       remember: [false],

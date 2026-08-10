@@ -1,0 +1,94 @@
+<app-header
+  [currentUser]="currentUser"
+  [languages]="languages"
+  [activeLanguage]="activeLanguage"
+  (searchChange)="onSearch($event)"
+  (languageChange)="onLanguageChange($event)"
+/>
+
+<main class="dashboard">
+  <h1 class="dashboard__title">
+    <i class="ti ti-layout-grid" aria-hidden="true"></i>
+    Dashboard
+  </h1>
+
+  <section class="dashboard__stats">
+    @for (card of statCards; track card.label) {
+      <app-stat-card [data]="card" />
+    }
+  </section>
+
+  <section class="dashboard__row">
+    <div class="dashboard-card dashboard-card--approvals">
+      <p class="dashboard-card__header">
+        <i class="ti ti-clipboard-list" aria-hidden="true"></i>
+        Pending Approvals
+      </p>
+      <p class="dashboard-card__big-number">{{ pendingApprovals }}</p>
+      <p class="dashboard-card__caption">Work items assigned to me</p>
+    </div>
+
+    <div class="dashboard-card dashboard-card--subscription">
+      <p class="dashboard-card__header">
+        <i class="ti ti-file-text" aria-hidden="true"></i>
+        Subscription Overview
+      </p>
+      <p class="dashboard-card__caption">Renewal Date</p>
+      <p class="dashboard-card__sub-value">{{ subscription.renewalDate }}</p>
+      <div class="dashboard-card__actions">
+        <button type="button" class="btn btn--primary">
+          <i class="ti ti-settings" aria-hidden="true"></i>
+          Manage Plans
+        </button>
+        <button type="button" class="btn btn--outline">View All</button>
+      </div>
+    </div>
+
+    <div class="dashboard-card dashboard-card--quick-actions">
+      <p class="dashboard-card__header">Quick Actions</p>
+      <button type="button" class="quick-action">
+        <i class="ti ti-building-plus" aria-hidden="true"></i>
+        <span>Add New School</span>
+        <i class="ti ti-chevron-right quick-action__arrow" aria-hidden="true"></i>
+      </button>
+      <button type="button" class="quick-action">
+        <i class="ti ti-user-plus" aria-hidden="true"></i>
+        <span>Add Student</span>
+        <i class="ti ti-chevron-right quick-action__arrow" aria-hidden="true"></i>
+      </button>
+      <button type="button" class="quick-action">
+        <i class="ti ti-users-plus" aria-hidden="true"></i>
+        <span>Add Teacher</span>
+        <i class="ti ti-chevron-right quick-action__arrow" aria-hidden="true"></i>
+      </button>
+    </div>
+  </section>
+
+  <section class="dashboard__row dashboard__row--two">
+    <div class="dashboard-card">
+      <p class="dashboard-card__header">
+        <i class="ti ti-cash" aria-hidden="true"></i>
+        Fee Collections
+        <span class="dashboard-card__header-value">{{ feeCollectionAmount }}</span>
+      </p>
+      <div class="dashboard-card__links">
+        <a href="#">View Details</a>
+        <span>|</span>
+        <a href="#">Defaulters List</a>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <p class="dashboard-card__header">
+        <i class="ti ti-calendar" aria-hidden="true"></i>
+        Exam Schedule
+        <span class="dashboard-card__header-value">{{ upcomingExamsCount }} Upcoming</span>
+      </p>
+      <div class="dashboard-card__links">
+        <a href="#">Add Exam</a>
+        <span>|</span>
+        <a href="#">View All</a>
+      </div>
+    </div>
+  </section>
+</main>
