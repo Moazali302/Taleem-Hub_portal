@@ -8,7 +8,7 @@ import { ApiResponse } from '../models/api-response.model';
 import { Role } from '@core/constants/roles.constants';
 
 /**
- * login() result shapes (mirrors backend AuthService.login()):
+ * login() result shape (mirrors backend AuthService.login() — FLAT, no {data} wrapper):
  * - OTP required (first-time / expired cookie): { success, message, requiresOtp: true }
  * - Valid session cookie reused: { success, token, role, redirectTo } (no OTP, no user object)
  */
@@ -21,7 +21,7 @@ export interface LoginResult {
   redirectTo?: string;
 }
 
-/** verifyOtp() result shape (mirrors backend AuthService.verifyOtp()). */
+/** verifyOtp() result shape (mirrors backend AuthService.verifyOtp() — also FLAT). */
 export interface VerifyOtpResult {
   success: boolean;
   token: string;
@@ -45,15 +45,14 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
+  /** Backend returns LoginResult directly (flat) — use postFlat, not post. */
   login(credentials: {
     email: string;
     password: string;
     schoolId?: string;
-  }): Observable<ApiResponse<LoginResult>> {
-    return this.api.post<LoginResult>(API.AUTH.LOGIN, credentials).pipe(
-      tap((res) => {
-        const result = res.data;
-
+  }): Observable<LoginResult> {
+    return this.api.postFlat<LoginResult>(API.AUTH.LOGIN, credentials).pipe(
+      tap((result) => {
         // Only the cookie-reuse case returns a token directly from login().
         // requiresOtp case has no token yet — session is saved after verifyOtp().
         if (result?.success && result.token) {
@@ -67,11 +66,10 @@ export class AuthService {
     return this.api.post(API.AUTH.REGISTER, data);
   }
 
-  verifyOtp(data: { email: string; otp: string }): Observable<ApiResponse<VerifyOtpResult>> {
-    return this.api.post<VerifyOtpResult>(API.AUTH.VERIFY_OTP, data).pipe(
-      tap((res) => {
-        const result = res.data;
-
+  /** Backend returns VerifyOtpResult directly (flat) — use postFlat, not post. */
+  verifyOtp(data: { email: string; otp: string }): Observable<VerifyOtpResult> {
+    return this.api.postFlat<VerifyOtpResult>(API.AUTH.VERIFY_OTP, data).pipe(
+      tap((result) => {
         if (result?.success && result.token) {
           this.saveSession(result.token, result.user);
         }

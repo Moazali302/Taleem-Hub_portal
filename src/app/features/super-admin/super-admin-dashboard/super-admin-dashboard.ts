@@ -13,7 +13,7 @@ import {User, LanguageOption } from '../../../core/models/user.model';
   styleUrl: './super-admin-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent {
+export class SuperAdminDashboardComponent {
   // TODO: replace with data from AuthService once login/session is wired up
   currentUser:User = {
     id: '1',

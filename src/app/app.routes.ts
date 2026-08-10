@@ -3,7 +3,8 @@ import { AuthLayoutComponent } from '@shared/layouts/auth-layout/auth-layout.com
 import { AdminLayoutComponent } from '@shared/layouts/admin-layout/admin-layout.component';
 import { TeacherLayoutComponent } from '@shared/layouts/teacher-layout/teacher-layout.component';
 import { ParentLayoutComponent } from '@shared/layouts/parent-layout/parent-layout.component';
-import { SuperAdminLayoutComponent } from '@shared/layouts/super-admin-layout/super-admin-layout.component';
+import { superAdminRoutes } from '@features/super-admin/super-admin.routes';
+import {SuperAdminDashboardComponent} from '@features/super-admin/super-admin-dashboard/super-admin-dashboard';
 import { AuthGuard } from '@core/guards/auth.guard';
 import { RoleGuard } from '@core/guards/role.guard';
 
@@ -36,11 +37,10 @@ export const routes: Routes = [
     loadChildren: () => import('@features/parent/parent.routes').then(m => m.parentRoutes)
   },
   {
-    path: 'super-admin',
-    component: SuperAdminLayoutComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'superadmin' },
-    loadChildren: () => import('@features/super-admin/super-admin.routes').then(m => m.superAdminRoutes)
-  },
+  path: 'super-admin',
+  canActivate: [AuthGuard, RoleGuard],
+  data: { role: 'superadmin' },
+  loadChildren: () => import('@features/super-admin/super-admin.routes').then(m => m.superAdminRoutes)
+},
   { path: '**', redirectTo: 'auth/login' }
 ];

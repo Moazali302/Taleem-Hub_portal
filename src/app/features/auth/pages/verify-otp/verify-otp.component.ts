@@ -187,6 +187,8 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
     const otp = Object.values(this.otpForm.value).join('');
 
     if (this.flow === 'reset') {
+      // verifyResetOtp() still returns a WRAPPED response ({ data: T }) —
+      // unchanged, so res.data stays correct here.
       this.authService.verifyResetOtp({ email: this.email, otp }).subscribe({
         next: (res) => {
           this.isSubmitting.set(false);
@@ -205,11 +207,12 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
         },
       });
     } else {
+      // verifyOtp() now returns a FLAT VerifyOtpResult directly (see auth.service.ts) —
+      // do NOT read res.data here, res IS the result.
       this.authService.verifyOtp({ email: this.email, otp }).subscribe({
-        next: (res) => {
+        next: (result) => {
           this.isSubmitting.set(false);
 
-          const result = res.data;
           if (result?.success && result.role) {
             this.toaster.success('OTP verification successful');
             this.rateLimiting.resetOtp('login');
