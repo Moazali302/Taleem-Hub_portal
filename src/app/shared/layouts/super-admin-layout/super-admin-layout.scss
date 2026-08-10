@@ -1,0 +1,24 @@
+// Sidebar is position:fixed (see sidebar.scss) and removed from normal flow,
+// so the main column is offset by its width instead of using flexbox for it.
+.super-admin-layout__main {
+  margin-left: 260px; // = sidebar width
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f6fa;
+}
+
+// Header stays visible while page content scrolls underneath it.
+:host ::ng-deep app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: block;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.super-admin-layout__content {
+  flex: 1;
+  padding: 24px 32px;
+}

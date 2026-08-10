@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from '@app/header/header';
 import {StatCardComponent} from '@app/shared/components/stat-card/stat-card';
 import {StatCardData} from '@app/shared/components/stat-card/stat-card-model';
 import {User, LanguageOption } from '../../../core/models/user.model';
@@ -8,25 +7,12 @@ import {User, LanguageOption } from '../../../core/models/user.model';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, StatCardComponent],
+  imports: [CommonModule,StatCardComponent],
   templateUrl: './super-admin-dashboard.html',
   styleUrl: './super-admin-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SuperAdminDashboardComponent {
-  // TODO: replace with data from AuthService once login/session is wired up
-  currentUser:User = {
-    id: '1',
-    name: 'Muaz Ali',
-    email: 'muaz.ali@example.com',
-    role: 'Super Admin',
-    avatarUrl: '/assets/images/users/muaz-ali.jpg',
-    initials: 'MA',
-  };
-
-  languages: LanguageOption[] = [{ code: 'en', label: 'English' }];
-  activeLanguage = 'en';
-
   // TODO: replace with data from a DashboardService (API call) once backend endpoint is ready
   statCards: StatCardData[] = [
     { icon: 'ti-building', label: 'Total Schools/Institutes', value: 24 },

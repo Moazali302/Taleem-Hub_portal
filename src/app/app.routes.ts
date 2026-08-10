@@ -7,6 +7,7 @@ import { superAdminRoutes } from '@features/super-admin/super-admin.routes';
 import {SuperAdminDashboardComponent} from '@features/super-admin/super-admin-dashboard/super-admin-dashboard';
 import { AuthGuard } from '@core/guards/auth.guard';
 import { RoleGuard } from '@core/guards/role.guard';
+import {SuperAdminLayoutComponent} from '@shared/layouts/super-admin-layout/super-admin-layout';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
@@ -38,6 +39,7 @@ export const routes: Routes = [
   },
   {
   path: 'super-admin',
+  component: SuperAdminLayoutComponent,
   canActivate: [AuthGuard, RoleGuard],
   data: { role: 'superadmin' },
   loadChildren: () => import('@features/super-admin/super-admin.routes').then(m => m.superAdminRoutes)

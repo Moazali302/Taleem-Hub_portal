@@ -1,0 +1,32 @@
+@if (config) {
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <img [src]="logoSrc" alt="Taleem Hub" class="sidebar__logo" />
+      <!-- <span class="sidebar__role-label">{{ config.roleLabel }}</span> -->
+    </div>
+
+    <nav class="sidebar__nav">
+      <ul class="sidebar__list">
+        @for (item of config.items; track item.route) {
+          <li>
+            <a
+              [routerLink]="[config.basePath, item.route]"
+              routerLinkActive="sidebar__link--active"
+              class="sidebar__link"
+            >
+              <i class="ti {{ item.icon }}" aria-hidden="true"></i>
+              <span>{{ item.label }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    @if (config.footerAction; as action) {
+      <a [routerLink]="[config.basePath, action.route]" class="sidebar__footer-btn">
+        <i class="ti {{ action.icon }}" aria-hidden="true"></i>
+        {{ action.label }}
+      </a>
+    }
+  </aside>
+}
