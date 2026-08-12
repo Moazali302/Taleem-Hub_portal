@@ -8,7 +8,13 @@ export class AuthGuard implements CanActivate {
   private router = inject(Router);
 
   canActivate(): boolean {
-    if (this.authService.isLoggedIn()) {
+    const token = this.authService.getToken();
+    const loggedIn = this.authService.isLoggedIn();
+
+    // TEMPORARY DEBUG LOG — remove once the redirect bug is confirmed fixed
+    console.log('AuthGuard ->', { token, loggedIn });
+
+    if (loggedIn) {
       return true;
     }
 

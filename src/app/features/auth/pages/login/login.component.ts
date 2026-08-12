@@ -41,7 +41,6 @@ export class LoginComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.syncBlockState();
   }
-
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -79,7 +78,6 @@ export class LoginComponent implements OnDestroy, OnInit {
       }
     }, 1000);
   }
-
   formatTimer(seconds: number): string {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -109,8 +107,6 @@ export class LoginComponent implements OnDestroy, OnInit {
       .login({ email, password, schoolId })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        // authService.login() now emits LoginResult directly (backend sends a
-        // flat body, not { data: LoginResult } ) — do NOT read `.data` here.
         next: (result) => {
           this.isSubmitting.set(false);
 

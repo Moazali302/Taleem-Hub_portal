@@ -1,15 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { AuthService } from '@core/auth/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class RoleGuard implements CanActivate {
-  constructor(private router: Router) {}
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
     const requiredRole = route.data['role'];
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const currentRole = this.authService.getRole();
+      console.log('RoleGuard -> required:', requiredRole, 'current:', currentRole);
 
-    if (user.role === requiredRole) return true;
+    if (currentRole === requiredRole) {
+      return true;
+    }
 
     this.router.navigate(['/auth/login']);
     return false;

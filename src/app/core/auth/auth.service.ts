@@ -3,14 +3,14 @@ import { ApiService } from '../services/api.service';
 import { TokenService } from './token.service';
 import { API } from '../constants/api.constants';
 import { User } from '../models/user.model';
-import { Observable, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
 import { Role } from '@core/constants/roles.constants';
 
 /**
- * login() result shape (mirrors backend AuthService.login() — FLAT, no {data} wrapper):
- * - OTP required (first-time / expired cookie): { success, message, requiresOtp: true }
- * - Valid session cookie reused: { success, token, role, redirectTo } (no OTP, no user object)
+ * login() result (mirrors backend AuthService.login()):
+ * - OTP required (first-time login / no valid cookie): { success, message, requiresOtp: true }
+ * - Valid session cookie reused: { success, token, role, redirectTo } — no `user` object.
  */
 export interface LoginResult {
   success: boolean;
@@ -21,13 +21,18 @@ export interface LoginResult {
   redirectTo?: string;
 }
 
-/** verifyOtp() result shape (mirrors backend AuthService.verifyOtp() — also FLAT). */
+/** verifyOtp() result (mirrors backend AuthService.verifyOtp()). */
 export interface VerifyOtpResult {
   success: boolean;
   token: string;
   role: Role;
   redirectTo: string;
   user: User;
+}
+
+export interface SimpleResult {
+  success: boolean;
+  message?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -45,16 +50,27 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  /** Backend returns LoginResult directly (flat) — use postFlat, not post. */
+  /**
+   * The auth endpoints (login/verifyOtp/verifyResetOtp) return their payload
+   * FLAT — confirmed from the actual network response, no `data` wrapper.
+   * `ApiService.post<T>()` is typed generically as `ApiResponse<T>` for every
+   * endpoint in the app, so that mismatch is reinterpreted right here, in one
+   * place, instead of leaking `as any` casts into every caller.
+   */
+  private authPost<T>(path: string, body: unknown): Observable<T> {
+    return this.api.post(path, body).pipe(map((res) => res as unknown as T));
+  }
+
   login(credentials: {
     email: string;
     password: string;
     schoolId?: string;
   }): Observable<LoginResult> {
-    return this.api.postFlat<LoginResult>(API.AUTH.LOGIN, credentials).pipe(
+    return this.authPost<LoginResult>(API.AUTH.LOGIN, credentials).pipe(
       tap((result) => {
-        // Only the cookie-reuse case returns a token directly from login().
-        // requiresOtp case has no token yet — session is saved after verifyOtp().
+        // Only the cookie-reuse case returns a token straight from login().
+        // Role lives inside the JWT itself (TokenService decodes it), so no
+        // separate user save is needed or possible here.
         if (result?.success && result.token) {
           this.tokenService.saveToken(result.token);
         }
@@ -66,9 +82,8 @@ export class AuthService {
     return this.api.post(API.AUTH.REGISTER, data);
   }
 
-  /** Backend returns VerifyOtpResult directly (flat) — use postFlat, not post. */
   verifyOtp(data: { email: string; otp: string }): Observable<VerifyOtpResult> {
-    return this.api.postFlat<VerifyOtpResult>(API.AUTH.VERIFY_OTP, data).pipe(
+    return this.authPost<VerifyOtpResult>(API.AUTH.VERIFY_OTP, data).pipe(
       tap((result) => {
         if (result?.success && result.token) {
           this.saveSession(result.token, result.user);
@@ -81,8 +96,8 @@ export class AuthService {
     return this.api.post(API.AUTH.RESEND_OTP, data);
   }
 
-  verifyResetOtp(data: { email: string; otp: string }): Observable<ApiResponse<any>> {
-    return this.api.post(API.AUTH.VERIFY_RESET_OTP, data);
+  verifyResetOtp(data: { email: string; otp: string }): Observable<SimpleResult> {
+    return this.authPost<SimpleResult>(API.AUTH.VERIFY_RESET_OTP, data);
   }
 
   forgotPassword(email: string): Observable<ApiResponse<any>> {
