@@ -1,59 +1,151 @@
-# TaleemHubPortal
+# 🎓 TaleemHub
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+> Multi-tenant School & Academy Management SaaS for Pakistan
 
-## Development server
+TaleemHub is a cloud-based multi-tenant SaaS platform built for private schools, coaching centers, and academies in Pakistan. It provides 4 separate portals covering the full school management lifecycle.
 
-To start a local development server, run:
+---
+
+## 🏫 Portals
+
+| Portal | Who Uses It | URL |
+|--------|-------------|-----|
+| Super Admin | TaleemHub Owner | `taleemhub.pk/super-admin` |
+| School Admin | Principal / School Owner | `schoolname.taleemhub.pk/admin` |
+| Teacher | Teachers | `schoolname.taleemhub.pk/teacher` |
+| Parent / Student | Parents | `schoolname.taleemhub.pk/parent` |
+
+---
+
+## ✨ Key Features
+
+- 🏢 **Multi-tenant Architecture** — One platform, hundreds of schools
+- 📲 **Real-time Notifications** — WhatsApp, Email & SMS across all events
+- 📊 **AG Grid + SSR** — Handles large data efficiently across all portals
+- 💳 **Local Payments** — JazzCash & EasyPaisa support
+- 📍 **GPS Attendance** — Teacher attendance with location tracking
+- 📄 **PDF Generation** — Result cards, fee receipts, reports
+- 🎓 **Full Exam Lifecycle** — Datesheet → Marks → Result → Parent delivery
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | Angular 17+ & Tailwind CSS |
+| Backend | NestJS (Node.js) |
+| Database | PostgreSQL |
+| Data Grid | AG Grid (Server Side Rendering) |
+| Authentication | JWT + Role-based Guards |
+| Payments | JazzCash API + EasyPaisa API + Stripe |
+| Notifications | Twilio (WhatsApp + SMS) + SendGrid (Email) |
+| File Storage | AWS S3 / Cloudflare R2 |
+| Maps | Google Maps API |
+| Hosting | DigitalOcean / Railway |
+
+---
+
+## 📁 Project Structure
+
+```
+taleemhub/
+├── frontend/          # Angular 17 — All 4 portals
+├── backend/           # NestJS — REST API & business logic
+├── shared/            # Shared TypeScript types & interfaces
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js v18+
+- PostgreSQL
+- Angular CLI v17+
+- NestJS CLI
+
+### Installation
 
 ```bash
+# Clone the repo
+git clone https://github.com/Moazali302/TaleemHub.git
+cd TaleemHub
+
+# Install frontend dependencies
+cd frontend
+npm install
+
+# Install backend dependencies
+cd ../backend
+npm install
+```
+
+### Environment Setup
+
+```bash
+# Backend — copy and fill in your values
+cp backend/.env.example backend/.env
+
+# Frontend — update environment files
+# frontend/src/environments/environment.ts
+```
+
+### Run Development Servers
+
+```bash
+# Frontend (Angular)
+cd frontend
 ng serve
+
+# Backend (NestJS)
+cd backend
+npm run start:dev
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 📦 Modules
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- ✅ Auth & Multi-tenant Setup
+- ✅ School Settings & Onboarding Wizard
+- ✅ Student Management
+- ✅ Teacher Management
+- ✅ Class & Timetable Management
+- ✅ Attendance (Student + Teacher with GPS)
+- ✅ Fee Management & Auto Reminders
+- ✅ Exam, Marks & Results
+- ✅ Complaint System
+- ✅ Leave Request System
+- ✅ Announcements
+- ✅ Subscription & Payments (JazzCash, EasyPaisa, Stripe)
+- ✅ Super Admin Panel
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🗺️ Roadmap
 
-```bash
-ng generate --help
-```
+| Phase | Description | Duration |
+|-------|-------------|----------|
+| Phase 1 | Foundation & Multi-Tenant Setup | 4 Weeks |
+| Phase 2 | Student & Class Management | 3 Weeks |
+| Phase 3 | Attendance Module | 2 Weeks |
+| Phase 4 | Fee System | 3 Weeks |
+| Phase 5 | Exam & Results | 3 Weeks |
+| Phase 6 | Complaints & Leave | 2 Weeks |
+| Phase 7 | Announcements | 1 Week |
+| Phase 8 | Payment Module | 3 Weeks |
+| Phase 9 | Super Admin Panel | 2 Weeks |
+| Phase 10 | Testing & Launch | 3 Weeks |
 
-## Building
+---
 
-To build the project run:
+## 📄 License
 
-```bash
-ng build
-```
+Private & Proprietary — TaleemHub © 2026
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+<p align="center">Built with ❤️ for Pakistan's Education System</p>
