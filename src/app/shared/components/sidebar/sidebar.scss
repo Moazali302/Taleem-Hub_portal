@@ -84,17 +84,16 @@
   font-weight: 500;
   transition: background-color 0.15s ease, color 0.15s ease;
 
-  i {
-    font-size: 19px; // increased from 18px to match text bump
-    width: 20px;
-    text-align: center;
-    color: inherit;
-  }
-
   &:hover {
     background: #f9fafb;
     color: #111827;
   }
+}
+  .sidebar__link-icon {
+  width: 25px;
+  height: 30px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .sidebar__link--active {
@@ -122,4 +121,11 @@
   &:hover {
     background: #1e293b;
   }
+}
+.sidebar__footer-icon {
+  width: 18px;
+  height: 18px;
+  color: #ffffff;
+  object-fit: contain;
+  flex-shrink: 0;
 }

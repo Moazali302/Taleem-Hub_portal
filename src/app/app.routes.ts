@@ -39,7 +39,7 @@ export const routes: Routes = [
   },
   {
   path: 'super-admin',
-  component: SuperAdminLayoutComponent,
+  component: SuperAdminLayoutComponent,a
   canActivate: [AuthGuard, RoleGuard],
   data: { role: 'superadmin' },
   loadChildren: () => import('@features/super-admin/super-admin.routes').then(m => m.superAdminRoutes)

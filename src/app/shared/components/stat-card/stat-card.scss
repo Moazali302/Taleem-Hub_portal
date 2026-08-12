@@ -50,4 +50,18 @@
   &--danger &__value {
     color: #dc2626;
   }
+  &--info &__icon {
+    background: #e0f2fe;
+    color: #0284c7;
+  }
+
+  &--success &__icon {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  &--purple &__icon {
+    background: #f3e8ff;
+    color: #9333ea;
+  }
 }

@@ -14,8 +14,8 @@
               routerLinkActive="sidebar__link--active"
               class="sidebar__link"
             >
-              <i class="ti {{ item.icon }}" aria-hidden="true"></i>
-              <span>{{ item.label }}</span>
+           <img [src]="item.icon" alt="" class="sidebar__link-icon" aria-hidden="true" />
+                <span>{{ item.label }}</span>
             </a>
           </li>
         }
@@ -24,7 +24,7 @@
 
     @if (config.footerAction; as action) {
       <a [routerLink]="[config.basePath, action.route]" class="sidebar__footer-btn">
-        <i class="ti {{ action.icon }}" aria-hidden="true"></i>
+     <img [src]="action.icon" alt="" class="sidebar__footer-icon" aria-hidden="true" />
         {{ action.label }}
       </a>
     }

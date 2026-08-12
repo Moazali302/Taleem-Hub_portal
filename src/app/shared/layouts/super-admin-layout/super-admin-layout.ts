@@ -21,7 +21,7 @@ export class SuperAdminLayoutComponent {
     name: 'Muaz Ali',
     email: 'muaz.ali@example.com',
     role: 'Super Admin',
-    avatarUrl: '/assets/images/users/muaz-ali.jpg',
+    avatarUrl: '/svg/user-round.svg',
     initials: 'MA',
   };
 
