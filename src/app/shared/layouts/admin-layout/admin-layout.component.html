@@ -1,0 +1,15 @@
+<app-sidebar />
+
+<div class="admin-layout__main">
+  <app-header
+    [currentUser]="currentUser"
+    [languages]="languages"
+    [activeLanguage]="activeLanguage"
+    (searchChange)="onSearch($event)"
+    (languageChange)="onLanguageChange($event)"
+  />
+
+  <div class="admin-layout__content">
+    <router-outlet />
+  </div>
+</div>
