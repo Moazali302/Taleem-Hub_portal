@@ -1,0 +1,19 @@
+<main class="school-listing">
+  <header class="school-listing__header">
+    <div>
+      <h1 class="school-listing__title">Schools</h1>
+      <p class="school-listing__subtitle">Manage all registered institutions across the platform.</p>
+    </div>
+    <app-button icon="ti-plus">Add New School</app-button>
+  </header>
+
+  <section class="school-listing__stats">
+    @for (card of statCards; track card.label) {
+      <app-stat-card [data]="card" />
+    }
+  </section>
+
+  <section class="school-listing__grid-card">
+    <app-data-grid [rowData]="schools" [columnDefs]="columnDefs" [pageSize]="10" />
+  </section>
+</main>

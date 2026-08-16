@@ -1,0 +1,39 @@
+.school-listing {
+  padding: 24px;
+  background: #f8f9fa;
+  min-height: calc(100vh - 64px);
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  &__title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px;
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  &__grid-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+  }
+}

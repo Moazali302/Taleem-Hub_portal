@@ -12,14 +12,14 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
+  sm: 'px-3.5 py-1.5 text-sm',
+  md: 'px-5 py-2.5 text-sm',
 };
 
 /**
  * Shared button for every "Add X" / primary action across the app.
- * To add a new look, add one entry to VARIANT_CLASSES (or SIZE_CLASSES) —
- * every screen using <app-button> picks it up automatically, no per-page CSS.
+ * Add a new look by adding one entry to VARIANT_CLASSES/SIZE_CLASSES —
+ * every screen using <app-button> picks it up automatically.
  *
  * Usage:
  *   <app-button icon="ti-plus">Add New School</app-button>
@@ -47,7 +47,7 @@ export class ButtonComponent {
   @Input() fullWidth = false;
 
   private readonly base =
-    'inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed';
+    'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed';
 
   get classes(): string {
     return [
