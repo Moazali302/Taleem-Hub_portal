@@ -28,7 +28,7 @@ export const routes: Routes = [
   path: 'schools',
   loadComponent: () => import ('@features/super-admin/school-listing/school-listing')
     .then(m => m.SchoolsListingComponent),
-}
+  },
   {
     path: 'teacher',
     component: TeacherLayoutComponent,
