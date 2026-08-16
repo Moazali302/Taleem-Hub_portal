@@ -7,6 +7,7 @@ import { superAdminRoutes } from '@features/super-admin/super-admin.routes';
 import {SuperAdminDashboardComponent} from '@features/super-admin/super-admin-dashboard/super-admin-dashboard';
 import { AuthGuard } from '@core/guards/auth.guard';
 import { RoleGuard } from '@core/guards/role.guard';
+import {SchoolsListingComponent} from '@features/super-admin/school-listing/school-listing';
 import {SuperAdminLayoutComponent} from '@shared/layouts/super-admin-layout/super-admin-layout';
 
 export const routes: Routes = [
@@ -23,6 +24,11 @@ export const routes: Routes = [
     data: { role: 'admin' },
     loadChildren: () => import('@features/admin/admin.routes').then(m => m.adminRoutes)
   },
+  {
+  path: 'schools',
+  loadComponent: () => import ('@features/super-admin/school-listing/school-listing')
+    .then(m => m.SchoolsListingComponent),
+}
   {
     path: 'teacher',
     component: TeacherLayoutComponent,
