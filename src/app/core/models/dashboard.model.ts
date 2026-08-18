@@ -13,3 +13,13 @@ export interface ExpiringSubscriptionItem {
   schoolName: string;
   expiresIn: string; // e.g. "3 days"
 }
+export interface ApprovaladminItem {
+  initials: string;
+  name: string;
+  type: string;
+  timeAgo: string;
+}
+export interface AnnouncementItem {
+  title: string;
+  subtitle: string;
+}

@@ -3,9 +3,24 @@
   [class]="'stat-card--' + (data.variant ?? 'default')"
   [class.stat-card--accented]="data.accented"
 >
-  <div class="stat-card__icon-wrap">
-    <img [src]="data.icon" alt="" class="stat-card__icon" aria-hidden="true" />
-  </div>
+  @if (data.ring !== undefined) {
+    <div class="stat-card__ring-wrap">
+      <svg viewBox="0 0 44 44" class="stat-card__ring">
+        <circle class="stat-card__ring-track" cx="22" cy="22" r="18" />
+        <circle
+          class="stat-card__ring-fill"
+          cx="22" cy="22" r="18"
+          [attr.stroke-dasharray]="ringCircumference"
+          [attr.stroke-dashoffset]="ringOffset"
+        />
+      </svg>
+      <span class="stat-card__ring-value">{{ data.ring }}%</span>
+    </div>
+  } @else {
+    <div class="stat-card__icon-wrap">
+      <img [src]="data.icon" alt="" class="stat-card__icon" aria-hidden="true" />
+    </div>
+  }
 
   <div class="stat-card__value-row">
     <p class="stat-card__value">{{ data.value }}</p>
@@ -16,15 +31,20 @@
 
   <p class="stat-card__label">{{ data.label }}</p>
 
-  @if (data.trend) {
-    <p class="stat-card__trend" [class.stat-card__trend--down]="data.trend.direction === 'down'">
-      <i
-        class="ti"
-        [class.ti-arrow-up]="data.trend.direction === 'up'"
-        [class.ti-arrow-down]="data.trend.direction === 'down'"
-        aria-hidden="true"
-      ></i>
-      {{ data.trend.value }}
-    </p>
+ @if (data.trend) {
+  <p class="stat-card__trend" [class.stat-card__trend--down]="data.trend.direction === 'down'">
+    <img
+      [src]="data.trend.direction === 'up' ? '/svg/trend-up.svg' : '/svg/trend-down.svg'"
+      alt=""
+      class="stat-card__trend-icon"
+      aria-hidden="true"
+    />
+    {{ data.trend.value }}
+  </p>
+}
+
+  @if (data.progress) {
+    <app-progress-bar [value]="data.progress.percent" [showPercentage]="false" color="orange" />
+    <p class="stat-card__progress-caption">{{ data.progress.caption }}</p>
   }
 </div>

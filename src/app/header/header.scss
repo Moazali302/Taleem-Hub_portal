@@ -102,6 +102,7 @@
     align-items: center;
     gap: 10px;
   }
+  
 
   &__avatar {
     width: 38px;
@@ -134,4 +135,10 @@
     &__search { max-width: 200px; }
     &__user-name { display: none; }
   }
+}
+.app-header__search-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.5;
 }

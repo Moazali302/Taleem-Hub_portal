@@ -1,14 +1,14 @@
 <header class="app-header">
-  <div class="app-header__search">
-    <i class="ti ti-search app-header__search-icon" aria-hidden="true"></i>
-    <input
-      type="text"
-      class="app-header__search-input"
-      [placeholder]="searchPlaceholder"
-      (input)="onSearchInput($any($event.target).value)"
-      aria-label="Search"
-    />
-  </div>
+ <div class="app-header__search">
+  <img src="/svg/search.svg" alt="" class="app-header__search-icon" aria-hidden="true" />
+  <input
+    type="text"
+    class="app-header__search-input"
+    [placeholder]="searchPlaceholder"
+    (input)="onSearchInput($any($event.target).value)"
+    aria-label="Search"
+  />
+</div>
 
   <div class="app-header__actions">
     <div class="app-header__language">

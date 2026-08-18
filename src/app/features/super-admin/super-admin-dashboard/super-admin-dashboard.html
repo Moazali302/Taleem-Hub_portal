@@ -13,7 +13,7 @@
   <section class="dashboard__row">
     <div class="dashboard-card">
       <p class="dashboard-card__header">
-        <i class="ti ti-clipboard-list" aria-hidden="true"></i>
+        <img src="/svg/clipboard-list.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
         Pending Approvals
       </p>
       <p class="dashboard-card__big-number">{{ pendingApprovals }}</p>
@@ -32,7 +32,7 @@
 
     <div class="dashboard-card">
       <p class="dashboard-card__header">
-        <i class="ti ti-file-text" aria-hidden="true"></i>
+        <img src="/svg/file-text.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
         Subscription Overview
       </p>
       <p class="dashboard-card__caption">Renewal Date</p>
@@ -42,7 +42,7 @@
 
       <div class="dashboard-card__actions">
         <button type="button" class="btn btn--primary">
-          <i class="ti ti-settings" aria-hidden="true"></i>
+          <img src="/svg/setting.svg" alt="" class="btn__icon" aria-hidden="true" />
           Manage Plans
         </button>
         <button type="button" class="btn btn--outline" routerLink="/subscriptions">View All</button>
@@ -52,19 +52,19 @@
     <div class="dashboard-card">
       <p class="dashboard-card__header">Quick Actions</p>
       <button type="button" class="quick-action" routerLink="/schools/new">
-        <i class="ti ti-building-plus" aria-hidden="true"></i>
+        <img src="/svg/school.svg" alt="" class="quick-action__icon" aria-hidden="true" />
         <span>Add School</span>
-        <i class="ti ti-chevron-right quick-action__arrow" aria-hidden="true"></i>
+        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
       </button>
       <button type="button" class="quick-action" routerLink="/students/new">
-        <i class="ti ti-user-plus" aria-hidden="true"></i>
+        <img src="/svg/user-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
         <span>Add Student</span>
-        <i class="ti ti-chevron-right quick-action__arrow" aria-hidden="true"></i>
+        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
       </button>
       <button type="button" class="quick-action" routerLink="/teachers/new">
-        <i class="ti ti-users-plus" aria-hidden="true"></i>
+        <img src="/svg/users-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
         <span>Add Teacher</span>
-        <i class="ti ti-chevron-right quick-action__arrow" aria-hidden="true"></i>
+        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
       </button>
     </div>
   </section>
@@ -72,7 +72,7 @@
   <section class="dashboard__row dashboard__row--two">
     <div class="dashboard-card">
       <p class="dashboard-card__header">
-        <i class="ti ti-cash" aria-hidden="true"></i>
+        <img src="/svg/cash.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
         Fee Collections
         <span class="dashboard-card__header-value">{{ feeCollection.amount }}</span>
       </p>
@@ -87,7 +87,7 @@
 
     <div class="dashboard-card">
       <p class="dashboard-card__header">
-        <i class="ti ti-calendar" aria-hidden="true"></i>
+        <img src="/svg/calendar.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
         Exam Schedule
         <span class="dashboard-card__header-value">{{ upcomingExamsCount }} Upcoming</span>
       </p>

@@ -4,6 +4,10 @@ export interface StatCardTrend {
   direction: 'up' | 'down';
   value: string; // e.g. '+3.2%'
 }
+export interface StatCardProgress {
+  percent: number;
+  caption: string;
+}
 
 export interface StatCardData {
   icon: string;
@@ -12,5 +16,7 @@ export interface StatCardData {
   variant?: StatCardVariant;
   trend?: StatCardTrend;
   urgencyLabel?: string; // e.g. '2 urgent', '5 critical'
-  accented?: boolean;    // true => left border accent color
+  accented?: boolean;
+   ring?: number;              // 0-100 → renders circular ring instead of icon (Attendance)
+  progress?: StatCardProgress;    // true => left border accent color
 }
