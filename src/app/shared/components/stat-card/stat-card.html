@@ -1,7 +1,30 @@
-<div class="stat-card" [class]="'stat-card--' + (data.variant ?? 'default')">
-  <div class="stat-card__icon">
-    <img [src]="data.icon" [alt]="data.label" width="20" height="20" />
+<div
+  class="stat-card"
+  [class]="'stat-card--' + (data.variant ?? 'default')"
+  [class.stat-card--accented]="data.accented"
+>
+  <div class="stat-card__icon-wrap">
+    <img [src]="data.icon" alt="" class="stat-card__icon" aria-hidden="true" />
   </div>
-  <p class="stat-card__value">{{ data.value }}</p>
+
+  <div class="stat-card__value-row">
+    <p class="stat-card__value">{{ data.value }}</p>
+    @if (data.urgencyLabel) {
+      <span class="stat-card__urgency">{{ data.urgencyLabel }}</span>
+    }
+  </div>
+
   <p class="stat-card__label">{{ data.label }}</p>
+
+  @if (data.trend) {
+    <p class="stat-card__trend" [class.stat-card__trend--down]="data.trend.direction === 'down'">
+      <i
+        class="ti"
+        [class.ti-arrow-up]="data.trend.direction === 'up'"
+        [class.ti-arrow-down]="data.trend.direction === 'down'"
+        aria-hidden="true"
+      ></i>
+      {{ data.trend.value }}
+    </p>
+  }
 </div>

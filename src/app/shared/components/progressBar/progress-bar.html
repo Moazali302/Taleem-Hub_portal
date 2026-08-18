@@ -1,0 +1,15 @@
+<div class="progress-bar">
+  @if (label || showPercentage) {
+    <div class="progress-bar__meta">
+      @if (label) { <span class="progress-bar__label">{{ label }}</span> }
+      @if (showPercentage) { <span class="progress-bar__percentage">{{ value }}%</span> }
+    </div>
+  }
+  <div class="progress-bar__track">
+    <div
+      class="progress-bar__fill"
+      [class]="'progress-bar__fill--' + color"
+      [style.width.%]="value"
+    ></div>
+  </div>
+</div>

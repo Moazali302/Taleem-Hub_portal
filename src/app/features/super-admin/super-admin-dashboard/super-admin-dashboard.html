@@ -1,6 +1,5 @@
 <main class="dashboard">
   <h1 class="dashboard__title">
-    <i class="ti ti-layout-grid" aria-hidden="true"></i>
     <img src="/svg/sidnav-dashboard.svg" alt="" class="dashboard__title-icon" aria-hidden="true" />
     Dashboard
   </h1>
@@ -12,44 +11,57 @@
   </section>
 
   <section class="dashboard__row">
-    <div class="dashboard-card dashboard-card--approvals">
+    <div class="dashboard-card">
       <p class="dashboard-card__header">
         <i class="ti ti-clipboard-list" aria-hidden="true"></i>
         Pending Approvals
       </p>
       <p class="dashboard-card__big-number">{{ pendingApprovals }}</p>
       <p class="dashboard-card__caption">Work items assigned to me</p>
+
+      <ul class="approval-list">
+        @for (item of approvalItems; track item.title) {
+          <li class="approval-list__item">
+            <img [src]="item.icon" alt="" class="approval-list__icon" aria-hidden="true" />
+            <span class="approval-list__title">{{ item.title }}</span>
+            <span class="approval-list__time">{{ item.timeAgo }}</span>
+          </li>
+        }
+      </ul>
     </div>
 
-    <div class="dashboard-card dashboard-card--subscription">
+    <div class="dashboard-card">
       <p class="dashboard-card__header">
         <i class="ti ti-file-text" aria-hidden="true"></i>
         Subscription Overview
       </p>
       <p class="dashboard-card__caption">Renewal Date</p>
       <p class="dashboard-card__sub-value">{{ subscription.renewalDate }}</p>
+
+      <app-progress-bar [value]="subscription.usagePercent" label="Usage" color="navy" />
+
       <div class="dashboard-card__actions">
         <button type="button" class="btn btn--primary">
           <i class="ti ti-settings" aria-hidden="true"></i>
           Manage Plans
         </button>
-        <button type="button" class="btn btn--outline">View All</button>
+        <button type="button" class="btn btn--outline" routerLink="/subscriptions">View All</button>
       </div>
     </div>
 
-    <div class="dashboard-card dashboard-card--quick-actions">
+    <div class="dashboard-card">
       <p class="dashboard-card__header">Quick Actions</p>
-      <button type="button" class="quick-action">
+      <button type="button" class="quick-action" routerLink="/schools/new">
         <i class="ti ti-building-plus" aria-hidden="true"></i>
-        <span>Add New School</span>
+        <span>Add School</span>
         <i class="ti ti-chevron-right quick-action__arrow" aria-hidden="true"></i>
       </button>
-      <button type="button" class="quick-action">
+      <button type="button" class="quick-action" routerLink="/students/new">
         <i class="ti ti-user-plus" aria-hidden="true"></i>
         <span>Add Student</span>
         <i class="ti ti-chevron-right quick-action__arrow" aria-hidden="true"></i>
       </button>
-      <button type="button" class="quick-action">
+      <button type="button" class="quick-action" routerLink="/teachers/new">
         <i class="ti ti-users-plus" aria-hidden="true"></i>
         <span>Add Teacher</span>
         <i class="ti ti-chevron-right quick-action__arrow" aria-hidden="true"></i>
@@ -62,12 +74,14 @@
       <p class="dashboard-card__header">
         <i class="ti ti-cash" aria-hidden="true"></i>
         Fee Collections
-        <span class="dashboard-card__header-value">{{ feeCollectionAmount }}</span>
+        <span class="dashboard-card__header-value">{{ feeCollection.amount }}</span>
       </p>
-      <div class="dashboard-card__links">
-        <a href="#">View Details</a>
-        <span>|</span>
-        <a href="#">Defaulters List</a>
+
+      <app-progress-bar [value]="feeCollection.collectedPercent" color="green" [showPercentage]="false" />
+
+      <div class="dashboard-card__chips">
+        <a routerLink="/fees" class="chip chip--neutral">View Details</a>
+        <a routerLink="/fees/defaulters" class="chip chip--danger">Defaulters List</a>
       </div>
     </div>
 
@@ -77,10 +91,20 @@
         Exam Schedule
         <span class="dashboard-card__header-value">{{ upcomingExamsCount }} Upcoming</span>
       </p>
-      <div class="dashboard-card__links">
-        <a href="#">Add Exam</a>
-        <span>|</span>
-        <a href="#">View All</a>
+
+      <ul class="exam-list">
+        @for (exam of examItems; track exam.title) {
+          <li class="exam-list__item">
+            <span class="exam-list__dot" [style.background]="exam.dotColor"></span>
+            <span class="exam-list__title">{{ exam.title }}</span>
+            <span class="exam-list__date">({{ exam.date }})</span>
+          </li>
+        }
+      </ul>
+
+      <div class="dashboard-card__chips">
+        <button type="button" class="chip chip--neutral" routerLink="/exams/new">Add Exam</button>
+        <button type="button" class="chip chip--neutral" routerLink="/exams">View All</button>
       </div>
     </div>
   </section>

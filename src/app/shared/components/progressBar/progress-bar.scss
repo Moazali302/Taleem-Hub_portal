@@ -1,0 +1,28 @@
+.progress-bar {
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  &__label { color: #6b7280; }
+  &__percentage { font-weight: 600; color: #111827; }
+
+  &__track {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+
+    &--navy   { background: #0f2a5e; }
+    &--green  { background: #16a34a; }
+    &--orange { background: #f97316; }
+    &--red    { background: #dc2626; }
+  }
+}

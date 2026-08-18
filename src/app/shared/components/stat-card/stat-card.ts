@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy,Input,Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {StatCardData} from './stat-card-model';
+import { StatCardData } from './stat-card-model';
 
 @Component({
   selector: 'app-stat-card',

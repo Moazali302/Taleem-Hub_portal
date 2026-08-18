@@ -1,67 +1,65 @@
 .stat-card {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  border-left: 3px solid transparent;
 
-  &__icon {
-    width: 36px;
-    height: 36px;
+  &--accented.stat-card--warning { border-left-color: #f97316; }
+  &--accented.stat-card--danger  { border-left-color: #dc2626; }
+
+  &__icon-wrap {
+    width: 40px;
+    height: 40px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #eef2ff;
-    color: #0f2a5e;
-    font-size: 18px;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
+    background: #eef0ff;
   }
 
-  &__label {
-    font-size: 13px;
-    color: #6b7280;
-    margin: 0;
+  &--purple &__icon-wrap  { background: #ede9fe; }
+  &--info &__icon-wrap    { background: #dbeafe; }
+  &--success &__icon-wrap { background: #dcfce7; }
+  &--warning &__icon-wrap { background: #ffedd5; }
+  &--danger &__icon-wrap  { background: #fee2e2; }
+
+  &__icon { width: 20px; height: 20px; }
+
+  &__value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
   }
 
   &__value {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: #111827;
     margin: 0;
   }
 
-  &--warning &__icon {
-    background: #fef3e2;
-    color: #d97706;
+  &__urgency { font-size: 13px; font-weight: 600; }
+  &--warning &__urgency { color: #f97316; }
+  &--danger &__urgency  { color: #dc2626; }
+
+  &__label {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 4px 0 8px;
   }
 
-  &--warning &__value {
-    color: #d97706;
-  }
-
-  &--danger &__icon {
-    background: #fee2e2;
-    color: #dc2626;
-  }
-
-  &--danger &__value {
-    color: #dc2626;
-  }
-  &--info &__icon {
-    background: #e0f2fe;
-    color: #0284c7;
-  }
-
-  &--success &__icon {
-    background: #dcfce7;
+  &__trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
     color: #16a34a;
-  }
+    margin: 0;
 
-  &--purple &__icon {
-    background: #f3e8ff;
-    color: #9333ea;
+    &--down { color: #dc2626; }
+    i { font-size: 14px; }
   }
 }
