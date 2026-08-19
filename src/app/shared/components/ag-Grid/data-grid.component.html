@@ -1,0 +1,61 @@
+<div class="data-grid">
+    <div class="data-grid__viewport" [style.height]="height">
+          <ag-grid-angular
+                 class="data-grid__grid" 
+                 [rowData]="rowData" 
+                 [columnDefs]="columnDefs"
+                 [defaultColDef]="defaultColDef" 
+                 [theme]="theme" 
+                 [pagination]="true" 
+                 [paginationPageSize]="pageSize"
+                 [suppressPaginationPanel]="true" 
+                 [quickFilterText]="quickFilterText"
+                 [animateRows]="true"
+                 (gridReady)="onGridReady($event)" 
+                 (paginationChanged)="onPaginationChanged($event)" />
+       </div>
+
+    <div class="data-grid__footer">
+        <div class="data-grid__page-size">
+            <span>Page Size:</span>
+            <select [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)">
+                @for (size of pageSizeOptions; track size) {
+                <option [value]="size">{{ size }}</option>
+                }
+            </select>
+        </div>
+
+        <div class="data-grid__range">{{ rangeStart }} to {{ rangeEnd }} of {{ totalRows }}</div>
+
+        <div class="data-grid__nav">
+         <button type="button"
+               (click)="goToFirstPage()"
+                [disabled]="currentPage === 0" 
+                 aria-label="First page">
+                <img src="/svg/chevron-left.svg" alt="" aria-hidden="true" />
+         </button>
+            <button 
+                 type="button" 
+                 (click)="goToPrevPage()" 
+                 [disabled]="currentPage === 0" 
+                 aria-label="Previous page">
+            <img src="/svg/chevron-left.svg" alt="" aria-hidden="true" />
+            </button>
+              <span class="data-grid__page-label">Page {{ currentPage + 1 }} of {{ totalPages || 1 }}</span>
+            <button 
+                 type="button" 
+                 (click)="goToNextPage()"
+                 [disabled]="currentPage >= totalPages - 1"
+                 aria-label="Next page">
+            <img src="/svg/chevron-right.svg" alt="" aria-hidden="true" />
+            </button>
+            <button
+                 type="button" 
+                (click)="goToLastPage()" 
+                [disabled]="currentPage >= totalPages - 1"
+                aria-label="Last page">
+            <img src="/svg/chevron-right.svg" alt="" aria-hidden="true" />
+            </button>
+        </div>
+    </div>
+</div>

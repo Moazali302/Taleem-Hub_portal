@@ -4,7 +4,8 @@
       <h1 class="school-listing__title">Schools</h1>
       <p class="school-listing__subtitle">Manage all registered institutions across the platform.</p>
     </div>
-    <app-button icon="ti-plus">Add New School</app-button>
+
+    <app-button icon="/svg/plus.svg" routerLink="/schools/new">Add New School</app-button>
   </header>
 
   <section class="school-listing__stats">
@@ -14,6 +15,42 @@
   </section>
 
   <section class="school-listing__grid-card">
-    <app-data-grid [rowData]="schools" [columnDefs]="columnDefs" [pageSize]="10" />
+    <div class="school-listing__toolbar">
+      <div class="school-listing__search">
+        <img src="/svg/search.svg" alt="" class="school-listing__search-icon" aria-hidden="true" />
+        <input
+          type="text"
+          placeholder="Search schools by name or ID..."
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          aria-label="Search schools"
+        />
+      </div>
+
+      <select
+        class="school-listing__status-filter"
+        [ngModel]="statusFilter"
+        (ngModelChange)="onStatusFilterChange($event)"
+        aria-label="Filter by status"
+      >
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="pending">Pending</option>
+        <option value="inactive">Inactive</option>
+      </select>
+
+      <button type="button" class="school-listing__export-btn" (click)="onExport()">
+        <img src="/svg/download.svg" alt="" aria-hidden="true" />
+        Export
+      </button>
+    </div>
+
+    <app-data-grid
+      #dataGrid
+      [rowData]="filteredSchools"
+      [columnDefs]="columnDefs"
+      [quickFilterText]="searchTerm"
+      [pageSize]="10"
+    />
   </section>
 </main>

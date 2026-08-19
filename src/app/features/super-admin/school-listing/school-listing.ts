@@ -1,23 +1,27 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ColDef } from 'ag-grid-community';
 import { StatCardComponent } from '@app/shared/components/stat-card/stat-card';
 import { StatCardData } from '@app/shared/components/stat-card/stat-card-model';
 import { ButtonComponent } from '@shared/components/button/button.component';
-import { DataGridComponent } from '@shared/components/data-grid/data-grid.component';
+import { DataGridComponent } from '@app/shared/components/ag-Grid/data-grid.component';
 import { StatusBadgeCellRendererComponent } from '@shared/components/data-grid/status-badge-cell-renderer.component';
-import { School } from '../../../core/models/school.model';
 import { RowActionsCellRendererComponent, RowActionsParams } from '@app/shared/components/data-grid/rowaction';
+import { School, SchoolStatus } from '../../../core/models/school.model';
 
 @Component({
   selector: 'app-school-listing',
   standalone: true,
-  imports: [CommonModule, StatCardComponent, ButtonComponent, DataGridComponent],
+  imports: [CommonModule, FormsModule, RouterLink, StatCardComponent, ButtonComponent, DataGridComponent],
   templateUrl: './school-listing.html',
   styleUrl: './school-listing.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SchoolsListingComponent {
+  @ViewChild('dataGrid') private dataGrid?: DataGridComponent<School>;
+
   // TODO: replace with data from a SchoolsService (API call) once backend endpoint is ready
   statCards: StatCardData[] = [
     { icon: '/svg/school.svg', label: 'Total Schools', value: 24, variant: 'purple' },
@@ -39,29 +43,51 @@ export class SchoolsListingComponent {
   ];
 
   columnDefs: ColDef<School>[] = [
-    { field: 'school_name', headerName: 'School Name', flex: 2, minWidth: 200 },
+    { field: 'school_name', headerName: 'School Name', flex: 2, minWidth: 220 },
     { field: 'school_id', headerName: 'School ID', flex: 1, minWidth: 110 },
     {
       field: 'status',
       headerName: 'Status',
       flex: 1,
-      minWidth: 110,
+      minWidth: 120,
+      sortable: false, // categorical — use the status dropdown filter above instead
       cellRenderer: StatusBadgeCellRendererComponent,
     },
-    { field: 'owner_name', headerName: 'Owner Name', flex: 1, minWidth: 150 },
-    { field: 'created_at', headerName: 'Created Date', flex: 1, minWidth: 130 },
+    { field: 'owner_name', headerName: 'Owner Name', flex: 1, minWidth: 160 },
+    { field: 'created_at', headerName: 'Created Date', flex: 1, minWidth: 140 },
     {
-  colId: 'actions',
-  headerName: '',
-  width: 60,
-  sortable: false,
-  resizable: false,
-  cellRenderer: RowActionsCellRendererComponent,
-  cellRendererParams: {
-    onView: (row: School) => console.log('view', row),
-    onEdit: (row: School) => console.log('edit', row),
-    onDelete: (row: School) => console.log('delete', row),
-  } as Partial<RowActionsParams<School>>,
-},
+      colId: 'actions',
+      headerName: '',
+      width: 60,
+      sortable: false,
+      resizable: false,
+      pinned: 'right', // stays reachable even when the grid scrolls horizontally
+      cellRenderer: RowActionsCellRendererComponent,
+      cellRendererParams: {
+        onView: (row: School) => console.log('view', row),
+        onEdit: (row: School) => console.log('edit', row),
+        onDelete: (row: School) => console.log('delete', row),
+      } as Partial<RowActionsParams<School>>,
+    },
   ];
+
+  searchTerm = '';
+  statusFilter: SchoolStatus | 'all' = 'all';
+
+  get filteredSchools(): School[] {
+    if (this.statusFilter === 'all') return this.schools;
+    return this.schools.filter((school) => school.status === this.statusFilter);
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
+  }
+
+  onStatusFilterChange(value: SchoolStatus | 'all'): void {
+    this.statusFilter = value;
+  }
+
+  onExport(): void {
+    this.dataGrid?.exportCsv('schools.csv');
+  }
 }
