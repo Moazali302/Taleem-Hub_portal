@@ -27,7 +27,7 @@ export const SIDEBAR_MENUS: Record<Role, SidebarConfig> = {
     roleLabel: 'Admin',
     items: [
       { label: 'Dashboard', icon: '/svg/sidnav-dashboard.svg', route: 'dashboard' },
-      { label: 'Schools', icon: '/svg/school.svg', route: 'schools' },
+      // { label: 'Schools', icon: '/svg/school.svg', route: 'schools' },
       { label: 'Teachers', icon: '/svg/teacher.svg', route: 'teachers' },
       { label: 'Students', icon: '/svg/students.svg', route: 'students' },
       { label: 'Fees', icon: '/svg/fees.svg', route: 'fees' },

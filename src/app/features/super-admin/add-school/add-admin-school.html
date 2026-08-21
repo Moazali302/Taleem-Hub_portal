@@ -1,0 +1,156 @@
+@if (isOpen) {
+  <!-- Dimmed backdrop -->
+  <div class="fixed inset-0 z-40 bg-on-surface/40" (click)="onClose()"></div>
+
+  <!-- Slide-in panel -->
+  <aside
+    class="fixed inset-y-0 right-0 z-50 flex w-full max-w-[720px] flex-col bg-surface-container-lowest shadow-2xl animate-slide-in"
+  >
+    <!-- Top accent bar -->
+    <div class="h-1 w-full bg-gradient-to-r from-primary to-primary/60"></div>
+
+    <!-- Header -->
+    <header class="flex items-center gap-3 border-b border-outline-variant px-8 py-6">
+      <button
+        type="button"
+        class="flex h-8 w-8 items-center justify-center rounded-xl text-on-surface-variant transition-colors hover:bg-surface-container"
+        aria-label="Back"
+        (click)="onClose()"
+      >
+        <i class="ti ti-arrow-left text-lg" aria-hidden="true"></i>
+      </button>
+      <h2 class="font-headline text-lg font-bold text-on-surface">Add New School</h2>
+    </header>
+
+    <!-- Body -->
+    <div class="flex-1 overflow-y-auto px-8 py-8">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="grid grid-cols-1 gap-x-10 gap-y-6 sm:grid-cols-2">
+          <!-- School Name -->
+          <div>
+            <label for="school_name" class="mb-1.5 block font-label text-sm font-medium text-on-surface-variant">
+              School Name <span class="text-error">*</span>
+            </label>
+            <input
+              id="school_name"
+              type="text"
+              formControlName="school_name"
+              placeholder="Enter school name"
+              class="field-input"
+              [class.field-input--error]="isInvalid('school_name')"
+            />
+            @if (isInvalid('school_name')) {
+              <p class="field-error">School name is required.</p>
+            }
+          </div>
+
+          <!-- School Address -->
+          <div>
+            <label for="school_address" class="mb-1.5 block font-label text-sm font-medium text-on-surface-variant">
+              School Address <span class="text-error">*</span>
+            </label>
+            <input
+              id="school_address"
+              type="text"
+              formControlName="school_address"
+              placeholder="Enter full address"
+              class="field-input"
+              [class.field-input--error]="isInvalid('school_address')"
+            />
+            @if (isInvalid('school_address')) {
+              <p class="field-error">School address is required.</p>
+            }
+          </div>
+
+          <!-- Owner Name -->
+          <div>
+            <label for="owner_name" class="mb-1.5 block font-label text-sm font-medium text-on-surface-variant">
+              Owner Name <span class="text-error">*</span>
+            </label>
+            <input
+              id="owner_name"
+              type="text"
+              formControlName="owner_name"
+              placeholder="Enter owner's name"
+              class="field-input"
+              [class.field-input--error]="isInvalid('owner_name')"
+            />
+            @if (isInvalid('owner_name')) {
+              <p class="field-error">Owner name is required.</p>
+            }
+          </div>
+
+          <!-- Owner Number -->
+          <div>
+            <label for="owner_number" class="mb-1.5 block font-label text-sm font-medium text-on-surface-variant">
+              Owner Number <span class="text-error">*</span>
+            </label>
+            <input
+              id="owner_number"
+              type="tel"
+              formControlName="owner_number"
+              placeholder="+1 (555) 000-0000"
+              class="field-input"
+              [class.field-input--error]="isInvalid('owner_number')"
+            />
+            @if (isInvalid('owner_number')) {
+              <p class="field-error">Enter a valid phone number.</p>
+            }
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="mb-1.5 block font-label text-sm font-medium text-on-surface-variant">
+              Email <span class="text-error">*</span>
+            </label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="admin@school.edu"
+              class="field-input"
+              [class.field-input--error]="isInvalid('email')"
+            />
+            @if (isInvalid('email')) {
+              <p class="field-error">Enter a valid email address.</p>
+            }
+          </div>
+
+          <!-- Password -->
+          <div>
+            <label for="password" class="mb-1.5 block font-label text-sm font-medium text-on-surface-variant">
+              Password <span class="text-error">*</span>
+            </label>
+            <div class="relative">
+              <input
+                id="password"
+                [type]="showPassword ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="Enter secure password"
+                class="field-input pr-10"
+                [class.field-input--error]="isInvalid('password')"
+              />
+              <button
+                type="button"
+                class="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-outline hover:text-on-surface-variant"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+                (click)="showPassword = !showPassword"
+              >
+                <i class="ti" [class.ti-eye]="!showPassword" [class.ti-eye-off]="showPassword" aria-hidden="true"></i>
+              </button>
+            </div>
+            @if (isInvalid('password')) {
+              <p class="field-error">Password must be at least 8 characters.</p>
+            }
+          </div>
+        </div>
+
+        <!-- Footer actions — sit directly below the form, not pinned to panel bottom -->
+        <div class="mt-10 flex justify-end gap-3 border-t border-outline-variant pt-6">
+          <app-button type="button" variant="outline" (click)="onClose()">Close</app-button>
+          <app-button type="submit" variant="primary">Add School</app-button>
+        </div>
+      </form>
+    </div>
+  </aside>
+}

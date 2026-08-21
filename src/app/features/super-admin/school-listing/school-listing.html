@@ -5,7 +5,7 @@
       <p class="school-listing__subtitle">Manage all registered institutions across the platform.</p>
     </div>
 
-    <app-button icon="/svg/plus.svg" routerLink="/schools/new">Add New School</app-button>
+    <app-button icon="/svg/plus.svg" (click)="openAddSchool()">Add New School</app-button>
   </header>
 
   <section class="school-listing__stats">
@@ -53,4 +53,10 @@
       [pageSize]="10"
     />
   </section>
+
+  <app-add-admin-school
+    [isOpen]="isAddSchoolOpen"
+    (closed)="closeAddSchool()"
+    (schoolAdded)="onSchoolAdded($event)"
+  />
 </main>

@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { ColDef } from 'ag-grid-community';
 import { StatCardComponent } from '@app/shared/components/stat-card/stat-card';
 import { StatCardData } from '@app/shared/components/stat-card/stat-card-model';
@@ -10,11 +9,19 @@ import { DataGridComponent } from '@app/shared/components/ag-Grid/data-grid.comp
 import { StatusBadgeCellRendererComponent } from '@shared/components/data-grid/status-badge-cell-renderer.component';
 import { RowActionsCellRendererComponent, RowActionsParams } from '@app/shared/components/data-grid/rowaction';
 import { School, SchoolStatus } from '../../../core/models/school.model';
+import { AddAdminSchoolComponent } from '../add-school/add-admin-school';
 
 @Component({
   selector: 'app-school-listing',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, StatCardComponent, ButtonComponent, DataGridComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    StatCardComponent,
+    ButtonComponent,
+    DataGridComponent,
+    AddAdminSchoolComponent,
+  ],
   templateUrl: './school-listing.html',
   styleUrl: './school-listing.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -74,6 +81,9 @@ export class SchoolsListingComponent {
   searchTerm = '';
   statusFilter: SchoolStatus | 'all' = 'all';
 
+  /** Controls the Add School slide-in panel — opened by the header button, closed from the panel itself. */
+  isAddSchoolOpen = false;
+
   get filteredSchools(): School[] {
     if (this.statusFilter === 'all') return this.schools;
     return this.schools.filter((school) => school.status === this.statusFilter);
@@ -89,5 +99,52 @@ export class SchoolsListingComponent {
 
   onExport(): void {
     this.dataGrid?.exportCsv('schools.csv');
+  }
+
+  openAddSchool(): void {
+    this.isAddSchoolOpen = true;
+  }
+
+  closeAddSchool(): void {
+    this.isAddSchoolOpen = false;
+  }
+
+  /**
+   * Handles a successful Add School submission from the panel.
+   *
+   * TODO: replace this local, optimistic insert with a real SchoolsService.create()
+   * call once the backend endpoint is ready — subscribe to the response and use the
+   * server-returned record (real id, generated school_id, and authoritative status)
+   * instead of the placeholder values below. New schools go through the existing
+   * approval workflow, so 'pending' is the correct default until the backend
+   * confirms — the grid's Status column always reflects whatever the API returns.
+   */
+  onSchoolAdded(payload: any): void {
+    const newSchool: School = {
+      id: this.nextTempId(),
+      school_id: 'PENDING', // backend generates the real business school_id on create
+      school_name: payload.school_name,
+      owner_name: payload.owner_name,
+      email: payload.email,
+      phone: payload.owner_number,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+    };
+
+    this.schools = [newSchool, ...this.schools];
+    this.refreshStatCardsLocally();
+    this.closeAddSchool();
+  }
+
+  private nextTempId(): number {
+    return Math.max(0, ...this.schools.map((s) => s.id)) + 1;
+  }
+
+  /** TODO: remove once stat cards are fed by a real dashboard-stats API call. */
+  private refreshStatCardsLocally(): void {
+    const total = this.statCards.find((c) => c.label === 'Total Schools');
+    const pending = this.statCards.find((c) => c.label === 'Pending Requests');
+    if (total) total.value = (total.value as number) + 1;
+    if (pending) pending.value = (pending.value as number) + 1;
   }
 }
