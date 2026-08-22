@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ColDef } from 'ag-grid-community';
@@ -11,7 +11,9 @@ import { RowActionsCellRendererComponent, RowActionsParams } from '@app/shared/c
 import { School, SchoolStatus } from '../../../core/models/school.model';
 import { AddAdminSchoolComponent } from '../add-school/add-admin-school';
 import { SidenavComponent } from '@app/shared/components/sidenav.component/sidenav';
-import { CreateSchoolResponse } from '../../../core/services/super-admin.service';
+import { SuperAdminService, SchoolListItem, CreateSchoolData } from '../../../core/services/super-admin.service';
+import { ToastService } from '@app/core/services/toast.service';
+import { ApiResponse } from '@app/core/models/api-response.model';
 
 @Component({
   selector: 'app-school-listing',
@@ -29,17 +31,17 @@ import { CreateSchoolResponse } from '../../../core/services/super-admin.service
   styleUrl: './school-listing.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SchoolsListingComponent {
+export class SchoolsListingComponent implements OnInit {
   @ViewChild('dataGrid') private dataGrid?: DataGridComponent<School>;
 
-  // TODO: replace with data from a real "list schools" API call once backend endpoint is ready
   statCards: StatCardData[] = [
-    { icon: '/svg/school.svg', label: 'Total Schools', value: 24, variant: 'purple' },
-    { icon: '/svg/school.svg', label: 'Active Schools', value: 20, variant: 'success' },
-    { icon: '/svg/complaint.svg', label: 'Pending Requests', value: 4, variant: 'warning' },
+    { icon: '/svg/school.svg', label: 'Total Schools', value: 0, variant: 'purple' },
+    { icon: '/svg/school.svg', label: 'Active Schools', value: 0, variant: 'success' },
+    { icon: '/svg/complaint.svg', label: 'Pending Requests', value: 0, variant: 'warning' },
   ];
 
   schools: School[] = [];
+  isLoading = false;
 
   columnDefs: ColDef<School>[] = [
     { field: 'school_name', headerName: 'School Name', flex: 2, minWidth: 220 },
@@ -74,6 +76,34 @@ export class SchoolsListingComponent {
   statusFilter: SchoolStatus | 'all' = 'all';
   isAddSchoolOpen = false;
 
+  constructor(
+    private readonly superAdminService: SuperAdminService,
+    private readonly toaster: ToastService,
+    private readonly cdr: ChangeDetectorRef,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadSchools();
+  }
+
+  loadSchools(): void {
+    this.isLoading = true;
+
+    this.superAdminService.getAllSchools().subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.schools = res.data.map((s: SchoolListItem) => this.toSchoolRow(s));
+        this.refreshStatCards();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.toaster.error(err);
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   get filteredSchools(): School[] {
     if (this.statusFilter === 'all') return this.schools;
     return this.schools.filter((school) => school.status === this.statusFilter);
@@ -99,34 +129,36 @@ export class SchoolsListingComponent {
     this.isAddSchoolOpen = false;
   }
 
-  /** Receives the server-confirmed school record after AddAdminSchoolComponent's own API call succeeds. */
-  onSchoolAdded(res: CreateSchoolResponse): void {
-    const newSchool: School = {
-      id: res.data.school.id,
-      school_id: res.data.school.school_id,
-      school_name: res.data.school.school_name,
-      owner_name: res.data.admin.name,
-      email: res.data.admin.email,
-      phone: res.data.admin.phone,
-      status: res.data.school.status as SchoolStatus,
-      created_at: res.data.school.created_at,
-    };
-
-    this.schools = [newSchool, ...this.schools];
-    this.refreshStatCardsLocally(newSchool.status);
+  onSchoolAdded(_res: ApiResponse<CreateSchoolData>): void {
     this.closeAddSchool();
+    this.loadSchools();
   }
 
-  private refreshStatCardsLocally(status: SchoolStatus): void {
-    const total = this.statCards.find((c) => c.label === 'Total Schools');
-    if (total) total.value = (total.value as number) + 1;
+  private toSchoolRow(item: SchoolListItem): School {
+    return {
+      id: item.id,
+      school_id: item.school_id,
+      school_name: item.school_name,
+      owner_name: item.owner_name ?? '',
+      email: item.owner_email ?? '',
+      phone: item.owner_phone ?? '',
+      status: this.normalizeStatus(item.status),
+      created_at: item.created_at,
+    };
+  }
 
-    if (status === 'active') {
-      const active = this.statCards.find((c) => c.label === 'Active Schools');
-      if (active) active.value = (active.value as number) + 1;
-    } else if (status === 'pending') {
-      const pending = this.statCards.find((c) => c.label === 'Pending Requests');
-      if (pending) pending.value = (pending.value as number) + 1;
-    }
+  private refreshStatCards(): void {
+    const total = this.statCards.find((c) => c.label === 'Total Schools');
+    const active = this.statCards.find((c) => c.label === 'Active Schools');
+    const pending = this.statCards.find((c) => c.label === 'Pending Requests');
+
+    if (total) total.value = this.schools.length;
+    if (active) active.value = this.schools.filter((s) => s.status === 'active').length;
+    if (pending) pending.value = this.schools.filter((s) => s.status === 'pending').length;
+  }
+
+  private normalizeStatus(status: string): SchoolStatus {
+    if (status === 'approved') return 'active';
+    return status as SchoolStatus;
   }
 }

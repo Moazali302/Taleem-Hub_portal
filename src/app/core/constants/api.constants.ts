@@ -84,6 +84,7 @@ export const API = {
   },
   SUPER_ADMIN: {
     CREATE_SCHOOL: '/schools/create-school',
+     LIST_SCHOOLS: '/schools', 
     SCHOOLS: '/super-admin/schools',
     SCHOOL: (id: string) => `/super-admin/schools/${id}`,
     BLOCK: (id: string) => `/super-admin/schools/${id}/block`,

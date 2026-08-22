@@ -1,8 +1,8 @@
-// src/app/core/services/super-admin.service.ts
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { API } from '../constants/api.constants';
+import { ApiResponse } from '../models/api-response.model';
 
 export interface CreateSchoolPayload {
   school_name: string;
@@ -13,34 +13,47 @@ export interface CreateSchoolPayload {
   password: string;
 }
 
-export interface CreateSchoolResponse {
-  success: boolean;
-  message: string;
-  data: {
-    school: {
-      id: number;
-      school_name: string;
-      school_address: string;
-      school_id: string;
-      status: string;
-      created_at: string;
-      updated_at: string;
-    };
-    admin: {
-      id: number;
-      name: string;
-      email: string;
-      phone: string;
-      role: string;
-    };
+export interface CreateSchoolData {
+  school: {
+    id: number;
+    school_name: string;
+    school_address: string;
+    school_id: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
   };
+  admin: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    role: string;
+  };
+}
+
+export interface SchoolListItem {
+  id: number;
+  school_name: string;
+  school_address: string;
+  school_id: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  owner_name?: string;
+  owner_email?: string;
+  owner_phone?: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class SuperAdminService {
   constructor(private readonly api: ApiService) {}
 
-  createSchool(payload: CreateSchoolPayload): Observable<CreateSchoolResponse> {
-    return this.api.post(API.SUPER_ADMIN.CREATE_SCHOOL, payload);
+  createSchool(payload: CreateSchoolPayload): Observable<ApiResponse<CreateSchoolData>> {
+    return this.api.post<CreateSchoolData>(API.SUPER_ADMIN.CREATE_SCHOOL, payload);
+  }
+
+  getAllSchools(): Observable<ApiResponse<SchoolListItem[]>> {
+    return this.api.get<SchoolListItem[]>(API.SUPER_ADMIN.LIST_SCHOOLS);
   }
 }

@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ButtonComponent } from '@shared/components/button/button.component';
-import { SuperAdminService, CreateSchoolResponse } from '../../../core/services/super-admin.service';
+import { SuperAdminService, CreateSchoolData } from '../../../core/services/super-admin.service';
+import { ApiResponse } from '@app/core/models/api-response.model';
+
 export interface AddSchoolPayload {
   school_name: string;
   school_address: string;
@@ -23,7 +25,7 @@ export interface AddSchoolPayload {
 })
 export class AddAdminSchoolComponent {
   @Output() closeClicked = new EventEmitter<void>();
-  @Output() schoolAdded = new EventEmitter<CreateSchoolResponse>();
+  @Output() schoolAdded = new EventEmitter<ApiResponse<CreateSchoolData>>();
 
   showPassword = false;
   isSubmitting = false;
@@ -70,7 +72,7 @@ export class AddAdminSchoolComponent {
       },
       error: (err) => {
         this.isSubmitting = false;
-       this.toaster.error(err);
+        this.toaster.error();
       },
     });
   }
