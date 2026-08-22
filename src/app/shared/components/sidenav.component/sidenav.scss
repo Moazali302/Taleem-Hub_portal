@@ -1,0 +1,18 @@
+:host {
+  // Children are fixed-positioned (backdrop + panel), so the host itself
+  // shouldn't introduce a box that affects the parent's layout.
+  display: contents;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.25s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

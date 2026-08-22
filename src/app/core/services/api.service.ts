@@ -17,7 +17,7 @@ import { ApiResponse } from '../models/api-response.model';
  */
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private baseUrl = environment.apiUrl;
+  private baseUrl = environment.apiUrl.replace(/\/$/, '');
 
   constructor(private http: HttpClient) {}
 

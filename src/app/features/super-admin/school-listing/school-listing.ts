@@ -130,7 +130,6 @@ export class SchoolsListingComponent {
       status: 'pending',
       created_at: new Date().toISOString(),
     };
-
     this.schools = [newSchool, ...this.schools];
     this.refreshStatCardsLocally();
     this.closeAddSchool();
