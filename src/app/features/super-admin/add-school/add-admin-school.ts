@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { ButtonComponent } from '@shared/components/button/button.component';
-
+import { SuperAdminService, CreateSchoolResponse } from '../../../core/services/super-admin.service';
 export interface AddSchoolPayload {
   school_name: string;
   school_address: string;
@@ -12,18 +13,6 @@ export interface AddSchoolPayload {
   password: string;
 }
 
-/**
- * Right-side slide-in panel for onboarding a new school (Super Admin flow).
- * Controlled by the parent via [isOpen] — the parent (e.g. the schools
- * listing page) owns when this opens/closes.
- *
- * Usage:
- *   <app-add-admin-school
- *     [isOpen]="isAddSchoolOpen"
- *     (closed)="isAddSchoolOpen = false"
- *     (schoolAdded)="onSchoolAdded($event)"
- *   />
- */
 @Component({
   selector: 'app-add-admin-school',
   standalone: true,
@@ -33,11 +22,11 @@ export interface AddSchoolPayload {
   styleUrl: './add-admin-school.scss',
 })
 export class AddAdminSchoolComponent {
-  @Input() isOpen = false;
-  @Output() closed = new EventEmitter<void>();
-  @Output() schoolAdded = new EventEmitter<AddSchoolPayload>();
+  @Output() closeClicked = new EventEmitter<void>();
+  @Output() schoolAdded = new EventEmitter<CreateSchoolResponse>();
 
   showPassword = false;
+  isSubmitting = false;
 
   private readonly fb = new FormBuilder();
 
@@ -50,13 +39,18 @@ export class AddAdminSchoolComponent {
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
+  constructor(
+    private readonly superAdminService: SuperAdminService,
+    private readonly toaster: ToastrService,
+  ) {}
+
   isInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
     return !!control && control.invalid && (control.dirty || control.touched);
   }
 
   onClose(): void {
-    this.closed.emit();
+    this.closeClicked.emit();
   }
 
   onSubmit(): void {
@@ -64,6 +58,20 @@ export class AddAdminSchoolComponent {
       this.form.markAllAsTouched();
       return;
     }
-    this.schoolAdded.emit(this.form.getRawValue() as AddSchoolPayload);
+
+    this.isSubmitting = true;
+    const payload = this.form.getRawValue() as AddSchoolPayload;
+
+    this.superAdminService.createSchool(payload).subscribe({
+      next: (res) => {
+        this.isSubmitting = false;
+        this.toaster.success('School added successfully!');
+        this.schoolAdded.emit(res);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+       this.toaster.error(err);
+      },
+    });
   }
 }

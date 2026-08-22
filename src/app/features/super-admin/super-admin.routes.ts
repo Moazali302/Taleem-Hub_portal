@@ -8,6 +8,6 @@ export const superAdminRoutes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: SuperAdminDashboardComponent },
   {path : 'schools', component: SchoolsListingComponent},
-  {path: 'add-school', component: AddAdminSchoolComponenta}
+  {path: 'add-school', component: AddAdminSchoolComponent}
 
 ];

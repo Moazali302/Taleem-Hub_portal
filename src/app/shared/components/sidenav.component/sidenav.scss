@@ -1,14 +1,46 @@
 :host {
-  // Children are fixed-positioned (backdrop + panel), so the host itself
-  // shouldn't introduce a box that affects the parent's layout.
+  // Children are fixed-positioned, so the host itself shouldn't introduce
+  // a box that affects the parent's layout or create its own stacking context.
   display: contents;
 }
 
-.animate-slide-in {
-  animation: slideIn 0.25s ease-out;
+.sidenav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 41, 59, 0.55);
+  z-index: 999998;
 }
 
-@keyframes slideIn {
+.sidenav-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 720px; // overridden inline via [style.max-width] when panelWidth is set
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  box-shadow: -8px 0 32px rgba(15, 23, 42, 0.18);
+  z-index: 999999;
+  animation: sidenav-slide-in 0.25s ease-out;
+}
+
+.sidenav-panel__accent {
+  flex-shrink: 0;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, #1e3a5f, #3b5f8a);
+}
+
+.sidenav-panel__content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes sidenav-slide-in {
   from {
     transform: translateX(100%);
   }

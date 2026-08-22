@@ -1,14 +1,9 @@
 @if (isOpen) {
-  <!-- Dimmed backdrop -->
-  <div class="fixed inset-0 z-40 bg-on-surface/40" (click)="onBackdropClick()"></div>
+  <div class="sidenav-backdrop" (click)="onBackdropClick()"></div>
 
-  <!-- Slide-in panel -->
-  <aside class="fixed inset-y-0 right-0 z-50 flex w-full {{ panelWidth }} flex-col bg-surface-container-lowest shadow-2xl animate-slide-in">
-    <!-- Brand accent bar — consistent across every sidenav in the app -->
-    <div class="h-1 w-full shrink-0 bg-gradient-to-r from-primary to-primary/60"></div>
-
-    <!-- Projected content (header + form + footer all supplied by the child) -->
-    <div class="flex min-h-0 flex-1 flex-col">
+  <aside class="sidenav-panel" [style.maxWidth]="panelWidth">
+    <div class="sidenav-panel__accent"></div>
+    <div class="sidenav-panel__content">
       <ng-content></ng-content>
     </div>
   </aside>

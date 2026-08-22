@@ -83,6 +83,7 @@ export const API = {
     DELETE: (id: string) => `/announcements/${id}`
   },
   SUPER_ADMIN: {
+    CREATE_SCHOOL: '/schools/create-school',
     SCHOOLS: '/super-admin/schools',
     SCHOOL: (id: string) => `/super-admin/schools/${id}`,
     BLOCK: (id: string) => `/super-admin/schools/${id}/block`,

@@ -10,6 +10,8 @@ import { StatusBadgeCellRendererComponent } from '@shared/components/data-grid/s
 import { RowActionsCellRendererComponent, RowActionsParams } from '@app/shared/components/data-grid/rowaction';
 import { School, SchoolStatus } from '../../../core/models/school.model';
 import { AddAdminSchoolComponent } from '../add-school/add-admin-school';
+import { SidenavComponent } from '@app/shared/components/sidenav.component/sidenav';
+import { CreateSchoolResponse } from '../../../core/services/super-admin.service';
 
 @Component({
   selector: 'app-school-listing',
@@ -21,6 +23,7 @@ import { AddAdminSchoolComponent } from '../add-school/add-admin-school';
     ButtonComponent,
     DataGridComponent,
     AddAdminSchoolComponent,
+    SidenavComponent,
   ],
   templateUrl: './school-listing.html',
   styleUrl: './school-listing.scss',
@@ -29,25 +32,14 @@ import { AddAdminSchoolComponent } from '../add-school/add-admin-school';
 export class SchoolsListingComponent {
   @ViewChild('dataGrid') private dataGrid?: DataGridComponent<School>;
 
-  // TODO: replace with data from a SchoolsService (API call) once backend endpoint is ready
+  // TODO: replace with data from a real "list schools" API call once backend endpoint is ready
   statCards: StatCardData[] = [
     { icon: '/svg/school.svg', label: 'Total Schools', value: 24, variant: 'purple' },
     { icon: '/svg/school.svg', label: 'Active Schools', value: 20, variant: 'success' },
     { icon: '/svg/complaint.svg', label: 'Pending Requests', value: 4, variant: 'warning' },
   ];
 
-  // Dummy data shaped exactly like the future API response — swapping this
-  // array for an HTTP call later requires no other changes on this screen.
-  schools: School[] = [
-    { id: 1, school_id: 'TH-001', school_name: 'Crescent International Academy', owner_name: 'Sarah Jenkins', email: 'sarah@crescent.edu', phone: '+923001234567', status: 'active', created_at: '2023-10-12' },
-    { id: 2, school_id: 'TH-002', school_name: 'Oakridge Public School', owner_name: 'Michael Chen', email: 'michael@oakridge.edu', phone: '+923001234568', status: 'active', created_at: '2023-10-15' },
-    { id: 3, school_id: 'TH-003', school_name: 'Pinnacle Excellence High', owner_name: 'David Osei', email: 'david@pinnacle.edu', phone: '+923001234569', status: 'pending', created_at: '2023-11-02' },
-    { id: 4, school_id: 'TH-004', school_name: 'Riverdale Elementary', owner_name: 'Emma Watson', email: 'emma@riverdale.edu', phone: '+923001234570', status: 'active', created_at: '2023-11-18' },
-    { id: 5, school_id: 'TH-005', school_name: 'Summit Preparatory', owner_name: 'James Rodriguez', email: 'james@summit.edu', phone: '+923001234571', status: 'inactive', created_at: '2023-12-05' },
-    { id: 6, school_id: 'TH-006', school_name: 'Global Vision School', owner_name: 'Aisha Patel', email: 'aisha@globalvision.edu', phone: '+923001234572', status: 'active', created_at: '2024-01-10' },
-    { id: 7, school_id: 'TH-007', school_name: 'Harmony Montessori', owner_name: 'Robert Fox', email: 'robert@harmony.edu', phone: '+923001234573', status: 'pending', created_at: '2024-01-22' },
-    { id: 8, school_id: 'TH-008', school_name: 'Beacon High Institute', owner_name: 'Linda Smith', email: 'linda@beacon.edu', phone: '+923001234574', status: 'active', created_at: '2024-02-01' },
-  ];
+  schools: School[] = [];
 
   columnDefs: ColDef<School>[] = [
     { field: 'school_name', headerName: 'School Name', flex: 2, minWidth: 220 },
@@ -57,7 +49,7 @@ export class SchoolsListingComponent {
       headerName: 'Status',
       flex: 1,
       minWidth: 120,
-      sortable: false, // categorical — use the status dropdown filter above instead
+      sortable: false,
       cellRenderer: StatusBadgeCellRendererComponent,
     },
     { field: 'owner_name', headerName: 'Owner Name', flex: 1, minWidth: 160 },
@@ -68,7 +60,7 @@ export class SchoolsListingComponent {
       width: 60,
       sortable: false,
       resizable: false,
-      pinned: 'right', // stays reachable even when the grid scrolls horizontally
+      pinned: 'right',
       cellRenderer: RowActionsCellRendererComponent,
       cellRendererParams: {
         onView: (row: School) => console.log('view', row),
@@ -80,8 +72,6 @@ export class SchoolsListingComponent {
 
   searchTerm = '';
   statusFilter: SchoolStatus | 'all' = 'all';
-
-  /** Controls the Add School slide-in panel — opened by the header button, closed from the panel itself. */
   isAddSchoolOpen = false;
 
   get filteredSchools(): School[] {
@@ -109,41 +99,34 @@ export class SchoolsListingComponent {
     this.isAddSchoolOpen = false;
   }
 
-  /**
-   * Handles a successful Add School submission from the panel.
-   *
-   * TODO: replace this local, optimistic insert with a real SchoolsService.create()
-   * call once the backend endpoint is ready — subscribe to the response and use the
-   * server-returned record (real id, generated school_id, and authoritative status)
-   * instead of the placeholder values below. New schools go through the existing
-   * approval workflow, so 'pending' is the correct default until the backend
-   * confirms — the grid's Status column always reflects whatever the API returns.
-   */
-  onSchoolAdded(payload: any): void {
+  /** Receives the server-confirmed school record after AddAdminSchoolComponent's own API call succeeds. */
+  onSchoolAdded(res: CreateSchoolResponse): void {
     const newSchool: School = {
-      id: this.nextTempId(),
-      school_id: 'PENDING', // backend generates the real business school_id on create
-      school_name: payload.school_name,
-      owner_name: payload.owner_name,
-      email: payload.email,
-      phone: payload.owner_number,
-      status: 'pending',
-      created_at: new Date().toISOString(),
+      id: res.data.school.id,
+      school_id: res.data.school.school_id,
+      school_name: res.data.school.school_name,
+      owner_name: res.data.admin.name,
+      email: res.data.admin.email,
+      phone: res.data.admin.phone,
+      status: res.data.school.status as SchoolStatus,
+      created_at: res.data.school.created_at,
     };
+
     this.schools = [newSchool, ...this.schools];
-    this.refreshStatCardsLocally();
+    this.refreshStatCardsLocally(newSchool.status);
     this.closeAddSchool();
   }
 
-  private nextTempId(): number {
-    return Math.max(0, ...this.schools.map((s) => s.id)) + 1;
-  }
-
-  /** TODO: remove once stat cards are fed by a real dashboard-stats API call. */
-  private refreshStatCardsLocally(): void {
+  private refreshStatCardsLocally(status: SchoolStatus): void {
     const total = this.statCards.find((c) => c.label === 'Total Schools');
-    const pending = this.statCards.find((c) => c.label === 'Pending Requests');
     if (total) total.value = (total.value as number) + 1;
-    if (pending) pending.value = (pending.value as number) + 1;
+
+    if (status === 'active') {
+      const active = this.statCards.find((c) => c.label === 'Active Schools');
+      if (active) active.value = (active.value as number) + 1;
+    } else if (status === 'pending') {
+      const pending = this.statCards.find((c) => c.label === 'Pending Requests');
+      if (pending) pending.value = (pending.value as number) + 1;
+    }
   }
 }
