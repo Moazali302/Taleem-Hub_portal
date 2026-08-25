@@ -30,24 +30,13 @@
       </ul>
     </div>
 
-    <div class="dashboard-card">
-      <p class="dashboard-card__header">
-        <img src="/svg/file-text.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
-        Subscription Overview
-      </p>
-      <p class="dashboard-card__caption">Renewal Date</p>
-      <p class="dashboard-card__sub-value">{{ subscription.renewalDate }}</p>
-
-      <app-progress-bar [value]="subscription.usagePercent" label="Usage" color="navy" />
-
-      <div class="dashboard-card__actions">
-        <button type="button" class="btn btn--primary">
-          <img src="/svg/setting.svg" alt="" class="btn__icon" aria-hidden="true" />
-          Manage Plans
-        </button>
-        <button type="button" class="btn btn--outline" routerLink="/subscriptions">View All</button>
-      </div>
-    </div>
+     <div class="dashboard-card dashboard-card--analytics">
+     <app-analytics-card
+         title="Analytics Overview"
+        [dataByRange]="analyticsData"
+       viewFullReportLink="/analytics"
+  />
+</div>
 
     <div class="dashboard-card">
       <p class="dashboard-card__header">Quick Actions</p>

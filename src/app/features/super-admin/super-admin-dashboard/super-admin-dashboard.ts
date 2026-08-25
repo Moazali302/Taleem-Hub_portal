@@ -4,12 +4,14 @@ import { RouterLink } from '@angular/router';
 import { StatCardComponent } from '@app/shared/components/stat-card/stat-card';
 import { ProgressBarComponent } from '@app/shared/components/progressBar/progress-bar';
 import { StatCardData } from '@app/shared/components/stat-card/stat-card-model';
+import { AnalyticsCardComponent } from '@app/shared/components/analytics-card/analytics-card';
+import { AnalyticsRange,AnalyticsSeries } from '@app/core/models/analytics.model';
 import { ApprovalItem,ExpiringSubscriptionItem,ExamItem} from '@app/core/models/dashboard.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatCardComponent, ProgressBarComponent],
+  imports: [CommonModule, RouterLink, StatCardComponent, ProgressBarComponent,AnalyticsCardComponent],
   templateUrl: './super-admin-dashboard.html',
   styleUrl: './super-admin-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,10 +35,48 @@ export class SuperAdminDashboardComponent {
     { icon: '/svg/teacher.svg', title: 'City School Teacher Batch', timeAgo: 'Yesterday' },
   ];
 
-  subscription = {
-    renewalDate: '2026-08-23',
-    usagePercent: 80,
-  };
+   analyticsData: Record<AnalyticsRange, AnalyticsSeries> = {
+  '7D': {
+    trendPercent: 4.2,
+    trendDirection: 'up',
+    trendCaption: 'this week',
+    points: [
+      { label: 'Mon', value: 420 },
+      { label: 'Tue', value: 440 },
+      { label: 'Wed', value: 435 },
+      { label: 'Thu', value: 460 },
+      { label: 'Fri', value: 455 },
+      { label: 'Sat', value: 470 },
+      { label: 'Sun', value: 480 },
+    ],
+  },
+  '30D': {
+    trendPercent: 12.7,
+    trendDirection: 'up',
+    trendCaption: 'this month',
+    points: [
+      { label: '1 Jun', value: 380 },
+      { label: '5 Jun', value: 400 },
+      { label: '10 Jun', value: 395 },
+      { label: '15 Jun', value: 430 },
+      { label: '20 Jun', value: 420 },
+      { label: '25 Jun', value: 450 },
+      { label: '30 Jun', value: 445 },
+      { label: '4 Jul', value: 470 },
+    ],
+  },
+  '90D': {
+    trendPercent: 21.3,
+    trendDirection: 'up',
+    trendCaption: 'last 90 days',
+    points: [
+      { label: 'Apr', value: 320 },
+      { label: 'May', value: 360 },
+      { label: 'Jun', value: 400 },
+      { label: 'Jul', value: 470 },
+    ],
+  },
+};
 
   feeCollection = {
     amount: 'PKR 1,240,500',

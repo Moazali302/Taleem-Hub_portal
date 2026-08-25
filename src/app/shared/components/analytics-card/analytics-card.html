@@ -1,0 +1,78 @@
+<div class="analytics-card">
+  <div class="analytics-card__header">
+    <p class="analytics-card__title">
+      <img src="/svg/chart-bar.svg" alt="" class="analytics-card__title-icon" aria-hidden="true" />
+      {{ title }}
+    </p>
+
+    <div class="analytics-card__range-toggle">
+      @for (range of ranges; track range) {
+        <button
+          type="button"
+          class="analytics-card__range-btn"
+          [class.analytics-card__range-btn--active]="range === activeRange"
+          (click)="selectRange(range)"
+        >
+          {{ range }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (activeSeries) {
+    <div class="analytics-card__trend">
+      <span
+        class="analytics-card__trend-value"
+        [class.analytics-card__trend-value--down]="activeSeries.trendDirection === 'down'"
+      >
+        {{ activeSeries.trendDirection === 'up' ? '+' : '-' }}{{ activeSeries.trendPercent }}%
+      </span>
+      <span class="analytics-card__trend-caption">{{ activeSeries.trendCaption }}</span>
+      <img
+        [src]="activeSeries.trendDirection === 'up' ? '/svg/trend-up.svg' : '/svg/trend-down.svg'"
+        alt=""
+        class="analytics-card__trend-icon"
+        aria-hidden="true"
+      />
+    </div>
+
+    <svg
+      class="analytics-card__chart"
+      viewBox="0 0 600 180"
+      preserveAspectRatio="none"
+      role="img"
+      [attr.aria-label]="title + ' trend chart'"
+    >
+      <defs>
+        <linearGradient [attr.id]="gradientId" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0f9488" stop-opacity="0.28" />
+          <stop offset="100%" stop-color="#0f9488" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+
+      <path class="analytics-card__area" [attr.d]="areaPath" [attr.fill]="'url(#' + gradientId + ')'" />
+      <path class="analytics-card__line" [attr.d]="linePath" />
+
+      @for (point of points; track $index; let isLast = $last) {
+        <circle
+          [attr.cx]="point.x"
+          [attr.cy]="point.y"
+          [attr.r]="isLast ? 5 : 3.5"
+          class="analytics-card__dot"
+          [class.analytics-card__dot--active]="isLast"
+        />
+      }
+    </svg>
+
+    <div class="analytics-card__x-axis">
+      @for (label of xLabels; track label.text) {
+        <span class="analytics-card__x-label">{{ label.text }}</span>
+      }
+    </div>
+  }
+
+  <a [routerLink]="viewFullReportLink" class="analytics-card__footer-link">
+    View Full Report
+    <img src="/svg/chevron-right.svg" alt="" aria-hidden="true" />
+  </a>
+</div>
