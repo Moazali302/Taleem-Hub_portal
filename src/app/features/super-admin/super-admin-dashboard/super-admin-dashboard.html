@@ -11,32 +11,20 @@
   </section>
 
   <section class="dashboard__row">
-    <div class="dashboard-card">
-      <p class="dashboard-card__header">
-        <img src="/svg/clipboard-list.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
-        Pending Approvals
-      </p>
-      <p class="dashboard-card__big-number">{{ pendingApprovals }}</p>
-      <p class="dashboard-card__caption">Work items assigned to me</p>
-
-      <ul class="approval-list">
-        @for (item of approvalItems; track item.title) {
-          <li class="approval-list__item">
-            <img [src]="item.icon" alt="" class="approval-list__icon" aria-hidden="true" />
-            <span class="approval-list__title">{{ item.title }}</span>
-            <span class="approval-list__time">{{ item.timeAgo }}</span>
-          </li>
-        }
-      </ul>
+    <div class="dashboard-card dashboard-card--profit">
+      <app-profit-overview-card
+        [data]="profitOverview"
+        [trendPercent]="12.7">
+      </app-profit-overview-card>
     </div>
 
-     <div class="dashboard-card dashboard-card--analytics">
-     <app-analytics-card
-         title="Analytics Overview"
+    <div class="dashboard-card dashboard-card--analytics">
+      <app-analytics-card
+        title="Analytics Overview"
         [dataByRange]="analyticsData"
-       viewFullReportLink="/analytics"
-  />
-</div>
+        viewFullReportLink="/analytics"
+      />
+    </div>
 
     <div class="dashboard-card">
       <p class="dashboard-card__header">Quick Actions</p>
