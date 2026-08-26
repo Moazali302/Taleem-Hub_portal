@@ -1,0 +1,47 @@
+<div class="profit-card">
+  <div class="profit-card__header">
+    <p class="profit-card__title">{{ data.centerLabel }} Overview</p>
+    @if (trendPercent !== null) {
+      <span class="profit-card__trend" [class.profit-card__trend--down]="trendPercent < 0">
+        {{ trendPercent >= 0 ? '↑' : '↓' }} {{ absTrend }}%
+      </span>
+    }
+  </div>
+
+  <div class="profit-card__ring-wrap">
+    <svg viewBox="0 0 180 180" class="profit-card__svg" role="img" aria-label="Profit overview breakdown">
+      <circle
+        class="profit-card__track"
+        cx="90" cy="90"
+        [attr.r]="radius"
+        [attr.stroke-width]="strokeWidth"
+      />
+      @for (seg of rings; track seg.label) {
+        <circle
+          class="profit-card__arc"
+          cx="90" cy="90"
+          [attr.r]="radius"
+          [attr.stroke-width]="strokeWidth"
+          [attr.stroke]="seg.color"
+          [attr.stroke-dasharray]="seg.dashArray"
+          [attr.stroke-dashoffset]="seg.dashOffset"
+        />
+      }
+    </svg>
+
+    <div class="profit-card__center">
+      <span class="profit-card__center-value">{{ data.centerValue }}</span>
+      <span class="profit-card__center-label">{{ data.centerLabel }}</span>
+    </div>
+  </div>
+
+  <ul class="profit-card__legend">
+    @for (seg of rings; track seg.label) {
+      <li class="profit-card__legend-item">
+        <span class="profit-card__legend-dot" [style.background]="seg.color"></span>
+        <span class="profit-card__legend-label">{{ seg.label }}</span>
+        <span class="profit-card__legend-value">{{ seg.displayValue }}</span>
+      </li>
+    }
+  </ul>
+</div>

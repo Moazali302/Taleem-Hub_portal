@@ -6,12 +6,15 @@ import { ProgressBarComponent } from '@app/shared/components/progressBar/progres
 import { StatCardData } from '@app/shared/components/stat-card/stat-card-model';
 import { AnalyticsCardComponent } from '@app/shared/components/analytics-card/analytics-card';
 import { AnalyticsRange,AnalyticsSeries } from '@app/core/models/analytics.model';
-import { ApprovalItem,ExpiringSubscriptionItem,ExamItem} from '@app/core/models/dashboard.model';
+import { ProfitOverviewCardComponent } from '@app/shared/components/profit-overview-card/profit-overview-card';
+import { ProfitOverviewData } from '@app/core/models/profit-overview.mode';
+import {ExamItem} from '@app/core/models/dashboard.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatCardComponent, ProgressBarComponent,AnalyticsCardComponent],
+  imports: [CommonModule, RouterLink, StatCardComponent, 
+    ProgressBarComponent,AnalyticsCardComponent,ProfitOverviewCardComponent],
   templateUrl: './super-admin-dashboard.html',
   styleUrl: './super-admin-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,13 +30,15 @@ export class SuperAdminDashboardComponent {
     { icon: '/svg/complaint.svg', label: 'Open Complaints', value: 18, variant: 'danger', accented: true, urgencyLabel: '5 critical' },
   ];
 
-  pendingApprovals = 156;
-
-  approvalItems: ApprovalItem[] = [
-    { icon: '/svg/school.svg', title: 'Oakridge School Request', timeAgo: '2h ago' },
-    { icon: '/svg/subscription.svg', title: 'Beaconhouse License renewal', timeAgo: '5h ago' },
-    { icon: '/svg/teacher.svg', title: 'City School Teacher Batch', timeAgo: 'Yesterday' },
-  ];
+   profitOverview: ProfitOverviewData = {
+  centerLabel: 'Profit',
+  centerValue: 'PKR 3,000',
+  income: 65000,               // total income (shown separately, e.g. in header/subtitle)
+  segments: [
+    { label: 'Profit', value: 18000, color: '#16a34a' },
+    { label: 'Expense', value: 47000, color: '#f97316' },
+  ],
+};
 
    analyticsData: Record<AnalyticsRange, AnalyticsSeries> = {
   '7D': {
