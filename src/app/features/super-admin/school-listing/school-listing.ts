@@ -55,7 +55,17 @@ export class SchoolsListingComponent implements OnInit {
       cellRenderer: StatusBadgeCellRendererComponent,
     },
     { field: 'owner_name', headerName: 'Owner Name', flex: 1, minWidth: 160 },
-    { field: 'created_at', headerName: 'Created Date', flex: 1, minWidth: 140 },
+    { field: 'created_at',
+       headerName: 'Created Date',
+        flex: 1, 
+        minWidth: 140,
+        valueFormatter: (params) =>
+       new Date(params.value).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }),
+       },
     {
       colId: 'actions',
       headerName: '',
@@ -148,15 +158,18 @@ export class SchoolsListingComponent implements OnInit {
     };
   }
 
-  private refreshStatCards(): void {
-    const total = this.statCards.find((c) => c.label === 'Total Schools');
-    const active = this.statCards.find((c) => c.label === 'Active Schools');
-    const pending = this.statCards.find((c) => c.label === 'Pending Requests');
+ private refreshStatCards(): void {
+  const total = this.schools.length;
+  const active = this.schools.filter((s) => s.status === 'active').length;
+  const pending = this.schools.filter((s) => s.status === 'pending').length;
 
-    if (total) total.value = this.schools.length;
-    if (active) active.value = this.schools.filter((s) => s.status === 'active').length;
-    if (pending) pending.value = this.schools.filter((s) => s.status === 'pending').length;
-  }
+  this.statCards = this.statCards.map((card) => {
+    if (card.label === 'Total Schools') return { ...card, value: total };
+    if (card.label === 'Active Schools') return { ...card, value: active };
+    if (card.label === 'Pending Requests') return { ...card, value: pending };
+    return card;
+  });
+}
 
   private normalizeStatus(status: string): SchoolStatus {
     if (status === 'approved') return 'active';

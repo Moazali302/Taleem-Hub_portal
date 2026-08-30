@@ -17,6 +17,7 @@ export const SIDEBAR_MENUS: Record<Role, SidebarConfig> = {
       { label: 'Announcements', icon: '/svg/announcement.svg', route: 'announcements' },
       { label: 'Complaints', icon: '/svg/complaint.svg', route: 'complaints' },
       { label: 'Analytics', icon: '/svg/analytics.svg', route: 'analytics' },
+      {label : 'RequestDemo', icon : 'svg/demo.svg',route:'request-demo'},
       { label: 'Setting', icon: '/svg/setting.svg', route: 'settings' },
     ],
     footerAction:{ label: 'Add New School', icon: '/svg/add.svg', route: 'schools/new' },
