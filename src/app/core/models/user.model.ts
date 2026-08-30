@@ -3,7 +3,7 @@ export interface User {
   name: string;
   email: string;
   role: string;
-  avatarUrl?: string;
+  avatarUrl?: '';
   initials: string;
 }
 export interface LanguageOption {

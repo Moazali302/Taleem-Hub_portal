@@ -43,6 +43,8 @@ export interface SchoolListItem {
   owner_name?: string;
   owner_email?: string;
   owner_phone?: string;
+  package?: 'basic' | 'advanced' | 'premium' | null;
+  subscription_status?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -54,6 +56,6 @@ export class SuperAdminService {
   }
 
   getAllSchools(): Observable<ApiResponse<SchoolListItem[]>> {
-    return this.api.get<SchoolListItem[]>(API.SUPER_ADMIN.LIST_SCHOOLS);
+    return this.api.get<SchoolListItem[]>(API.SUPER_ADMIN.SCHOOLS);
   }
 }

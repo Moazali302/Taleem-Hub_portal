@@ -21,7 +21,7 @@ export class AdminLayoutComponent {
     name: 'Muaz Ali',
     email: 'muaz.ali@example.com',
     role: 'Admin',
-    avatarUrl: '/svg/user-round.svg',
+    avatarUrl: '',
     initials: 'MA',
   };
 

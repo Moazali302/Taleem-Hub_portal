@@ -1,36 +1,38 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import {User, LanguageOption } from '../core/models/user.model';
+import { User, LanguageOption } from '../core/models/user.model';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  /** Currently logged-in user, passed from the layout/auth state */
   @Input({ required: true }) currentUser!: User;
-
-  /** Available languages for the language switcher */
   @Input() languages: LanguageOption[] = [{ code: 'en', label: 'English' }];
-
-  /** Currently active language code */
   @Input() activeLanguage = 'en';
+  @Input() searchPlaceholder = 'Search...';
 
-  /** Placeholder text for the search input */
-  @Input() searchPlaceholder = 'Search';
+  /** Set to true on pages that need the search input; hidden by default to match this layout */
+  @Input() showSearch = false;
 
-  /** Emits the search term as the user types (debouncing handled by consumer if needed) */
   @Output() searchChange = new EventEmitter<string>();
-
-  /** Emits the selected language code when changed */
   @Output() languageChange = new EventEmitter<string>();
 
   isLanguageMenuOpen = false;
+
+  constructor(private elementRef: ElementRef<HTMLElement>) {}
 
   onSearchInput(value: string): void {
     this.searchChange.emit(value);
@@ -41,7 +43,6 @@ export class HeaderComponent {
   }
 
   selectLanguage(language: LanguageOption): void {
-    this.activeLanguage = language.code;
     this.isLanguageMenuOpen = false;
     this.languageChange.emit(language.code);
   }
@@ -49,4 +50,11 @@ export class HeaderComponent {
   get activeLanguageLabel(): string {
     return this.languages.find((lang) => lang.code === this.activeLanguage)?.label ?? '';
   }
+
+  // @HostListener('document:click', ['$event.target'])
+  // onDocumentClick(target: HTMLElement): void {
+  //   if (this.isLanguageMenuOpen && !this.elementRef.nativeElement.contains(target)) {
+  //     this.isLanguageMenuOpen = false;
+  //   }
+  // }
 }

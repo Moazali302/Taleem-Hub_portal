@@ -144,6 +144,7 @@ export class SchoolsListingComponent implements OnInit {
       phone: item.owner_phone ?? '',
       status: this.normalizeStatus(item.status),
       created_at: item.created_at,
+      // package: item.package ?? null,
     };
   }
 
