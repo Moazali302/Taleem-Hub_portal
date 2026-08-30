@@ -54,49 +54,23 @@
     margin: 0 0 16px;
   }
 
+  &__header-icon {
+    width: 18px;
+    height: 18px;
+  }
+
   &__header-value {
     margin-left: auto;
     font-size: 20px;
     font-weight: 700;
   }
 
-  &__big-number {
-    font-size: 36px;
-    font-weight: 700;
-    color: #111827;
-    margin-top: 10px;
-  }
-
-  &__caption { font-size: 13px; color: #6b7280; margin-top: 20px; }
-
-  &__sub-value {
-    font-size: 20px;
-    font-weight: 700;
-    color: #111827;
-    margin: 4px 0 16px;
-  }
-
-  &__actions, &__chips {
+  &__chips {
     display: flex;
     gap: 12px;
     margin-top: auto;
     padding-top: 16px;
   }
-}
-
-.btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid transparent;
-
-  &--primary { background: #0f2a5e; color: #ffffff; }
-  &--outline { background: #ffffff; border-color: #d1d5db; color: #111827; }
 }
 
 .quick-action {
@@ -111,57 +85,23 @@
   font-size: 14px;
   color: #111827;
   cursor: pointer;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
 
   &:last-child { margin-bottom: 0; }
-  &__arrow { margin-left: auto; color: #9ca3af; }
-}
 
-.approval-list {
-  list-style: none;
-  margin: 16px 0 0;
-  padding: 12px 0 0;
-  border-top: 1px solid #e5e7eb;
+  &__icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
 
-  &__item { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
-  &__icon { width: 20px; height: 20px; flex-shrink: 0; }
-  &__title { font-size: 14px; color: #111827; flex: 1; }
-  &__time { font-size: 12px; color: #9ca3af; white-space: nowrap; }
-}
-
-.exam-list {
-  list-style: none;
-  margin: 0 0 16px;
-  padding: 0;
-
-  &__item { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px; }
-  &__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  &__title { font-weight: 500; color: #111827; }
-  &__date { color: #6b7280; }
-}
-
-.dashboard-card__header-icon {
-  width: 18px;
-  height: 18px;
-}
-
-.quick-action__icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-.quick-action__arrow {
-  width: 16px;
-  height: 16px;
-  margin-left: auto;
-  flex-shrink: 0;
-  opacity: 0.5;
-}
-
-.btn__icon {
-  width: 16px;
-  height: 16px;
+  &__arrow {
+    width: 16px;
+    height: 16px;
+    margin-left: auto;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
 }
 
 .chip {
@@ -183,4 +123,113 @@
 
 .dashboard-card--profit {
   align-items: center;
+}
+
+.dashboard-card--activity {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fee-rate {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  &__icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #fef3e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+
+  &__trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 600;
+    color: #15803d;
+    white-space: nowrap;
+
+    &--down { color: #dc2626; }
+
+    img { width: 13px; height: 13px; }
+  }
+
+  &__value {
+    font-size: 40px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  &__caption {
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 12px 0 0;
+  }
+  &__breakdown {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+    margin: 20px 0 24px;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 10px;
+  }
+
+  &__breakdown-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  &__breakdown-divider {
+    width: 1px;
+    background: #e5e7eb;
+  }
+
+  &__breakdown-label {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 500;
+  }
+
+  &__breakdown-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+
+    &--success { color: #15803d; }
+    &--warning { color: #b45309; }
+    &--danger  { color: #dc2626; }
+  }
 }

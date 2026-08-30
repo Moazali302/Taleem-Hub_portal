@@ -23,3 +23,12 @@ export interface AnnouncementItem {
   title: string;
   subtitle: string;
 }
+export interface FeeCollectionSummary {
+  ratePercent: number;
+  trendPercent: number;
+  trendDirection: 'up' | 'down';
+  collectedAmount: string;
+  billedAmount: string;
+  pendingAmount: string;
+  overdueCount: number;
+}

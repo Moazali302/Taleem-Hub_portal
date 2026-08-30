@@ -33,56 +33,79 @@
         <span>Add School</span>
         <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
       </button>
-      <button type="button" class="quick-action" routerLink="/students/new">
+      <button type="button" class="quick-action" routerLink="/expense">
         <img src="/svg/user-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
         <span>Add Expense</span>
         <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
       </button>
-      <button type="button" class="quick-action" routerLink="/teachers/new">
+      <button type="button" class="quick-action" routerLink="/complaint">
         <img src="/svg/complaint.svg" alt="" class="quick-action__icon" aria-hidden="true" />
-        <span>view Complaint </span>
+        <span>View Complaint </span>
+        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
+      </button>
+       <button type="button" class="quick-action" routerLink="/users/new">
+        <img src="/svg/user-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
+        <span>Add Users</span>
         <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
       </button>
     </div>
   </section>
 
   <section class="dashboard__row dashboard__row--two">
-    <div class="dashboard-card">
-      <p class="dashboard-card__header">
-        <img src="/svg/cash.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
-        Fee Collections
-        <span class="dashboard-card__header-value">{{ feeCollection.amount }}</span>
-      </p>
+     <div class="dashboard-card">
+  <div class="fee-rate">
+    <div class="fee-rate__header">
+      <span class="fee-rate__icon-wrap">
+        <img src="/svg/cash.svg" alt="" class="fee-rate__icon" aria-hidden="true" />
+      </span>
+      <p class="fee-rate__title">Fee Collection Rate</p>
 
-      <app-progress-bar [value]="feeCollection.collectedPercent" color="green" [showPercentage]="false" />
+      <span
+        class="fee-rate__trend"
+        [class.fee-rate__trend--down]="feeCollection.trendDirection === 'down'"
+      >
+        <img
+          [src]="feeCollection.trendDirection === 'up' ? '/svg/trend-up.svg' : '/svg/trend-down.svg'"
+          alt=""
+          aria-hidden="true"
+        />
+        {{ feeCollection.trendDirection === 'up' ? '+' : '-' }}{{ feeCollection.trendPercent }}% vs last month
+      </span>
+    </div>
 
-      <div class="dashboard-card__chips">
-        <a routerLink="/fees" class="chip chip--neutral">View Details</a>
-        <a routerLink="/fees/defaulters" class="chip chip--danger">Defaulters List</a>
+    <p class="fee-rate__value">{{ feeCollection.ratePercent }}%</p>
+
+    <app-progress-bar [value]="feeCollection.ratePercent" color="green" [showPercentage]="false" />
+
+    <p class="fee-rate__caption">
+      {{ feeCollection.collectedAmount }} collected of {{ feeCollection.billedAmount }} billed this month
+    </p>
+
+    <div class="fee-rate__breakdown">
+      <div class="fee-rate__breakdown-item">
+        <span class="fee-rate__breakdown-label">Collected</span>
+        <span class="fee-rate__breakdown-value fee-rate__breakdown-value--success">{{ feeCollection.collectedAmount }}</span>
+      </div>
+      <div class="fee-rate__breakdown-divider"></div>
+      <div class="fee-rate__breakdown-item">
+        <span class="fee-rate__breakdown-label">Pending</span>
+        <span class="fee-rate__breakdown-value fee-rate__breakdown-value--warning">{{ feeCollection.pendingAmount }}</span>
+      </div>
+      <div class="fee-rate__breakdown-divider"></div>
+      <div class="fee-rate__breakdown-item">
+        <span class="fee-rate__breakdown-label">Overdue Accounts</span>
+        <span class="fee-rate__breakdown-value fee-rate__breakdown-value--danger">{{ feeCollection.overdueCount }}</span>
       </div>
     </div>
 
-    <div class="dashboard-card">
-      <p class="dashboard-card__header">
-        <img src="/svg/calendar.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
-        Exam Schedule
-        <span class="dashboard-card__header-value">{{ upcomingExamsCount }} Upcoming</span>
-      </p>
-
-      <ul class="exam-list">
-        @for (exam of examItems; track exam.title) {
-          <li class="exam-list__item">
-            <span class="exam-list__dot" [style.background]="exam.dotColor"></span>
-            <span class="exam-list__title">{{ exam.title }}</span>
-            <span class="exam-list__date">({{ exam.date }})</span>
-          </li>
-        }
-      </ul>
-
-      <div class="dashboard-card__chips">
-        <button type="button" class="chip chip--neutral" routerLink="/exams/new">Add Exam</button>
-        <button type="button" class="chip chip--neutral" routerLink="/exams">View All</button>
-      </div>
+    <div class="dashboard-card__chips">
+      <a routerLink="/fees" class="chip chip--neutral">View Details</a>
+      <a routerLink="/fees/defaulters" class="chip chip--danger">Defaulters List</a>
     </div>
+  </div>
+</div>
+    <div class="dashboard-card dashboard-card--activity">
+  <app-activity-feed [items]="recentActivities" viewAllLink="/activity" maxHeight="240px" />
+</div>
   </section>
 </main>

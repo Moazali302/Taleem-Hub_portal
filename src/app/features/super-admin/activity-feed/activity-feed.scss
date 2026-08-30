@@ -1,0 +1,110 @@
+.activity-feed {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+
+  &__title-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  &__view-all {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f2a5e;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0 4px 0 0;
+    overflow-y: auto;
+
+    // subtle scrollbar so it doesn't look like a raw browser default
+    &::-webkit-scrollbar { width: 5px; }
+    &::-webkit-scrollbar-thumb {
+      background: #e5e7eb;
+      border-radius: 999px;
+    }
+    &::-webkit-scrollbar-track { background: transparent; }
+  }
+
+  &__item {
+    position: relative;
+    display: flex;
+    gap: 12px;
+    padding-bottom: 20px;
+
+    // vertical connecting line between icon badges
+    &::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 32px;
+      bottom: 0;
+      width: 1px;
+      background: #e5e7eb;
+    }
+
+    &--last {
+      padding-bottom: 0;
+      &::before { display: none; }
+    }
+  }
+
+  &__icon-wrap {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+    padding-top: 2px;
+  }
+
+  &__description {
+    font-size: 14px;
+    font-weight: 500;
+    color: #111827;
+    margin: 0 0 3px;
+    line-height: 1.4;
+  }
+
+  &__timestamp {
+    font-size: 12.5px;
+    color: #9ca3af;
+    margin: 0;
+  }
+}

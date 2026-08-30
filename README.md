@@ -123,22 +123,6 @@ npm run start:dev
 - ✅ Subscription & Payments (JazzCash, EasyPaisa, Stripe)
 - ✅ Super Admin Panel
 
----
-
-## 🗺️ Roadmap
-
-| Phase | Description | Duration |
-|-------|-------------|----------|
-| Phase 1 | Foundation & Multi-Tenant Setup | 4 Weeks |
-| Phase 2 | Student & Class Management | 3 Weeks |
-| Phase 3 | Attendance Module | 2 Weeks |
-| Phase 4 | Fee System | 3 Weeks |
-| Phase 5 | Exam & Results | 3 Weeks |
-| Phase 6 | Complaints & Leave | 2 Weeks |
-| Phase 7 | Announcements | 1 Week |
-| Phase 8 | Payment Module | 3 Weeks |
-| Phase 9 | Super Admin Panel | 2 Weeks |
-| Phase 10 | Testing & Launch | 3 Weeks |
 
 ---
 

@@ -5,16 +5,19 @@ import { StatCardComponent } from '@app/shared/components/stat-card/stat-card';
 import { ProgressBarComponent } from '@app/shared/components/progressBar/progress-bar';
 import { StatCardData } from '@app/shared/components/stat-card/stat-card-model';
 import { AnalyticsCardComponent } from '@app/shared/components/analytics-card/analytics-card';
+import { ActivityFeedComponent } from '../activity-feed/activity-feed';
+import { ActivityItem } from '@app/core/models/activity.model';
 import { AnalyticsRange,AnalyticsSeries } from '@app/core/models/analytics.model';
 import { ProfitOverviewCardComponent } from '@app/shared/components/profit-overview-card/profit-overview-card';
 import { ProfitOverviewData } from '@app/core/models/profit-overview.mode';
-import {ExamItem} from '@app/core/models/dashboard.model';
+import { FeeCollectionSummary } from '@app/core/models/dashboard.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, RouterLink, StatCardComponent, 
-    ProgressBarComponent,AnalyticsCardComponent,ProfitOverviewCardComponent],
+    ProgressBarComponent,AnalyticsCardComponent,ProfitOverviewCardComponent,
+     ActivityFeedComponent],
   templateUrl: './super-admin-dashboard.html',
   styleUrl: './super-admin-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -82,18 +85,41 @@ export class SuperAdminDashboardComponent {
     ],
   },
 };
+  feeCollection: FeeCollectionSummary = {
+  ratePercent: 82,
+  trendPercent: 2.4,
+  trendDirection: 'up',
+  collectedAmount: 'PKR 42.3M',
+  billedAmount: 'PKR 51.6M',
+  pendingAmount: 'PKR 9.3M',
+  overdueCount: 14,
+};
 
-  feeCollection = {
-    amount: 'PKR 1,240,500',
-    collectedPercent: 72,
-  };
-
-  upcomingExamsCount = 8;
-
-  examItems: ExamItem[] = [
-    { title: 'Mid-term Exams', date: 'Oct 12', dotColor: '#f97316' },
-    { title: 'Final Year Project', date: 'Oct 20', dotColor: '#0f2a5e' },
-  ];
+  recentActivities: ActivityItem[] = [
+  { type: 'school_added', description: 'Oakridge School was added to the platform', timestamp: '2026-08-29T13:00:00' },
+  { type: 'status_changed', description: 'Beaconhouse status changed to Active', timestamp: '2026-08-29T10:00:00' },
+  { type: 'subscription_upgraded', description: 'City School upgraded to Premium plan', timestamp: '2026-08-28T09:00:00' },
+  { type: 'complaint_raised', description: 'New complaint raised by Riverdale Elementary', timestamp: '2026-08-28T06:30:00' },
+  { type: 'user_added', description: 'New Support Agent "Ali Raza" added to the team', timestamp: '2026-08-27T15:20:00' },
+  { type: 'school_added', description: 'Summit Preparatory was added to the platform', timestamp: '2026-08-27T11:10:00' },
+  { type: 'status_changed', description: 'Global Vision School status changed to Inactive', timestamp: '2026-08-26T17:45:00' },
+  { type: 'subscription_upgraded', description: 'Harmony Montessori upgraded to Pro plan', timestamp: '2026-08-26T08:00:00' },
+  { type: 'complaint_raised', description: 'Complaint resolved for Beacon High Institute', timestamp: '2026-08-25T14:35:00' },
+  { type: 'user_added', description: 'New Sales Manager "Hina Fatima" added to the team', timestamp: '2026-08-25T09:50:00' },
+  { type: 'school_added', description: 'Crescent International Academy was added to the platform', timestamp: '2026-08-24T12:15:00' },
+  { type: 'status_changed', description: 'Pinnacle Excellence High status changed to Active', timestamp: '2026-08-24T07:40:00' },
+  { type: 'subscription_upgraded', description: 'Riverdale Elementary upgraded to Premium plan', timestamp: '2026-08-23T16:00:00' },
+  { type: 'complaint_raised', description: 'New complaint raised by Oakridge School', timestamp: '2026-08-23T10:20:00' },
+  { type: 'user_added', description: 'New Support Agent "Bilal Khan" added to the team', timestamp: '2026-08-22T13:30:00' },
+  { type: 'school_added', description: 'Beacon High Institute was added to the platform', timestamp: '2026-08-22T09:05:00' },
+  { type: 'status_changed', description: 'City School status changed to Active', timestamp: '2026-08-21T18:15:00' },
+  { type: 'subscription_upgraded', description: 'Summit Preparatory upgraded to Pro plan', timestamp: '2026-08-21T11:00:00' },
+  { type: 'complaint_raised', description: 'Complaint resolved for Global Vision School', timestamp: '2026-08-20T15:50:00' },
+  { type: 'user_added', description: 'New Sales Manager "Usman Tariq" added to the team', timestamp: '2026-08-20T08:25:00' },
+  { type: 'school_added', description: 'Harmony Montessori was added to the platform', timestamp: '2026-08-19T14:00:00' },
+  { type: 'status_changed', description: 'Crescent International Academy status changed to Inactive', timestamp: '2026-08-19T10:10:00' },
+  { type: 'subscription_upgraded', description: 'Pinnacle Excellence High upgraded to Premium plan', timestamp: '2026-08-18T16:40:00' },
+];
 
   onSearch(term: string): void {
     // TODO: wire up to search service

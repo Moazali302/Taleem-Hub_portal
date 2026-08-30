@@ -1,0 +1,24 @@
+<div class="activity-feed">
+  <div class="activity-feed__header">
+    <p class="activity-feed__title">
+      <img src="/svg/clock.svg" alt="" class="activity-feed__title-icon" aria-hidden="true" />
+      Recent Activity
+    </p>
+    <a [routerLink]="viewAllLink" class="activity-feed__view-all">View All</a>
+  </div>
+
+  <ul class="activity-feed__list" [style.max-height]="maxHeight">
+    @for (item of items; track $index; let isLast = $last) {
+      <li class="activity-feed__item" [class.activity-feed__item--last]="isLast">
+        <span class="activity-feed__icon-wrap" [style.background]="getStyle(item.type).bg">
+          <img [src]="getStyle(item.type).icon" alt="" class="activity-feed__icon" aria-hidden="true" />
+        </span>
+
+        <div class="activity-feed__content">
+          <p class="activity-feed__description">{{ item.description }}</p>
+          <p class="activity-feed__timestamp">{{ item.timestamp | timeAgo }}</p>
+        </div>
+      </li>
+    }
+  </ul>
+</div>
