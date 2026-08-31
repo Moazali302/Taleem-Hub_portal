@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { SuperAdminService, CreateSchoolData } from '../../../core/services/super-admin.service';
 import { ApiResponse } from '@app/core/models/api-response.model';
+import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 export interface AddSchoolPayload {
   school_name: string;
   school_address: string;
@@ -55,24 +56,24 @@ export class AddAdminSchoolComponent {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    this.isSubmitting = true;
-    const payload = this.form.getRawValue() as AddSchoolPayload;
-
-    this.superAdminService.createSchool(payload).subscribe({
-      next: (res) => {
-        this.isSubmitting = false;
-        this.toaster.success('School added successfully!');
-        this.schoolAdded.emit(res);
-      },
-      error: (err) => {
-        this.isSubmitting = false;
-        // this.toaster.error(err);
-      },
-    });
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
+
+  this.isSubmitting = true;
+  const payload = this.form.getRawValue() as AddSchoolPayload;
+
+  this.superAdminService.createSchool(payload).subscribe({
+    next: (res) => {
+      this.isSubmitting = false;
+      this.toaster.success('School added successfully!');
+      this.schoolAdded.emit(res);
+    },
+   error: (err) => {
+      this.isSubmitting = false;
+      this.toaster.error(getHttpErrorMessage(err));
+    },
+  });
+}
 }
