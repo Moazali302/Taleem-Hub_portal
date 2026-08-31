@@ -14,7 +14,6 @@ import { SidenavComponent } from '@app/shared/components/sidenav.component/siden
 import { SuperAdminService, SchoolListItem, CreateSchoolData } from '../../../core/services/super-admin.service';
 import { ToastService } from '@app/core/services/toast.service';
 import { ApiResponse } from '@app/core/models/api-response.model';
-
 @Component({
   selector: 'app-school-listing',
   standalone: true,

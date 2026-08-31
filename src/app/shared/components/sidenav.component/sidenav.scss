@@ -11,6 +11,14 @@
   z-index: 999998;
 }
 
+.sidenav-backdrop-enter {
+  animation: sidenav-backdrop-fade-in 0.6s ease-out;
+}
+
+.sidenav-backdrop-leave{
+  animation: sidenav-backdrop-fade-out 0.34s ease-in;
+}
+
 .sidenav-panel {
   position: fixed;
   top: 0;
@@ -23,7 +31,14 @@
   background: #ffffff;
   box-shadow: -8px 0 32px rgba(15, 23, 42, 0.18);
   z-index: 999999;
-  animation: sidenav-slide-in 0.25s ease-out;
+}
+
+.sidenav-panel-enter {
+  animation: sidenav-panel-slide-in 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidenav-panel-leave {
+  animation: sidenav-panel-slide-out 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidenav-panel__accent {
@@ -36,15 +51,27 @@
 .sidenav-panel__content {
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
-@keyframes sidenav-slide-in {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
+@keyframes sidenav-panel-slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes sidenav-panel-slide-out {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes sidenav-backdrop-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sidenav-backdrop-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }

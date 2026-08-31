@@ -1,7 +1,17 @@
 @if (isOpen) {
-  <div class="sidenav-backdrop" (click)="onBackdropClick()"></div>
+  <div
+    class="sidenav-backdrop"
+    animate.enter="sidenav-backdrop-enter"
+    animate.leave="sidenav-backdrop-leave"
+    (click)="onBackdropClick()"
+  ></div>
 
-  <aside class="sidenav-panel" [style.maxWidth]="panelWidth">
+  <aside
+    class="sidenav-panel"
+    [style.maxWidth]="panelWidth"
+    animate.enter="sidenav-panel-enter"
+    animate.leave="sidenav-panel-leave"
+  >
     <div class="sidenav-panel__accent"></div>
     <div class="sidenav-panel__content">
       <ng-content></ng-content>

@@ -5,7 +5,6 @@ import { ToastrService } from 'ngx-toastr';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { SuperAdminService, CreateSchoolData } from '../../../core/services/super-admin.service';
 import { ApiResponse } from '@app/core/models/api-response.model';
-
 export interface AddSchoolPayload {
   school_name: string;
   school_address: string;
@@ -72,7 +71,7 @@ export class AddAdminSchoolComponent {
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.toaster.error();
+        // this.toaster.error(err);
       },
     });
   }
