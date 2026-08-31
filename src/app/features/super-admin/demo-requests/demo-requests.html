@@ -1,0 +1,23 @@
+<main class="demo-requests">
+  <header class="demo-requests__header">
+    <div>
+      <h1 class="demo-requests__title">Demo Requests</h1>
+      <p class="demo-requests__subtitle">Leads captured from the website's "Request a demo" form.</p>
+    </div>
+  </header>
+
+  <section class="demo-requests__stats">
+    @for (card of statCards; track card.label) {
+      <app-stat-card [data]="card" />
+    }
+  </section>
+
+  <section class="demo-requests__grid-card">
+    <app-ag-grid-table
+      [rowData]="requests"
+      [columnDefs]="columnDefs"
+      [dashboard]="false"
+      tabId="demo-requests"
+    />
+  </section>
+</main>

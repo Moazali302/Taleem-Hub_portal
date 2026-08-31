@@ -90,6 +90,8 @@ export const API = {
     BLOCK: (id: string) => `/super-admin/schools/${id}/block`,
     UNBLOCK: (id: string) => `/super-admin/schools/${id}/unblock`,
     REVENUE: '/super-admin/revenue',
-    AUDIT_LOGS: '/super-admin/audit-logs'
+    AUDIT_LOGS: '/super-admin/audit-logs',
+    DEMO_REQUESTS: '/super-admin/demo-request',
+    DEMO_REQUEST_STATUS:(id:string)=>'/super-admin/demo-request/${id}'
   }
 };

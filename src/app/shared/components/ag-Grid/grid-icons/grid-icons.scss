@@ -1,0 +1,75 @@
+:host {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.grid-action-icon {
+  border-radius: 0.5rem;
+  background-color: transparent;
+  padding: 0.25rem;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #1f2430; // was $midnight-moss in the reference — not defined in this
+                  // project's variables file, so using the equivalent hex directly
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+}
+
+.grid-icons {
+  position: relative;
+}
+
+.counter {
+  border-radius: 50%;
+  background-color: #00174f;
+  color: white;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: #f3f4f6;
+  }
+}
+
+.tag-container {
+  display: flex;
+  align-items: center;
+  text-decoration: underline;
+  color: #0f6e56;
+  font-size: 12px;
+
+  &.clickable {
+    cursor: pointer;
+  }
+}
+
+.action-parent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.tag-count {
+  font-weight: 600;
+}

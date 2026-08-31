@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { API } from '../constants/api.constants';
 import { ApiResponse } from '../models/api-response.model';
+import { DemoRequest,DemoRequestStatus } from '../models/demo-request.model';
 
 export interface CreateSchoolPayload {
   school_name: string;
@@ -57,5 +58,24 @@ export class SuperAdminService {
 
   getAllSchools(): Observable<ApiResponse<SchoolListItem[]>> {
     return this.api.get<SchoolListItem[]>(API.SUPER_ADMIN.SCHOOLS);
+  }
+
+  blockSchool(id: number): Observable<ApiResponse<unknown>> {
+    return this.api.patch<unknown>(API.SUPER_ADMIN.BLOCK(String(id)));
+  }
+
+  unblockSchool(id: number): Observable<ApiResponse<unknown>> {
+    return this.api.patch<unknown>(API.SUPER_ADMIN.UNBLOCK(String(id)));
+  }
+
+  getDemoRequests(): Observable<ApiResponse<DemoRequest[]>> {
+    return this.api.get<DemoRequest[]>(API.SUPER_ADMIN.DEMO_REQUESTS);
+  }
+
+  updateDemoRequestStatus(
+    id: number,
+    status: DemoRequestStatus,
+  ): Observable<ApiResponse<DemoRequest>> {
+    return this.api.patch<DemoRequest>(API.SUPER_ADMIN.DEMO_REQUEST_STATUS(id.toString()), { status });
   }
 }

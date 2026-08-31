@@ -1,0 +1,18 @@
+<div class="ag-theme-alpine" [ngClass]="{'dashboard-grid': dashboard}">
+  <ag-grid-angular
+    style="width: 100%;"
+    [rowData]="rowData"
+    [columnDefs]="columnDefs"
+    [defaultColDef]="defaultColDef"
+    [rowSelection]="rowSelection"
+    [gridOptions]="gridOptions"
+    (gridReady)="onGridReady($event)"
+    [pagination]="true"
+    [paginationPageSize]="10"
+    [paginationPageSizeSelector]="[10, 20, 50, 100]"
+    [domLayout]="'autoHeight'"
+    [suppressHorizontalScroll]="false"
+    (rowClicked)="onRowClicked($event)"
+    (selectionChanged)="onSelectionChanged($event)"
+  ></ag-grid-angular>
+</div>
