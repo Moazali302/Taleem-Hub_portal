@@ -1,216 +1,284 @@
-<main class="login-root">
-  <section class="branding-panel">
-    <div class="branding-logo">Taleem_Hub</div>
+<main class="flex min-h-screen bg-page font-body">
+  <!-- Branding panel (desktop) -->
+  <aside
+    class="relative hidden w-[44%] flex-col overflow-hidden bg-linear-to-b from-primary-light to-primary px-12 py-10 lg:flex"
+  >
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.07)_1px,transparent_1px)] [background-size:28px_28px]"
+    ></div>
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -right-32 -top-40 size-[420px] rounded-full border border-white/5 bg-white/[0.02]"
+    ></div>
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -bottom-24 -left-24 size-72 rounded-full border border-white/5"
+    ></div>
 
-    <div class="branding-content">
-      <h1 class="branding-headline">
-        The Gateway to <span class="gold-text">Institutional Excellence.</span>
-      </h1>
-      <p class="branding-subtext">
-        Access your secure portal to manage academic data and administrative operations with
-        precision and authority.
-      </p>
-    </div>
-
-    <div class="branding-footer-tags">
-      <span>Precision</span>
-      <span class="dot">•</span>
-      <span>Security</span>
-      <span class="dot">•</span>
-      <span>Legacy</span>
-    </div>
-
-    <div class="branding-watermark" aria-hidden="true">
-      <span class="material-symbols-outlined">account_balance</span>
-    </div>
-  </section>
-
-  <section class="form-panel">
-    <div class="blob blob-top-right" aria-hidden="true"></div>
-    <div class="blob blob-bottom-left" aria-hidden="true"></div>
-
-    <div class="form-card">
-      <div class="mobile-branding" aria-hidden="true">
-        <div class="mobile-branding-title">Taleem_Hub</div>
-        <div class="mobile-branding-bar"></div>
+    <div class="relative z-10 flex items-center gap-2.5">
+      <img src="assets/images/logo-mark.svg" alt="" class="h-8 w-auto" />
+      <div class="leading-none">
+        <p class="font-display text-xl font-extrabold tracking-tight text-white">
+          Taleem<span class="text-accent">Hub</span>
+        </p>
+        <p class="mt-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/50">
+          Institutional Platform
+        </p>
       </div>
+    </div>
 
-      <header class="form-header">
-        <h2 class="form-title">Institutional Login</h2>
-        <div class="title-bar"></div>
-        <p class="form-subtitle">Enter your official credentials to access the portal.</p>
+    <div class="relative z-10 my-auto max-w-md pb-10 pt-8">
+      <div class="mb-5 h-[3px] w-10 rounded-full bg-accent"></div>
+      <h1 class="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-white">
+        Empowering
+        <span class="block text-accent">Smarter Schools.</span>
+      </h1>
+      <p class="mt-5 max-w-sm text-[15px] leading-relaxed text-white/70">
+        Manage your institution, academics, staff, students, and operations — all from one secure
+        and unified platform.
+      </p>
+
+      <ul class="mt-8 space-y-3">
+        @for (feature of features; track feature.label) {
+          <li class="flex items-center gap-3">
+            <span
+              class="grid size-8 place-items-center rounded-lg border border-white/10 bg-white/10 text-sm"
+              aria-hidden="true"
+              >{{ feature.icon }}</span
+            >
+            <span class="text-sm font-medium text-white/80">{{ feature.label }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Form panel -->
+  <section class="flex flex-1 flex-col items-center justify-center px-5 py-8 sm:px-8">
+    <!-- Mobile branding -->
+    <div class="mb-6 flex flex-col items-center text-center lg:hidden">
+      <div class="flex items-center gap-2.5">
+        <img src="assets/images/logo-mark.svg" alt="" class="h-10 w-auto" />
+        <div class="text-left leading-none">
+          <p class="font-display text-2xl font-extrabold tracking-tight text-primary">
+            Taleem<span class="text-accent">Hub</span>
+          </p>
+          <p class="mt-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted">
+            Institutional Platform
+          </p>
+        </div>
+      </div>
+      <p class="mt-4 text-[13px] font-medium text-muted">Institutional Management Platform</p>
+    </div>
+
+    <div
+      class="w-full max-w-[440px] rounded-2xl bg-white p-7 shadow-[0_10px_40px_-12px_rgba(13,31,69,0.15)] ring-1 ring-primary/5 sm:p-10"
+    >
+      <header>
+        <h2 class="font-display text-[26px] font-extrabold tracking-tight text-primary">
+          Welcome Back
+        </h2>
+        <p class="mt-1.5 text-sm text-muted">Sign in to access your institutional portal.</p>
       </header>
 
-
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate autocomplete="off">
-        
-        <div class="field-group">
-          <label class="field-label" for="school-id">
-            School ID
-            <span class="field-tag">REQUIRED</span>
-          </label>
-          <div class="input-wrapper">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate autocomplete="off" class="mt-7 space-y-5">
+        <!-- School ID -->
+        <div>
+          <label class="auth-label" for="school-id">School ID</label>
+          <div class="group relative">
+            <svg
+              class="pointer-events-none absolute left-3.5 top-1/2 size-[18px] -translate-y-1/2 text-subtle transition-colors group-focus-within:text-primary-light"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+            >
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <path d="M9 22V12h6v10" />
+            </svg>
             <input
               id="school-id"
               type="text"
-              class="field-input"
-              [class.field-input--error]="isFieldInvalid('schoolId')"
+              class="auth-input pl-10"
               formControlName="schoolId"
-              placeholder="TH-PK-001"
+              placeholder="Enter your school ID"
               autocomplete="off"
+              [attr.aria-invalid]="isFieldInvalid('schoolId')"
               aria-describedby="schoolId-error"
             />
           </div>
-          <span
-            id="schoolId-error"
-            class="field-error"
-            role="alert"
-            *ngIf="isFieldInvalid('schoolId')"
-          >
-            <ng-container *ngIf="loginForm.get('schoolId')?.errors?.['required']">
-              School ID is required.
-            </ng-container>
-            <ng-container *ngIf="loginForm.get('schoolId')?.errors?.['maxlength']">
-              School ID cannot exceed 255 characters.
-            </ng-container>
-          </span>
+          @if (isFieldInvalid('schoolId')) {
+            <p id="schoolId-error" class="mt-1.5 text-xs font-medium text-error" role="alert">
+              @if (loginForm.get('schoolId')?.errors?.['required']) {
+                School ID is required.
+              } @else if (loginForm.get('schoolId')?.errors?.['maxlength']) {
+                School ID cannot exceed 255 characters.
+              }
+            </p>
+          }
         </div>
 
-        <div class="field-group">
-          <label class="field-label" for="email">
-            Email
-            <span class="field-tag">OFFICIAL</span>
-          </label>
-          <div class="input-wrapper">
+        <!-- Email -->
+        <div>
+          <label class="auth-label" for="email">Email Address</label>
+          <div class="group relative">
+            <svg
+              class="pointer-events-none absolute left-3.5 top-1/2 size-[18px] -translate-y-1/2 text-subtle transition-colors group-focus-within:text-primary-light"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+            >
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
+            </svg>
             <input
               id="email"
               type="email"
-              class="field-input"
-              [class.field-input--error]="isFieldInvalid('email')"
+              class="auth-input pl-10"
               formControlName="email"
-              placeholder="admin@school.edu.pk"
+              placeholder="Enter your official email"
               autocomplete="off"
+              [attr.aria-invalid]="isFieldInvalid('email')"
               aria-describedby="email-error"
             />
           </div>
-          <span id="email-error" class="field-error" role="alert" *ngIf="isFieldInvalid('email')">
-            <ng-container *ngIf="loginForm.get('email')?.errors?.['required']">
-              email is required.
-            </ng-container>
-            <ng-container *ngIf="loginForm.get('email')?.errors?.['email']">
-              Please enter a valid email address.
-            </ng-container>
-          </span>
+          @if (isFieldInvalid('email')) {
+            <p id="email-error" class="mt-1.5 text-xs font-medium text-error" role="alert">
+              @if (loginForm.get('email')?.errors?.['required']) {
+                Email is required.
+              } @else if (loginForm.get('email')?.errors?.['email']) {
+                Please enter a valid email address.
+              }
+            </p>
+          }
         </div>
 
-        <div class="field-group">
-          <label class="field-label" for="password">
-            Password
-            <span class="field-tag">ENCRYPTED</span>
-          </label>
-          <div class="input-wrapper input-wrapper--password">
+        <!-- Password -->
+        <div>
+          <label class="auth-label" for="password">Password</label>
+          <div class="group relative">
+            <svg
+              class="pointer-events-none absolute left-3.5 top-1/2 size-[18px] -translate-y-1/2 text-subtle transition-colors group-focus-within:text-primary-light"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
             <input
               id="password"
               [type]="showPassword() ? 'text' : 'password'"
-              class="field-input field-input--padded-right"
-              [class.field-input--error]="isFieldInvalid('password')"
+              class="auth-input px-10"
               formControlName="password"
-              placeholder="••••••••"
+              placeholder="Enter your password"
               autocomplete="current-password"
+              [attr.aria-invalid]="isFieldInvalid('password')"
               aria-describedby="password-error"
             />
             <button
               type="button"
-              class="password-toggle"
+              class="absolute right-2 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-md text-subtle transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-primary-light"
               (click)="togglePasswordVisibility()"
               [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
               [attr.aria-pressed]="showPassword()"
             >
-              <span class="material-symbols-outlined">
-                {{ showPassword() ? 'visibility_off' : 'visibility' }}
-              </span>
+              @if (showPassword()) {
+                <svg
+                  class="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                >
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 5c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+                  <path d="m1 1 22 22" />
+                </svg>
+              } @else {
+                <svg
+                  class="size-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                >
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              }
             </button>
           </div>
-          <span
-            id="password-error"
-            class="field-error"
-            role="alert"
-            *ngIf="isFieldInvalid('password')"
-          >
-            <ng-container *ngIf="loginForm.get('password')?.errors?.['required']">
-              Password is required.
-            </ng-container>
-            <ng-container *ngIf="loginForm.get('password')?.errors?.['minlength']">
-              Password must be at least 8 characters.
-            </ng-container>
-          </span>
+          @if (isFieldInvalid('password')) {
+            <p id="password-error" class="mt-1.5 text-xs font-medium text-error" role="alert">
+              @if (loginForm.get('password')?.errors?.['required']) {
+                Password is required.
+              } @else if (loginForm.get('password')?.errors?.['minlength']) {
+                Password must be at least 8 characters.
+              }
+            </p>
+          }
         </div>
 
-        <div class="form-options">
-          <label class="remember-label">
-            <div class="checkbox-wrapper">
-              <input type="checkbox" class="checkbox-input" formControlName="remember" />
-              <span class="material-symbols-outlined checkbox-check">check</span>
-            </div>
-            <span class="remember-text">Remember Me</span>
+        <!-- Options -->
+        <div class="flex items-center justify-between text-[13px]">
+          <label class="flex cursor-pointer select-none items-center gap-2 text-muted">
+            <input type="checkbox" formControlName="remember" class="size-4 rounded border-border accent-primary-light" />
+            Remember me
           </label>
-
-          <button type="button" class="forgot-password-btn" (click)="onForgotPassword()">
+          <button
+            type="button"
+            class="font-semibold text-primary-light transition-colors hover:text-primary hover:underline"
+            (click)="onForgotPassword()"
+          >
             Forgot Password?
           </button>
         </div>
 
-        <div class="submit-wrapper">
-          <button
-            type="submit"
-            class="submit-btn"
-            [class.submit-btn--loading]="isSubmitting()"
-            [disabled]="isSubmitting()"
-            aria-live="polite"
-          >
-            <span *ngIf="!isSubmitting()" class="submit-btn-content">
-              <span class="submit-btn-label">Secure Portal Login</span>
-              <span class="material-symbols-outlined submit-btn-icon">shield_lock</span>
-            </span>
-      
-            <span *ngIf="isSubmitting()" class="submit-btn-content">
-              <span class="spinner" aria-hidden="true"></span>
-              <span class="submit-btn-label">Authenticating...</span>
-            </span>
-          </button>
-        </div>
+        <!-- Submit -->
+        <button
+          type="submit"
+          [disabled]="isSubmitting()"
+          aria-live="polite"
+          class="flex h-[46px] w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-primary-light to-primary font-display text-sm font-bold text-white shadow-[0_8px_20px_-6px_rgba(13,31,69,0.5)] transition enabled:hover:-translate-y-px enabled:hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          @if (isSubmitting()) {
+            <span class="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden="true"></span>
+            <span>Authenticating...</span>
+          } @else {
+            <span>Sign In</span>
+            <svg
+              class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+            >
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          }
+        </button>
       </form>
 
+      <!-- Rate limit states -->
+      @if (isBlocked()) {
+        <div class="mt-4 flex items-center gap-2.5 rounded-lg border border-red-300 bg-red-50 px-3.5 py-2.5">
+          <mat-icon class="shrink-0 text-red-600">lock_clock</mat-icon>
+          <div class="flex-1 leading-snug">
+            <p class="text-sm font-semibold text-red-800">Account Locked</p>
+            <p class="text-xs text-red-700">Too many failed attempts</p>
+          </div>
+          <span class="min-w-13 rounded-md bg-red-600 px-2.5 py-1 text-center text-[13px] font-bold tabular-nums text-white">
+            {{ formatTimer(blockTimer()) }}
+          </span>
+        </div>
+      }
 
- <ng-container *ngIf="isBlocked()">
-  <div class="lock-screen">
-    <mat-icon>lock_clock</mat-icon>
-    <div class="text">
-      <div class="title">Account Locked</div>
-      <div class="desc">Too many failed attempts</div>
+      @if (attemptsLeft() < 5 && attemptsLeft() > 0) {
+        <div class="mt-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[13px] text-amber-700">
+          <mat-icon class="shrink-0 text-amber-500">warning</mat-icon>
+          <span>{{ attemptsLeft() }} attempts left</span>
+        </div>
+      }
+
+      <p class="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-subtle">
     </div>
-    <div class="timer">{{ formatTimer(blockTimer()) }}</div>
-  </div>
-</ng-container>
 
-<ng-container *ngIf="attemptsLeft() < 5 && attemptsLeft() > 0">
-  <div class="warn-box">
-    <mat-icon>warning</mat-icon>
-    <span>{{ attemptsLeft() }} attempts left</span>
-  </div>
-</ng-container>
-
-
-      <footer class="card-footer">
-        <p>
-          Need an institutional account?
-          <a routerLink="/auth/register" class="card-footer-link">Register Now</a>
-        </p>
-      </footer>
-
-      <div class="card-seal" aria-hidden="true">
-        <span class="material-symbols-outlined">verified</span>
-      </div>
+    <div class="mt-6 text-center text-[13px]">
+      <p class="text-subtle">Need help accessing your account?</p>
+      <p class="mt-0.5 font-medium text-muted">Contact your institution administrator</p>
     </div>
+
+    <p class="mt-8 text-xs text-subtle/70 lg:hidden">
+      © {{ currentYear }} Taleem Hub. All rights reserved.
+    </p>
   </section>
 </main>

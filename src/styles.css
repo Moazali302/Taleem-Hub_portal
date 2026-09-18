@@ -1,8 +1,35 @@
-/* You can add global styles to this file, and also import other style files */
-
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+@import 'tailwindcss';
 
 @theme {
-  --color-primary: #0f2a5e;
-  --color-on-primary: #ffffff;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Brand */
+  --color-primary: #0d1f45;
+  --color-primary-light: #1a3270;
+  --color-accent: #f5c518;
+  --color-accent-hover: #e6b800;
+
+  /* Neutrals */
+  --color-page: #f3f5fa;
+  --color-border: #d5dae6;
+  --color-muted: #64748b;
+  --color-subtle: #94a3b8;
+
+  /* Feedback */
+  --color-error: #dc2626;
+}
+
+@layer components {
+  .auth-label {
+    @apply mb-1.5 block text-[13px] font-semibold text-primary;
+  }
+
+  .auth-input {
+    @apply h-[46px] w-full rounded-lg border border-border bg-white px-3.5 text-sm text-primary
+      transition placeholder:text-subtle
+      focus:border-primary-light focus:outline-none focus:ring-3 focus:ring-primary-light/15
+      aria-invalid:border-error aria-invalid:focus:border-error aria-invalid:focus:ring-error/15;
+  }
 }

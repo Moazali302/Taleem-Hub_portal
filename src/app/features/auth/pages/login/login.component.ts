@@ -8,6 +8,7 @@ import { AuthService } from '@core/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { RateLimitService } from '@core/services/rate-limit.service';
 
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -18,6 +19,14 @@ import { RateLimitService } from '@core/services/rate-limit.service';
 export class LoginComponent implements OnDestroy, OnInit {
   readonly isSubmitting = signal<boolean>(false);
   readonly showPassword = signal<boolean>(false);
+  readonly currentYear = new Date().getFullYear();
+
+readonly features = [
+  { icon: '🏫', label: 'Student & Staff Management' },
+  { icon: '📊', label: 'Academic Progress Tracking' },
+  { icon: '📋', label: 'Attendance & Timetabling' },
+  { icon: '🔒', label: 'Role-Based Secure Access' },
+] as const;
 
   isBlocked = signal(false);
   blockTimer = signal(0);
