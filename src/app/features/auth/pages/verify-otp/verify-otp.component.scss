@@ -1,269 +1,119 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@use 'sass:map';
 
+// Must match Tailwind's `lg` breakpoint used in the template.
+$bp-lg: 64rem;
+
+$deco-stroke: rgba(255, 255, 255, 0.06);
+$deco-stroke-strong: rgba(255, 255, 255, 0.12);
 :host {
   display: block;
-  min-height: 100vh;
-}
-
-.page-wrapper {
-  min-height: 100vh;
-  background: #f4f6f9;
-  font-family: 'Inter', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  height: 100vh;
+  height: 100dvh;
+  overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+
+  // Vertical rhythm + control heights. On phones they shrink with the viewport
+  // height so the screen fits short devices (iPhone SE, landscape) without
+  // needless scrolling; from `lg` up they are fixed to the desktop design.
+  --gap-sm: clamp(0.5rem, 1.4vh, 0.75rem);
+  --gap-md: clamp(0.75rem, 2vh, 1rem);
+  --gap-lg: clamp(1rem, 2.8vh, 1.5rem);
+  --gap-xl: clamp(1.125rem, 3.3vh, 1.75rem);
+  --otp-h: clamp(2.75rem, 6vh, 3.5rem);
+  --btn-h: clamp(2.75rem, 5.6vh, 3.375rem);
+
+  @media (min-width: $bp-lg) {
+    --gap-sm: 0.75rem;
+    --gap-md: 1rem;
+    --gap-lg: 1.5rem;
+    --gap-xl: 1.75rem;
+    --otp-h: 3.875rem;
+    --btn-h: 3.375rem;
+  }
 }
 
-.main-content {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 16px;
-}
+// ─── Material Symbols ────────────────────────────────────────────────
+// Scoped here so sizes are not overridden by any global icon styles.
+$icon-sizes: (
+  xs: 0.875rem,
+  sm: 1rem,
+  md: 1.125rem,
+  lg: 1.375rem,
+);
 
-.otp-card {
-  width: 100%;
-  max-width: 480px;
-  background: #ffffff;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-  padding: 40px 36px 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.logo-icon {
-  width: 52px;
-  height: 52px;
-  background: #e8effc;
-  border: 1.5px solid #c3d3f7;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 18px;
-}
-
-.logo-icon .material-symbols-outlined {
-  font-size: 26px;
-  color: #1a56db;
-}
-
-.brand-label {
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-
-.brand-super {
-  color: #1a56db;
-  font-weight: 700;
-}
-
-.brand-sub {
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.brand-name {
-  font-size: 26px;
-  font-weight: 700;
-  color: #111928;
-  letter-spacing: -0.5px;
-  margin-bottom: 20px;
-}
-
-.card-heading {
-  margin-bottom: 28px;
-  width: 100%;
-  text-align: left;
-}
-
-.card-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #111928;
-  margin-bottom: 6px;
-}
-
-.card-desc {
-  font-size: 14px;
-  color: #6b7280;
-  line-height: 1.6;
-}
-
-.email-highlight {
-  font-weight: 600;
-  color: #1a56db;
-}
-
-.otp-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.field-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #111928;
-  text-align: left;
-  margin-bottom: 10px;
-}
-
-.otp-inputs {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.otp-box {
-  flex: 1;
-  min-width: 0;
-  height: 56px;
-  background: #f9fafb;
-  border: 1.5px solid #d1d5db;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: 700;
-  font-family: 'Inter', monospace;
-  color: #111928;
-  outline: none;
-  caret-color: #1a56db;
-  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
-}
-
-.otp-box:focus {
-  border-color: #1a56db;
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.12);
-}
-
-.otp-box:not(:placeholder-shown),
-.otp-box.ng-valid:not([value=""]) {
-  border-color: #1a56db;
-  background: #e8effc;
-  color: #1a56db;
-}
-
-.otp-sep {
-  font-size: 18px;
-  color: #d1d5db;
-}
-
-.timer-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.timer-text {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.timer-value {
-  font-weight: 700;
-  color: #1a56db;
-}
-
-.resend-btn {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a56db;
-  background: none;
-  border: 1.5px solid #d1d5db;
-  border-radius: 6px;
-  padding: 5px 12px;
-  cursor: pointer;
-}
-
-.resend-btn:disabled {
-  color: #6b7280;
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.submit-btn {
-  width: 100%;
-  height: 48px;
-  background: #111928;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.submit-btn:disabled {
-  background: #9ca3af;
-}
-
-.footer {
-  width: 100%;
-  padding: 24px 16px 28px;
-  text-align: center;
-}
-
-.footer-links a {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.footer-copy {
-  font-size: 11px;
-  color: #9ca3af;
-}
-/* Block state timer text */
-.blocked-text {
-  color: #dc2626;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 13px;
-}
-
-.warn-icon {
-  font-size: 16px !important;
+.material-symbols-outlined {
+  font-size: map.get($icon-sizes, md);
   line-height: 1;
+  user-select: none;
 }
 
-.block-timer {
-  color: #dc2626 !important;
-  font-weight: 700;
+@each $name, $size in $icon-sizes {
+  .icon-#{$name} {
+    font-size: $size;
+  }
 }
 
-/* Attempts warning */
-.attempts-left {
-  color: #f59e0b;
-  font-size: 12px;
-  font-weight: 600;
+.icon-filled {
+  font-variation-settings: 'FILL' 1;
 }
 
-/* Badge on disabled button */
-.attempts-badge {
-  font-size: 11px;
-  font-weight: 700;
-  background: rgba(220, 38, 38, 0.12);
-  color: #dc2626;
-  padding: 1px 6px;
-  border-radius: 10px;
-  margin-left: 4px;
+// ─── Brand panel (desktop only) ──────────────────────────────────────
+.brand-panel {
+  @media (min-width: $bp-lg) {
+    background-image: linear-gradient(
+      160deg,
+      var(--color-primary) 0%,
+      color-mix(in srgb, var(--color-primary) 55%, black) 100%
+    );
+  }
+}
+
+.brand-deco {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  &__ring {
+    position: absolute;
+    border: 1px solid $deco-stroke;
+    border-radius: 50%;
+
+    // concentric inner ring
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 55px;
+      border: 1px solid $deco-stroke;
+      border-radius: 50%;
+    }
+
+    &--top {
+      width: 576px;
+      height: 576px;
+      top: -288px;
+      right: -288px;
+    }
+
+    &--bottom {
+      width: 320px;
+      height: 320px;
+      bottom: 3.5rem;
+      left: -8rem;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  &__diamond {
+    position: absolute;
+    right: 17%;
+    bottom: 15%;
+    width: 45px;
+    height: 45px;
+    border: 1px solid $deco-stroke-strong;
+    transform: rotate(45deg);
+  }
 }

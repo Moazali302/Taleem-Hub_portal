@@ -23,6 +23,7 @@ import { RateLimitService } from '@core/services/rate-limit.service';
 })
 export class VerifyOtpComponent implements OnInit, OnDestroy {
   @ViewChildren('otpInput') inputs!: QueryList<ElementRef>;
+  readonly currentYear = new Date().getFullYear();
 
   otpForm: FormGroup;
   isSubmitting = signal(false);
@@ -78,6 +79,12 @@ export class VerifyOtpComponent implements OnInit, OnDestroy {
       this.startTimer();
     }
   }
+  readonly features = [
+  { icon: 'groups', label: 'Student & Staff Management' },
+  { icon: 'bar_chart', label: 'Academic Progress Tracking' },
+  { icon: 'calendar_month', label: 'Attendance & Timetabling' },
+  { icon: 'lock', label: 'Role-Based Secure Access' },
+] as const;
 
   ngOnDestroy(): void {
     clearInterval(this.intervalId);

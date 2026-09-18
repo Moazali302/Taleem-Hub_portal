@@ -33,32 +33,15 @@ TaleemHub is a cloud-based multi-tenant SaaS platform built for private schools,
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | Angular 17+ & Tailwind CSS |
+| Frontend | Angular 22 & Tailwind CSS |
 | Backend | NestJS (Node.js) |
 | Database | PostgreSQL |
 | Data Grid | AG Grid (Server Side Rendering) |
 | Authentication | JWT + Role-based Guards |
-| Payments | JazzCash API + EasyPaisa API + Stripe |
-| Notifications | Twilio (WhatsApp + SMS) + SendGrid (Email) |
 | File Storage | AWS S3 / Cloudflare R2 |
 | Maps | Google Maps API |
-| Hosting | DigitalOcean / Railway |
 
 ---
-
-## 📁 Project Structure
-
-```
-taleemhub/
-├── frontend/          # Angular 17 — All 4 portals
-├── backend/           # NestJS — REST API & business logic
-├── shared/            # Shared TypeScript types & interfaces
-├── .gitignore
-└── README.md
-```
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -120,7 +103,6 @@ npm run start:dev
 - ✅ Complaint System
 - ✅ Leave Request System
 - ✅ Announcements
-- ✅ Subscription & Payments (JazzCash, EasyPaisa, Stripe)
 - ✅ Super Admin Panel
 
 

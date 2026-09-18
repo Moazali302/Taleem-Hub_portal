@@ -1,117 +1,220 @@
-<div class="page-wrapper">
+<div class="flex min-h-full flex-col bg-page font-body text-primary lg:grid lg:grid-cols-[44%_1fr]">
+  <!--
+    Brand panel
+    - < lg : compact centered header (logo + title + subtitle)
+    - >= lg: full-height dark hero on the left
+  -->
+  <aside
+    class="brand-panel relative flex flex-col overflow-hidden bg-white/60 px-4 pb-[var(--gap-md)] pt-[var(--gap-lg)] lg:bg-primary lg:px-8 lg:pb-7 lg:pt-10 2xl:px-16"
+  >
+    <div class="brand-deco hidden lg:block" aria-hidden="true">
+      <span class="brand-deco__ring brand-deco__ring--top"></span>
+      <span class="brand-deco__ring brand-deco__ring--bottom"></span>
+      <span class="brand-deco__diamond"></span>
+    </div>
 
-  <main class="main-content">
-    <div class="otp-card">
-
-      <div class="logo-icon">
-        <span class="material-symbols-outlined">verified_user</span>
-      </div>
-
-      <div class="brand-label">
-        <span class="brand-super">VERIFY</span>
-        <span class="brand-sub"> ACCOUNT ACCESS</span>
-      </div>
-      <h1 class="brand-name">Taleem_Hub</h1>
-
-      <div class="card-heading">
-        <h2 class="card-title">Check Your Email</h2>
-        <p class="card-desc">
-          We've sent a 6-digit verification code to<br>
-          <span class="email-highlight">{{ email }}</span>
+    <!-- Logo (shared by both layouts) -->
+    <div class="relative z-10 flex items-center justify-center gap-3 lg:justify-start">
+      <span
+        class="grid size-11 shrink-0 place-items-center rounded-xl bg-primary text-accent lg:size-10 lg:bg-white/10 lg:ring-1 lg:ring-white/15"
+      >
+        <span class="material-symbols-outlined icon-lg" aria-hidden="true">school</span>
+      </span>
+      <div class="min-w-0 leading-none">
+        <p class="font-display text-xl font-bold text-primary lg:text-white">
+          Taleem<span class="text-accent">Hub</span>
+        </p>
+        <p class="mt-1 text-[10px] font-medium uppercase tracking-[0.18em] text-subtle">
+          Institutional Platform
         </p>
       </div>
+    </div>
 
-      <form [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="otp-form">
+    <!-- Mobile heading -->
+    <div class="relative z-10 mt-[var(--gap-md)] text-center lg:hidden">
+      <h1 class="font-display text-xl font-bold">Secure Your Access</h1>
+      <p class="mt-1 text-[13px] text-muted">
+        Verify your email to continue to your institutional portal.
+      </p>
+    </div>
 
-        <div class="field-label">Verification Code</div>
+    <!-- Desktop hero -->
+    <div class="relative z-10 hidden flex-1 flex-col justify-center py-10 lg:flex">
+      <span class="mb-8 h-[3px] w-11 rounded-full bg-accent"></span>
 
-        <div class="otp-inputs">
-          <ng-container *ngFor="let i of [0,1,2,3,4,5]">
-            <input
-              #otpInput
-              class="otp-box"
-              type="text"
-              inputmode="numeric"
-              maxlength="1"
-              [formControlName]="'digit' + i"
-              (input)="onInput($event, i)"
-              (keydown.backspace)="onBackspace($event, i)"
-            />
-            <span *ngIf="i === 2" class="otp-sep">—</span>
-          </ng-container>
-        </div>
+      <h1
+        class="font-display text-5xl font-extrabold leading-[1.1] tracking-tight text-white xl:text-[56px]"
+      >
+        Secure Your
+        <span class="block text-accent">Access.</span>
+      </h1>
 
-        <!-- ✅ Timer Row — dono cases handle hote hain -->
-        <div class="timer-row">
+      <p class="mt-6 max-w-sm text-[15px] leading-relaxed text-white/70">
+        Enter the verification code sent to your registered email address to securely access your
+        institutional portal.
+      </p>
 
-          <!-- Case 1: Rate limit block — 15 min timer -->
-          <ng-container *ngIf="isOtpBlocked(); else normalTimer">
-            <span class="timer-text blocked-text">
-              <span class="material-symbols-outlined warn-icon">lock</span>
-              Too many attempts. Try again in
-              <span class="timer-value block-timer">
-                {{ formatTime(otpBlockTimer()) }}
+      <ul class="mt-9 space-y-4">
+        <li
+          *ngFor="let feature of features"
+          class="flex items-center gap-3 text-[15px] text-white/80"
+        >
+          <span
+            class="grid size-9 shrink-0 place-items-center rounded-lg bg-white/10 ring-1 ring-white/10"
+          >
+            <span class="material-symbols-outlined icon-md" aria-hidden="true">{{
+              feature.icon
+            }}</span>
+          </span>
+          {{ feature.label }}
+        </li>
+      </ul>
+    </div>
+
+    <p class="relative z-10 hidden text-[13px] text-white/40 lg:block">
+      © {{ currentYear }} TaleemHub. All rights reserved.
+    </p>
+  </aside>
+
+  <!-- Verification column -->
+  <div class="flex min-w-0 flex-1 flex-col">
+    <main
+      class="flex flex-1 items-center justify-center px-4 py-[var(--gap-lg)] sm:px-6 lg:px-10 lg:py-8"
+    >
+      <div class="w-full max-w-[502px]">
+        <section class="rounded-2xl bg-white p-6 shadow-xl shadow-primary/10 sm:p-8 lg:p-11">
+          <header>
+            <h2 class="font-display text-2xl font-bold tracking-tight">Verify Your Email</h2>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted sm:text-[15px]">
+              We've sent a verification code to your registered email address.
+            </p>
+            <p
+              class="mt-[var(--gap-md)] inline-flex max-w-full items-center gap-2 rounded-full bg-page px-3.5 py-1.5 text-[13px] font-medium"
+            >
+              <span class="material-symbols-outlined icon-xs shrink-0" aria-hidden="true"
+                >mail</span
+              >
+              <span class="truncate">{{ email }}</span>
+            </p>
+          </header>
+
+          <form [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()" class="mt-[var(--gap-xl)]">
+            <p id="otp-label" class="mb-[var(--gap-sm)] text-sm font-semibold">
+              Enter verification code
+            </p>
+
+            <div
+              role="group"
+              aria-labelledby="otp-label"
+              class="flex justify-center gap-2 sm:gap-3"
+            >
+              <input
+                *ngFor="let i of [0, 1, 2, 3, 4, 5]"
+                #otpInput
+                type="text"
+                inputmode="numeric"
+                maxlength="1"
+                [formControlName]="'digit' + i"
+                [attr.aria-label]="'Digit ' + (i + 1) + ' of 6'"
+                (input)="onInput($event, i)"
+                (keydown.backspace)="onBackspace($event, i)"
+                class="h-[var(--otp-h)] min-w-0 max-w-[54px] flex-1 appearance-none rounded-lg border-[1.5px] border-border bg-white p-0 text-center text-xl font-bold text-primary caret-primary outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 [&.ng-valid]:border-primary"
+              />
+            </div>
+
+            <!-- Expiry countdown / rate-limit block message -->
+            <p role="timer" class="mt-[var(--gap-md)] text-center text-[13px] text-subtle">
+              <span
+                *ngIf="isOtpBlocked(); else expiry"
+                class="inline-flex flex-wrap items-center justify-center gap-x-1.5 font-medium text-error"
+              >
+                <span class="material-symbols-outlined icon-sm" aria-hidden="true">lock</span>
+                Too many attempts. Try again in
+                <strong class="font-bold">{{ formatTime(otpBlockTimer()) }}</strong>
               </span>
-            </span>
-            <button type="button" class="resend-btn" disabled>
-              Resend Code
-              <span class="attempts-badge">0 left</span>
+
+              <ng-template #expiry>
+                {{ timer() > 0 ? 'Code expires in' : 'Code expired' }}
+                <strong *ngIf="timer() > 0" class="font-bold text-primary">{{
+                  formatTime(timer())
+                }}</strong>
+              </ng-template>
+            </p>
+
+            <button
+              type="submit"
+              [disabled]="otpForm.invalid || isSubmitting() || isOtpBlocked()"
+              class="mt-[var(--gap-lg)] flex h-[var(--btn-h)] w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-primary-light to-primary text-[15px] font-semibold text-white shadow-lg shadow-primary/20 transition enabled:hover:brightness-110 enabled:active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <span
+                *ngIf="isSubmitting()"
+                class="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+                aria-hidden="true"
+              ></span>
+              {{ isSubmitting() ? 'Verifying...' : 'Verify & Continue' }}
+              <span
+                *ngIf="!isSubmitting()"
+                class="material-symbols-outlined icon-md"
+                aria-hidden="true"
+              >
+                arrow_forward
+              </span>
             </button>
-          </ng-container>
+          </form>
 
-          <!-- Case 2: Normal — cooldown timer + resend button -->
-          <ng-template #normalTimer>
-            <span class="timer-text">
-              Resend code in
-              <span class="timer-value">{{ formatTime(timer()) }}</span>
-              <!-- Warning: attempts kam hone par -->
-              <span *ngIf="otpResendLeft() < 5" class="attempts-left">
-                &nbsp;· {{ otpResendLeft() }} resend(s) left
-              </span>
-            </span>
+          <!-- Resend -->
+          <div class="mt-[var(--gap-md)] flex flex-col items-center gap-0.5 text-[13px]">
+            <p class="text-subtle">Didn't receive the code?</p>
             <button
               type="button"
-              class="resend-btn"
-              [disabled]="timer() > 0"
               (click)="onResendOtp()"
+              [disabled]="isOtpBlocked() || timer() > 0"
+              class="rounded font-semibold text-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-light enabled:text-primary enabled:hover:underline disabled:cursor-not-allowed"
             >
               Resend Code
             </button>
-          </ng-template>
+            <p
+              *ngIf="!isOtpBlocked() && otpResendLeft() < 5"
+              class="text-xs font-semibold text-amber-600"
+            >
+              {{ otpResendLeft() }} {{ otpResendLeft() === 1 ? 'resend' : 'resends' }} left
+            </p>
+          </div>
 
-        </div>
+          <!-- Card footer -->
+          <div
+            class="mt-[var(--gap-lg)] flex flex-col items-center gap-[var(--gap-md)] border-t border-border/70 pt-[var(--gap-md)]"
+          >
+            <a
+              routerLink="/auth/login"
+              class="inline-flex items-center gap-1.5 rounded text-[13px] text-subtle transition hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-light"
+            >
+              <span class="material-symbols-outlined icon-sm" aria-hidden="true">arrow_back</span>
+              Back to Login
+            </a>
 
-        <button
-          type="submit"
-          class="submit-btn"
-          [disabled]="otpForm.invalid || isSubmitting() || isOtpBlocked()"
-        >
-          <span *ngIf="isSubmitting()" class="spinner"></span>
-          {{ isSubmitting() ? 'Verifying...' : 'Verify Account' }}
-          <span *ngIf="!isSubmitting()" class="material-symbols-outlined btn-icon">
-            arrow_forward
-          </span>
-        </button>
+            <p class="inline-flex items-center gap-1.5 text-center text-[11px] text-subtle">
+              <span
+                class="material-symbols-outlined icon-filled icon-xs shrink-0"
+                aria-hidden="true"
+                >verified_user</span
+              >
+              Secure institutional access · 256-bit encrypted
+            </p>
+          </div>
+        </section>
 
-      </form>
-
-      <div class="back-row">
-        <a routerLink="/auth/login" class="back-link">
-          <span class="material-symbols-outlined back-icon">arrow_back</span>
-          Back to Login
-        </a>
+        <p class="mt-5 hidden text-center text-[13px] text-subtle lg:block">
+          Need help accessing your account?
+          <span class="font-semibold text-primary">Contact your institution administrator</span>
+        </p>
       </div>
+    </main>
 
-    </div>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-links">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Help Center</a>
-    </div>
-    <p class="footer-copy">© 2026 TALEEM_HUB. ALL RIGHTS RESERVED.</p>
-  </footer>
-
+    <footer
+      class="px-4 pb-[max(var(--gap-md),env(safe-area-inset-bottom))] text-center text-xs text-subtle lg:hidden"
+    >
+      © {{ currentYear }} TaleemHub. All rights reserved.
+    </footer>
+  </div>
 </div>
