@@ -44,7 +44,7 @@ export class TokenService {
   }
 
   /** Decodes the stored JWT. Never throws — malformed/missing token just yields null. */
-  private getDecodedToken(): DecodedTaleemToken | null {
+   private getDecodedToken(): DecodedTaleemToken | null {
     const token = this.getToken();
     if (!token) {
       return null;
@@ -52,12 +52,10 @@ export class TokenService {
 
     try {
       return jwtDecode<DecodedTaleemToken>(token);
-    } catch(err) {
-          console.error('JWT decode failed:', err);   // <-- temporary debug line
-        return null;
+    } catch {
+      return null;
     }
   }
-
   /** Real expiry check against the JWT's `exp` claim (seconds since epoch). */
   isTokenExpired(): boolean {
     const decoded = this.getDecodedToken();
@@ -76,5 +74,8 @@ export class TokenService {
    */
   getRole(): string | null {
     return this.getDecodedToken()?.role ?? null;
+  }
+   getSchoolId(): string | null {
+    return this.getDecodedToken()?.schoolId ?? null;
   }
 }

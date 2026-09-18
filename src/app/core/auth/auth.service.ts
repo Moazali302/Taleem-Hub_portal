@@ -77,6 +77,9 @@ export class AuthService {
       }),
     );
   }
+    getSchoolId(): string | null {
+    return this.tokenService.getSchoolId();
+  }
 
   register(data: any): Observable<ApiResponse<any>> {
     return this.api.post(API.AUTH.REGISTER, data);
