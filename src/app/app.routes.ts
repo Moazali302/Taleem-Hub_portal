@@ -25,11 +25,6 @@ export const routes: Routes = [
     loadChildren: () => import('@features/admin/admin.routes').then(m => m.adminRoutes)
   },
   {
-  path: 'schools',
-  loadComponent: () => import ('@features/super-admin/school-listing/school-listing')
-    .then(m => m.SchoolsListingComponent),
-  },
-  {
     path: 'teacher',
     component: TeacherLayoutComponent,
     canActivate: [AuthGuard, RoleGuard],

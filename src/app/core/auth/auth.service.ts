@@ -5,7 +5,7 @@ import { API } from '../constants/api.constants';
 import { User } from '../models/user.model';
 import { Observable, map, tap } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
-import { Role } from '@core/constants/roles.constants';
+import { Role, ROLE_REDIRECTS } from '@core/constants/roles.constants';
 
 /**
  * login() result (mirrors backend AuthService.login()):
@@ -37,14 +37,6 @@ export interface SimpleResult {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  /** Role -> dashboard route, shared by login (cookie-reuse) and verify-otp flows. */
-  private readonly roleDashboardRoutes: Record<Role, string[]> = {
-    [Role.SUPER_ADMIN]: ['/super-admin/dashboard'],
-    [Role.ADMIN]: ['/admin/dashboard'],
-    [Role.TEACHER]: ['/teacher/dashboard'],
-    [Role.STUDENT]: ['/student/dashboard'],
-  };
-
   constructor(
     private api: ApiService,
     private tokenService: TokenService,
@@ -77,6 +69,9 @@ export class AuthService {
       }),
     );
   }
+  //   getSchoolId(): string | null {
+  //   return this.tokenService.getSchoolId();
+  // }
 
   register(data: any): Observable<ApiResponse<any>> {
     return this.api.post(API.AUTH.REGISTER, data);
@@ -128,9 +123,12 @@ export class AuthService {
     return this.tokenService.getRole();
   }
 
-  /** Resolves the dashboard route for a role. Used after login (cookie-reuse) and verify-otp. */
+  /** Resolves the dashboard route for a role. Used after login (cookie-reuse) and verify-otp.
+   *  Single source of truth: ROLE_REDIRECTS in roles.constants.ts — this used to be a
+   *  separate, duplicated map here that had gone stale (STUDENT pointed at a route that
+   *  doesn't exist), breaking every parent/student login redirect. */
   getDashboardRoute(role: Role): string[] {
-    return this.roleDashboardRoutes[role] ?? ['/auth/login'];
+    return [ROLE_REDIRECTS[role] ?? '/auth/login'];
   }
 
   saveSession(token: string, user: User): void {
