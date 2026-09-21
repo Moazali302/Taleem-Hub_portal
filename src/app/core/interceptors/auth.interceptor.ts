@@ -2,13 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TokenService } from '../auth/token.service';
-import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
-import { Router } from '@angular/router';
 
+/**
+ * Attaches the access token to outgoing requests. 401 handling (silent
+ * refresh, and forced logout if refresh also fails) now lives entirely in
+ * RefreshInterceptor — keeping that in one place instead of split across
+ * two interceptors avoids the two of them racing/duplicating the same
+ * "remove token, redirect to login" cleanup.
+ */
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private tokenService: TokenService, private router: Router) {}
+  constructor(private tokenService: TokenService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.tokenService.getToken();
@@ -21,15 +25,6 @@ export class AuthInterceptor implements HttpInterceptor {
       });
     }
 
-    return next.handle(request).pipe(
-      catchError((error: any) => {
-        if (error.status === 401) {
-          this.tokenService.removeToken();
-          this.tokenService.removeUser();
-          this.router.navigate(['/auth/login']);
-        }
-        return throwError(() => error);
-      })
-    );
+    return next.handle(request);
   }
 }

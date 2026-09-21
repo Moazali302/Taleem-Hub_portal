@@ -3,15 +3,11 @@ import { ApiService } from '../services/api.service';
 import { TokenService } from './token.service';
 import { API } from '../constants/api.constants';
 import { User } from '../models/user.model';
-import { Observable, map, tap } from 'rxjs';
+import { Observable, catchError, map, of, tap } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
-import { Role } from '@core/constants/roles.constants';
+import { Role, ROLE_REDIRECTS } from '@core/constants/roles.constants';
 
-/**
- * login() result (mirrors backend AuthService.login()):
- * - OTP required (first-time login / no valid cookie): { success, message, requiresOtp: true }
- * - Valid session cookie reused: { success, token, role, redirectTo } — no `user` object.
- */
+
 export interface LoginResult {
   success: boolean;
   message?: string;
@@ -37,26 +33,12 @@ export interface SimpleResult {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  /** Role -> dashboard route, shared by login (cookie-reuse) and verify-otp flows. */
-  private readonly roleDashboardRoutes: Record<Role, string[]> = {
-    [Role.SUPER_ADMIN]: ['/super-admin/dashboard'],
-    [Role.ADMIN]: ['/admin/dashboard'],
-    [Role.TEACHER]: ['/teacher/dashboard'],
-    [Role.STUDENT]: ['/student/dashboard'],
-  };
-
   constructor(
     private api: ApiService,
     private tokenService: TokenService,
   ) {}
 
-  /**
-   * The auth endpoints (login/verifyOtp/verifyResetOtp) return their payload
-   * FLAT — confirmed from the actual network response, no `data` wrapper.
-   * `ApiService.post<T>()` is typed generically as `ApiResponse<T>` for every
-   * endpoint in the app, so that mismatch is reinterpreted right here, in one
-   * place, instead of leaking `as any` casts into every caller.
-   */
+
   private authPost<T>(path: string, body: unknown): Observable<T> {
     return this.api.post(path, body).pipe(map((res) => res as unknown as T));
   }
@@ -76,6 +58,9 @@ export class AuthService {
         }
       }),
     );
+  }
+    getSchoolId(): string | null {
+    return this.tokenService.getSchoolId();
   }
 
   register(data: any): Observable<ApiResponse<any>> {
@@ -109,7 +94,10 @@ export class AuthService {
   }
 
   logout(): void {
-    this.clearSession();
+    this.api.post(API.AUTH.LOGOUT, {}).subscribe({
+      complete: () => this.clearSession(),
+      error: () => this.clearSession(), // clear locally regardless of network state
+    });
   }
 
   getCurrentUser(): User | null {
@@ -124,13 +112,35 @@ export class AuthService {
     return !!this.getToken() && !this.tokenService.isTokenExpired();
   }
 
+  /**
+   * Used by AuthGuard when the access token looks expired/missing on a
+   * fresh page load. The httpOnly session cookie may still be valid even
+   * though the short-lived access token in localStorage isn't — this asks
+   * the backend for a new access token using that cookie, instead of
+   * immediately treating an expired access token as "logged out".
+   */
+  refreshSession(): Observable<boolean> {
+    return this.api
+      .post<{ success: boolean; token: string; role: string }>(API.AUTH.REFRESH_TOKEN, {})
+      .pipe(
+        map((res) => {
+          const token = (res as unknown as { token?: string })?.token;
+          if (!token) {
+            return false;
+          }
+          this.tokenService.saveToken(token);
+          return true;
+        }),
+        catchError(() => of(false)),
+      );
+  }
+
   getRole(): string | null {
     return this.tokenService.getRole();
   }
 
-  /** Resolves the dashboard route for a role. Used after login (cookie-reuse) and verify-otp. */
   getDashboardRoute(role: Role): string[] {
-    return this.roleDashboardRoutes[role] ?? ['/auth/login'];
+    return [ROLE_REDIRECTS[role] ?? '/auth/login'];
   }
 
   saveSession(token: string, user: User): void {
