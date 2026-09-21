@@ -8,6 +8,7 @@ import { provideToastr } from 'ngx-toastr';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
+import { RefreshInterceptor } from './core/interceptors/refresh.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,7 +21,10 @@ export const appConfig: ApplicationConfig = {
       preventDuplicates: true,
     }),
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    // Registered last = innermost = sees a 401 response before ErrorInterceptor
+    // or AuthInterceptor do, so it gets first chance at a silent recovery.
+    { provide: HTTP_INTERCEPTORS, useClass: RefreshInterceptor, multi: true },
   ]
 };
