@@ -27,7 +27,7 @@ import { CommonModule } from '@angular/common';
 export class SidenavComponent implements OnChanges {
   @Input() isOpen = false;
   /** Real CSS max-width value, e.g. '720px' — NOT a Tailwind class string. */
-  @Input() panelWidth = '720px';
+  @Input() panelWidth = '800px';
   @Output() close = new EventEmitter<void>();
 
   ngOnChanges(changes: SimpleChanges): void {

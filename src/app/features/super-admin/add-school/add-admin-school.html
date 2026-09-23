@@ -1,39 +1,73 @@
-<header class="school-form__header">
-  <button type="button" class="school-form__back" aria-label="Back" (click)="onClose()">
+<header class="flex shrink-0 items-start gap-4 border-b border-border px-6 py-5">
+  <button
+    type="button"
+    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-white text-primary transition hover:bg-page"
+    aria-label="Back"
+    (click)="onClose()"
+  >
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </button>
-  <div class="school-form__header-text">
-    <h2 class="school-form__title">Add New School</h2>
-    <p class="school-form__subtitle">Onboard a new institution to the platform</p>
+  <div>
+    <h2 class="font-display text-xl font-bold text-primary">Add New School</h2>
+    <p class="mt-1 font-body text-[13px] text-muted">Onboard a new institution to the platform</p>
   </div>
 </header>
 
-<div class="school-form__body">
+<!-- Section progress stepper -->
+<div class="shrink-0 border-b border-border px-6 py-3">
+  <div class="mb-2 flex items-center gap-1.5">
+    @for (section of sections; track section.id; let i = $index) {
+      <button
+        type="button"
+        class="h-1.5 flex-1 rounded-full transition-colors duration-300"
+        [class.bg-primary]="i <= activeSectionIndex()"
+        [class.bg-border]="i > activeSectionIndex()"
+        (click)="scrollToSection(i)"
+      ></button>
+    }
+  </div>
+  <div class="flex items-center justify-between font-body text-[11px]">
+    <span class="font-semibold" [class.text-primary]="true">{{ sections[activeSectionIndex()].label }}</span>
+    <span class="text-subtle">Section {{ activeSectionIndex() + 1 }} of {{ sections.length }}</span>
+  </div>
+</div>
+
+<div class="school-form-scroll flex-1 overflow-y-auto px-6 py-6" #scrollContainer>
+
+  @if (duplicateEmailError(); as emailError) {
+    <div class="mb-5 flex items-start gap-2 rounded-xl border border-error/30 bg-error/10 px-4 py-3 font-body text-sm text-error">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mt-0.5 shrink-0">
+        <path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>{{ emailError }}</span>
+    </div>
+  }
+
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
     <!-- Section: School Info -->
-    <div class="school-form__section">
-      <div class="school-form__section-header">
-        <span class="school-form__section-icon">
+    <div class="mb-5" #sectionRef>
+      <div class="mb-4 flex items-center gap-3">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary/10 text-primary">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4 21V7a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v14M14 21V10a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v11M4 21h16M8 9h.01M8 13h.01M8 17h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
         <div>
-          <p class="school-form__section-title">School Info</p>
-          <p class="school-form__section-subtitle">Basic details about the institution</p>
+          <p class="font-display text-sm font-bold text-primary">School Info</p>
+          <p class="font-body text-xs text-subtle">Basic details about the institution</p>
         </div>
       </div>
 
-      <div class="school-form__grid">
-        <div class="school-form__field">
-          <label for="school_name" class="school-form__label">
-            School Name <span class="school-form__required">*</span>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+        <div class="flex flex-col">
+          <label for="school_name" class="mb-1.5 font-body text-[13px] font-semibold text-primary">
+            School Name <span class="text-error">*</span>
           </label>
-          <div class="school-form__input-wrap">
-            <span class="school-form__input-icon">
+          <div class="relative flex items-center">
+            <span class="pointer-events-none absolute left-3 flex items-center text-subtle">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 21V7a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v14M14 21V10a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v11M4 21h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -43,21 +77,32 @@
               type="text"
               formControlName="school_name"
               placeholder="Enter school name"
-              class="school-form__input school-form__input--with-icon"
-              [class.school-form__input--error]="isInvalid('school_name')"
+              class="h-11 w-full rounded-[10px] border bg-white pl-9 pr-9 font-body text-sm text-primary placeholder:text-subtle focus:outline-none focus:ring-3"
+              [class.border-border]="!isInvalid('school_name')"
+              [class.focus:border-primary]="!isInvalid('school_name')"
+              [class.focus:ring-primary/15]="!isInvalid('school_name')"
+              [class.border-error]="isInvalid('school_name')"
+              [class.focus:ring-error/15]="isInvalid('school_name')"
             />
+            @if (isValidTouched('school_name')) {
+              <span class="absolute right-3 flex items-center text-emerald-500">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 12.5 9 17.5 20 6.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            }
           </div>
           @if (isInvalid('school_name')) {
-            <p class="school-form__error">School name is required.</p>
+            <p class="mt-1.5 font-body text-xs text-error">School name is required.</p>
           }
         </div>
 
-        <div class="school-form__field">
-          <label for="school_address" class="school-form__label">
-            School Address <span class="school-form__required">*</span>
+        <div class="flex flex-col">
+          <label for="school_address" class="mb-1.5 font-body text-[13px] font-semibold text-primary">
+            School Address <span class="text-error">*</span>
           </label>
-          <div class="school-form__input-wrap">
-            <span class="school-form__input-icon">
+          <div class="relative flex items-center">
+            <span class="pointer-events-none absolute left-3 flex items-center text-subtle">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 22s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
                 <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.7"/>
@@ -68,23 +113,27 @@
               type="text"
               formControlName="school_address"
               placeholder="Enter full address"
-              class="school-form__input school-form__input--with-icon"
-              [class.school-form__input--error]="isInvalid('school_address')"
+              class="h-11 w-full rounded-[10px] border bg-white pl-9 pr-3 font-body text-sm text-primary placeholder:text-subtle focus:outline-none focus:ring-3"
+              [class.border-border]="!isInvalid('school_address')"
+              [class.focus:border-primary]="!isInvalid('school_address')"
+              [class.focus:ring-primary/15]="!isInvalid('school_address')"
+              [class.border-error]="isInvalid('school_address')"
+              [class.focus:ring-error/15]="isInvalid('school_address')"
             />
           </div>
           @if (isInvalid('school_address')) {
-            <p class="school-form__error">School address is required.</p>
+            <p class="mt-1.5 font-body text-xs text-error">School address is required.</p>
           }
         </div>
       </div>
     </div>
 
-    <div class="school-form__divider"></div>
+    <div class="my-5 h-px bg-border"></div>
 
     <!-- Section: Owner Info -->
-    <div class="school-form__section">
-      <div class="school-form__section-header">
-        <span class="school-form__section-icon">
+    <div class="mb-5" #sectionRef>
+      <div class="mb-4 flex items-center gap-3">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary/10 text-primary">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/>
             <circle cx="9" cy="11" r="2" stroke="currentColor" stroke-width="1.7"/>
@@ -92,18 +141,18 @@
           </svg>
         </span>
         <div>
-          <p class="school-form__section-title">Owner Info</p>
-          <p class="school-form__section-subtitle">Primary contact for the account</p>
+          <p class="font-display text-sm font-bold text-primary">Owner Info</p>
+          <p class="font-body text-xs text-subtle">Primary contact for the account</p>
         </div>
       </div>
 
-      <div class="school-form__grid">
-        <div class="school-form__field">
-          <label for="owner_name" class="school-form__label">
-            Owner Name <span class="school-form__required">*</span>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+        <div class="flex flex-col">
+          <label for="owner_name" class="mb-1.5 font-body text-[13px] font-semibold text-primary">
+            Owner Name <span class="text-error">*</span>
           </label>
-          <div class="school-form__input-wrap">
-            <span class="school-form__input-icon">
+          <div class="relative flex items-center">
+            <span class="pointer-events-none absolute left-3 flex items-center text-subtle">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.7"/>
                 <path d="M4.5 20c1.4-3.5 4.3-5.5 7.5-5.5s6.1 2 7.5 5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
@@ -114,22 +163,42 @@
               type="text"
               formControlName="owner_name"
               placeholder="Enter owner's name"
-              class="school-form__input school-form__input--with-icon"
-              [class.school-form__input--error]="isInvalid('owner_name')"
+              class="h-11 w-full rounded-[10px] border bg-white pl-9 pr-3 font-body text-sm text-primary placeholder:text-subtle focus:outline-none focus:ring-3"
+              [class.border-border]="!isInvalid('owner_name')"
+              [class.focus:border-primary]="!isInvalid('owner_name')"
+              [class.focus:ring-primary/15]="!isInvalid('owner_name')"
+              [class.border-error]="isInvalid('owner_name')"
+              [class.focus:ring-error/15]="isInvalid('owner_name')"
             />
           </div>
           @if (isInvalid('owner_name')) {
-            <p class="school-form__error">Owner name is required.</p>
+            <p class="mt-1.5 font-body text-xs text-error">Owner name is required.</p>
           }
         </div>
 
-        <div class="school-form__field">
-          <label for="owner_number" class="school-form__label">
-            Owner Number <span class="school-form__required">*</span>
+        <div class="flex flex-col">
+          <label for="owner_number" class="mb-1.5 font-body text-[13px] font-semibold text-primary">
+            Owner Number <span class="text-error">*</span>
           </label>
-          <div class="school-form__input-wrap">
-            <span class="school-form__input-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div
+            class="flex h-11 items-center rounded-[10px] border bg-white focus-within:ring-3"
+            [class.border-border]="!isInvalid('owner_number')"
+            [class.focus-within:border-primary]="!isInvalid('owner_number')"
+            [class.focus-within:ring-primary/15]="!isInvalid('owner_number')"
+            [class.border-error]="isInvalid('owner_number')"
+            [class.focus-within:ring-error/15]="isInvalid('owner_number')"
+          >
+            <select
+              formControlName="owner_dial_code"
+              aria-label="Country code"
+              class="h-full shrink-0 rounded-l-[10px] border-r border-border bg-transparent pl-3 pr-1 font-body text-sm text-primary focus:outline-none"
+            >
+              @for (dial of dialCodes; track dial.code) {
+                <option [value]="dial.code">{{ dial.flag }} {{ dial.code }}</option>
+              }
+            </select>
+            <span class="flex items-center pl-2.5 text-subtle">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 5c0-1 1-2 2-2h1.5c.5 0 1 .3 1.2.8l1 2.4c.2.5.1 1-.3 1.4L8 9c1 2.5 3 4.5 5.5 5.5l1.4-1.4c.4-.4.9-.5 1.4-.3l2.4 1c.5.2.8.7.8 1.2V17c0 1-1 2-2 2h-1C10.3 19 4 12.7 4 6V5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
               </svg>
             </span>
@@ -137,42 +206,41 @@
               id="owner_number"
               type="tel"
               formControlName="owner_number"
-              placeholder="+1 (555) 000-0000"
-              class="school-form__input school-form__input--with-icon"
-              [class.school-form__input--error]="isInvalid('owner_number')"
+              placeholder="(555) 000-0000"
+              class="h-full w-full rounded-r-[10px] bg-transparent px-2.5 font-body text-sm text-primary placeholder:text-subtle focus:outline-none"
             />
           </div>
           @if (isInvalid('owner_number')) {
-            <p class="school-form__error">Enter a valid phone number.</p>
+            <p class="mt-1.5 font-body text-xs text-error">Enter a valid phone number.</p>
           }
         </div>
       </div>
     </div>
 
-    <div class="school-form__divider"></div>
+    <div class="my-5 h-px bg-border"></div>
 
     <!-- Section: Account Credentials -->
-    <div class="school-form__section">
-      <div class="school-form__section-header">
-        <span class="school-form__section-icon">
+    <div #sectionRef>
+      <div class="mb-4 flex items-center gap-3">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary/10 text-primary">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 3 4.5 6v5.5c0 4.5 3 7.7 7.5 9.5 4.5-1.8 7.5-5 7.5-9.5V6L12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
             <path d="M9.5 12.2 11 13.8l3.5-3.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
         <div>
-          <p class="school-form__section-title">Account Credentials</p>
-          <p class="school-form__section-subtitle">Login access for the school admin</p>
+          <p class="font-display text-sm font-bold text-primary">Account Credentials</p>
+          <p class="font-body text-xs text-subtle">Login access for the school admin</p>
         </div>
       </div>
 
-      <div class="school-form__grid">
-        <div class="school-form__field">
-          <label for="email" class="school-form__label">
-            Email <span class="school-form__required">*</span>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+        <div class="flex flex-col">
+          <label for="email" class="mb-1.5 font-body text-[13px] font-semibold text-primary">
+            Email <span class="text-error">*</span>
           </label>
-          <div class="school-form__input-wrap">
-            <span class="school-form__input-icon">
+          <div class="relative flex items-center">
+            <span class="pointer-events-none absolute left-3 flex items-center text-subtle">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/>
                 <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -183,23 +251,27 @@
               type="email"
               formControlName="email"
               placeholder="admin@school.edu"
-              class="school-form__input school-form__input--with-icon"
-              [class.school-form__input--error]="isInvalid('email')"
+              class="h-11 w-full rounded-[10px] border bg-white pl-9 pr-3 font-body text-sm text-primary placeholder:text-subtle focus:outline-none focus:ring-3"
+              [class.border-border]="!isInvalid('email') && !duplicateEmailError()"
+              [class.focus:border-primary]="!isInvalid('email') && !duplicateEmailError()"
+              [class.focus:ring-primary/15]="!isInvalid('email') && !duplicateEmailError()"
+              [class.border-error]="isInvalid('email') || duplicateEmailError()"
+              [class.focus:ring-error/15]="isInvalid('email') || duplicateEmailError()"
             />
           </div>
           @if (isInvalid('email')) {
-            <p class="school-form__error">Enter a valid email address.</p>
+            <p class="mt-1.5 font-body text-xs text-error">Enter a valid email address.</p>
           } @else {
-            <p class="school-form__hint">This becomes the school admin's login email</p>
+            <p class="mt-1.5 font-body text-xs text-subtle">This becomes the school admin's login email</p>
           }
         </div>
 
-        <div class="school-form__field">
-          <label for="password" class="school-form__label">
-            Password <span class="school-form__required">*</span>
+        <div class="flex flex-col">
+          <label for="password" class="mb-1.5 font-body text-[13px] font-semibold text-primary">
+            Password <span class="text-error">*</span>
           </label>
-          <div class="school-form__input-wrap">
-            <span class="school-form__input-icon">
+          <div class="relative flex items-center">
+            <span class="pointer-events-none absolute left-3 flex items-center text-subtle">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="4.5" y="10.5" width="15" height="10" rx="2" stroke="currentColor" stroke-width="1.7"/>
                 <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.7"/>
@@ -210,12 +282,16 @@
               [type]="showPassword ? 'text' : 'password'"
               formControlName="password"
               placeholder="Enter secure password"
-              class="school-form__input school-form__input--with-icon school-form__input--with-toggle"
-              [class.school-form__input--error]="isInvalid('password')"
+              class="h-11 w-full rounded-[10px] border bg-white pl-9 pr-9 font-body text-sm text-primary placeholder:text-subtle focus:outline-none focus:ring-3"
+              [class.border-border]="!isInvalid('password')"
+              [class.focus:border-primary]="!isInvalid('password')"
+              [class.focus:ring-primary/15]="!isInvalid('password')"
+              [class.border-error]="isInvalid('password')"
+              [class.focus:ring-error/15]="isInvalid('password')"
             />
             <button
               type="button"
-              class="school-form__toggle-visibility"
+              class="absolute right-3 flex items-center text-subtle hover:text-primary"
               [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
               (click)="showPassword = !showPassword"
             >
@@ -231,16 +307,42 @@
               }
             </button>
           </div>
+
           @if (isInvalid('password')) {
-            <p class="school-form__error">Password must be at least 8 characters.</p>
+            <p class="mt-1.5 font-body text-xs text-error">Password must be at least 8 characters.</p>
           } @else {
-            <p class="school-form__hint">Minimum 8 characters</p>
+            <p class="mt-1.5 font-body text-xs text-subtle">Minimum 8 characters</p>
+
+            @if (passwordStrength(); as strength) {
+              <div class="mt-2 flex items-center gap-1.5">
+                @for (bar of [0, 1, 2]; track bar) {
+                  <span
+                    class="h-1 flex-1 rounded-full transition-colors"
+                    [class.bg-error]="strength === 'weak' && bar === 0"
+                    [class.bg-amber-400]="strength === 'medium' && bar <= 1"
+                    [class.bg-emerald-500]="strength === 'strong'"
+                    [class.bg-border]="
+                      (strength === 'weak' && bar > 0) ||
+                      (strength === 'medium' && bar > 1)
+                    "
+                  ></span>
+                }
+              </div>
+              <p
+                class="mt-1 font-body text-xs font-medium"
+                [class.text-error]="strength === 'weak'"
+                [class.text-amber-500]="strength === 'medium'"
+                [class.text-emerald-600]="strength === 'strong'"
+              >
+                {{ strength === 'weak' ? 'Weak password' : strength === 'medium' ? 'Medium password' : 'Strong password' }}
+              </p>
+            }
           }
         </div>
       </div>
     </div>
 
-    <div class="school-form__footer">
+    <div class="mt-6 flex justify-end gap-3 border-t border-border pt-5">
       <app-button type="button" variant="outline" (click)="onClose()">Close</app-button>
       <app-button type="submit" variant="primary" [disabled]="isSubmitting">
         @if (!isSubmitting) {
