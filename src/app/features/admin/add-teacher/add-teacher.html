@@ -1,0 +1,88 @@
+<header class="add-teacher__header">
+  <button type="button" class="add-teacher__back" aria-label="Close" (click)="onClose()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div>
+    <h2 class="add-teacher__title">{{ heading }}</h2>
+    <p class="add-teacher__subtitle">{{ subtitle }}</p>
+  </div>
+</header>
+
+<div class="add-teacher__body">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="add-teacher__section-label">
+      <span class="add-teacher__icon-badge" aria-hidden="true">
+        <img src="/svg/teacher.svg" alt="" />
+      </span>
+      <div>
+        <p class="add-teacher__section-title">Staff profile</p>
+        <p class="add-teacher__section-hint">Name, contact, and teaching assignment</p>
+      </div>
+    </div>
+
+    <div class="add-teacher__grid">
+      <div class="add-teacher__field add-teacher__field--full">
+        <label for="teacher_name">Teacher Name <span>*</span></label>
+        <input id="teacher_name" type="text" formControlName="teacher_name" placeholder="Enter full name" />
+        @if (isInvalid('teacher_name')) {
+          <p class="add-teacher__error">Teacher name is required.</p>
+        }
+      </div>
+
+      <div class="add-teacher__field">
+        <label for="qualification">Qualification <span>*</span></label>
+        <input id="qualification" type="text" formControlName="qualification" placeholder="e.g. M.Ed Mathematics" />
+        @if (isInvalid('qualification')) {
+          <p class="add-teacher__error">Qualification is required.</p>
+        }
+      </div>
+
+      <div class="add-teacher__field">
+        <label for="specialty">Specialty / Subject <span>*</span></label>
+        <input id="specialty" type="text" formControlName="specialty" placeholder="e.g. Biology" />
+        @if (isInvalid('specialty')) {
+          <p class="add-teacher__error">Specialty is required.</p>
+        }
+      </div>
+
+      <div class="add-teacher__field">
+        <label for="phone">Phone Number <span>*</span></label>
+        <input id="phone" type="text" formControlName="phone" placeholder="0300 1234567" />
+        @if (isInvalid('phone')) {
+          <p class="add-teacher__error">Enter a valid phone number.</p>
+        }
+      </div>
+
+      <div class="add-teacher__field">
+        <label for="email">Email <span>*</span></label>
+        <input id="email" type="email" formControlName="email" placeholder="teacher@school.pk" />
+        @if (isInvalid('email')) {
+          <p class="add-teacher__error">Enter a valid email address.</p>
+        }
+      </div>
+
+      <div class="add-teacher__field add-teacher__field--full">
+        <label for="rank">Rank <span>*</span></label>
+        <select id="rank" formControlName="rank">
+          @for (option of rankOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        @if (isInvalid('rank')) {
+          <p class="add-teacher__error">Rank is required.</p>
+        }
+      </div>
+    </div>
+
+    <div class="add-teacher__actions">
+      <app-button type="button" variant="outline" (click)="onClose()">Close</app-button>
+      @if (mode !== 'view') {
+        <app-button type="submit" variant="primary" [disabled]="isSubmitting">
+          {{ submitLabel }}
+        </app-button>
+      }
+    </div>
+  </form>
+</div>

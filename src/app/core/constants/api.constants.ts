@@ -84,6 +84,8 @@ export const API = {
   },
   ADMIN: {
     DASHBOARD: '/admin/dashboard',
+    TEACHERS: '/admin/teachers',
+    TEACHER: (id: string) => `/admin/teachers/${id}`,
   },
   SUPER_ADMIN: {
     CREATE_SCHOOL: '/schools/create-school',
