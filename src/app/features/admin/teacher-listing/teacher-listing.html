@@ -1,1 +1,76 @@
-<p>teacher-listing works!</p>
+<main class="teacher-listing">
+  <header class="teacher-listing__header">
+    <div>
+      <h1 class="teacher-listing__title">Teachers</h1>
+      <p class="teacher-listing__subtitle">Manage teaching staff across your school.</p>
+    </div>
+
+    <app-button icon="/svg/plus.svg" (click)="openAddTeacher()">
+      Add Teacher
+    </app-button>
+  </header>
+
+  <section class="teacher-listing__stats">
+    @for (card of statCards; track card.label) {
+      <app-stat-card [data]="card" />
+    }
+  </section>
+
+  <section class="teacher-listing__grid-card">
+    <div class="teacher-listing__toolbar">
+      <div class="teacher-listing__search">
+        <img src="/svg/search.svg" alt="" class="teacher-listing__search-icon" aria-hidden="true" />
+        <input
+          type="text"
+          placeholder="Search teachers by name, school or specialty..."
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          aria-label="Search teachers"
+        />
+      </div>
+
+      <select
+        class="teacher-listing__status-filter"
+        [ngModel]="statusFilter"
+        (ngModelChange)="onStatusFilterChange($event)"
+        aria-label="Filter by status"
+      >
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="on_leave">On Leave</option>
+      </select>
+    </div>
+
+    @if (isLoading) {
+      <div class="teacher-listing__state" role="status">
+        <app-loader />
+        <p>Loading teachers…</p>
+      </div>
+    } @else if (hasError) {
+      <div class="teacher-listing__state teacher-listing__state--error" role="alert">
+        <p>{{ errorMessage }}</p>
+        <app-button variant="outline" size="sm" (click)="loadTeachers()">Try again</app-button>
+      </div>
+    } @else if (filteredTeachers.length === 0) {
+      <div class="teacher-listing__state" role="status">
+        <p>No teachers found.</p>
+      </div>
+    } @else {
+      <app-ag-grid-table
+        [rowData]="filteredTeachers"
+        [columnDefs]="columnDefs"
+        tabId="teachers"
+      />
+    }
+  </section>
+
+  <app-sidenav [isOpen]="isSidenavOpen" (close)="closeSidenav()">
+    <app-add-teacher
+      *ngIf="isSidenavOpen"
+      [mode]="formMode"
+      [teacher]="selectedTeacher"
+      (closeClicked)="closeSidenav()"
+      (saved)="onTeacherSaved()"
+    />
+  </app-sidenav>
+</main>
