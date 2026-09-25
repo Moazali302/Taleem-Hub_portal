@@ -4,124 +4,137 @@
     Dashboard
   </h1>
 
-  <section class="dashboard__stats">
-    @for (card of statCards; track card.label) {
-      <app-stat-card [data]="card" />
-    }
-  </section>
+  @if (isLoading) {
+    <div class="dashboard__state" role="status">
+      <app-loader />
+      <p>Loading dashboard…</p>
+    </div>
+  } @else if (hasError) {
+    <div class="dashboard__state dashboard__state--error" role="alert">
+      <p>{{ errorMessage }}</p>
+      <app-button variant="outline" size="sm" (click)="loadSummary()">Try again</app-button>
+    </div>
+  } @else if (!summary) {
+    <div class="dashboard__state" role="status">
+      <p>No dashboard data yet.</p>
+    </div>
+  } @else {
+    <section class="dashboard__stats">
+      @for (card of statCards; track card.label) {
+        <app-stat-card [data]="card" />
+      }
+    </section>
 
-  <section class="dashboard__row">
-    <!-- Pending Approvals -->
-    <div class="dashboard-card">
-      <div class="dashboard-card__header-row">
-        <p class="dashboard-card__header">
-          <img src="/svg/clipboard-list.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
-          Pending Approvals
-        </p>
-        <span class="badge">{{ pendingApprovalsCount }} Total</span>
-      </div>
+    <section class="dashboard__row">
+      <div class="dashboard-card">
+        <div class="dashboard-card__header-row">
+          <p class="dashboard-card__header">
+            <img src="/svg/clipboard-list.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
+            Pending Approvals
+          </p>
+          <span class="badge">{{ pendingApprovals.length }} Total</span>
+        </div>
 
-      <ul class="approval-list">
-        @for (item of approvalItems; track item.name) {
-          <li class="approval-list__item">
-            <span class="approval-list__avatar">{{ item.initials }}</span>
-            <div class="approval-list__info">
-              <p class="approval-list__name">{{ item.name }}</p>
-              <p class="approval-list__meta">{{ item.type }} • {{ item.timeAgo }}</p>
-            </div>
-            <img src="/svg/chevron-right.svg" alt="" class="approval-list__arrow" aria-hidden="true" />
-          </li>
+        @if (pendingApprovals.length === 0) {
+          <p class="dashboard__empty">No pending approvals.</p>
+        } @else {
+          <ul class="approval-list">
+            @for (item of pendingApprovals; track item.id) {
+              <li class="approval-list__item">
+                <span class="approval-list__avatar">{{ initials(item.requester_name) }}</span>
+                <div class="approval-list__info">
+                  <p class="approval-list__name">{{ item.requester_name }}</p>
+                  <p class="approval-list__meta">{{ item.request_type }} • {{ timeAgo(item.created_at) }}</p>
+                </div>
+              </li>
+            }
+          </ul>
         }
-      </ul>
-
-      <button type="button" class="btn btn--block" routerLink="/approvals">
-        View All Approvals
-      </button>
-    </div>
-
-    <!-- Announcements -->
-    <div class="dashboard-card">
-      <div class="dashboard-card__header-row">
-        <p class="dashboard-card__header">
-          <img src="/svg/speakerphone.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
-          Announcements
-        </p>
-        <span class="badge">New</span>
       </div>
 
-      <span class="tag">Latest</span>
-      <p class="dashboard-card__sub-value">{{ announcement.latestTitle }}</p>
-      <p class="dashboard-card__description">{{ announcement.latestDescription }}</p>
+      <div class="dashboard-card">
+        <div class="dashboard-card__header-row">
+          <p class="dashboard-card__header">
+            <img src="/svg/speakerphone.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
+            Announcements
+          </p>
+        </div>
 
-      <ul class="announcement-list">
-        @for (item of announcementItems; track item.title) {
-          <li class="announcement-list__item">
-            <span class="announcement-list__dot"></span>
-            <div>
-              <p class="announcement-list__title">{{ item.title }}</p>
-              <p class="announcement-list__subtitle">{{ item.subtitle }}</p>
-            </div>
-          </li>
+        @if (!latestAnnouncement) {
+          <p class="dashboard__empty">No announcements yet.</p>
+        } @else {
+          <span class="tag">Latest</span>
+          <p class="dashboard-card__sub-value">{{ latestAnnouncement.title }}</p>
+          <p class="dashboard-card__description">{{ latestAnnouncement.body }}</p>
+
+          @if (olderAnnouncements.length > 0) {
+            <ul class="announcement-list">
+              @for (item of olderAnnouncements; track item.id) {
+                <li class="announcement-list__item">
+                  <span class="announcement-list__dot"></span>
+                  <div>
+                    <p class="announcement-list__title">{{ item.title }}</p>
+                    <p class="announcement-list__subtitle">{{ item.body }}</p>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
         }
-      </ul>
 
-      <button type="button" class="btn btn--block" routerLink="/announcements">
-        Manage Announcements
-      </button>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="dashboard-card">
-      <p class="dashboard-card__header">
-        <img src="/svg/bolt.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
-        Quick Actions
-      </p>
-      <button type="button" class="quick-action" routerLink="/students/new">
-        <img src="/svg/user-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
-        <span>Add Student</span>
-        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
-      </button>
-      <button type="button" class="quick-action" routerLink="/teachers/new">
-        <img src="/svg/users-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
-        <span>Add Teacher</span>
-        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
-      </button>
-      <button type="button" class="quick-action" routerLink="/announcements/new">
-        <img src="/svg/speakerphone.svg" alt="" class="quick-action__icon" aria-hidden="true" />
-        <span>Add Announcement</span>
-        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
-      </button>
-      <button type="button" class="quick-action" routerLink="/exams/new">
-        <img src="/svg/calendar-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
-        <span>Schedule Exam</span>
-        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
-      </button>
-    </div>
-  </section>
-
-  <section class="dashboard__row dashboard__row--two">
-    <div class="dashboard-card">
-      <p class="dashboard-card__header">
-        <img src="/svg/building-bank.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
-        Total Collections
-        <span class="dashboard-card__header-value">{{ feeCollection.amount }}</span>
-      </p>
-      <div class="dashboard-card__chips">
-        <a routerLink="/fees" class="chip chip--neutral">View Details</a>
-        <a routerLink="/fees/defaulters" class="chip chip--danger">Defaulters List</a>
+        <a class="btn btn--block" routerLink="/admin/announcements">Manage Announcements</a>
       </div>
-    </div>
 
-    <div class="dashboard-card">
-      <p class="dashboard-card__header">
-        <img src="/svg/calendar.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
-        Exam Schedule
-        <span class="dashboard-card__header-value">{{ upcomingExamsCount }} Upcoming</span>
-      </p>
-      <div class="dashboard-card__chips">
-        <button type="button" class="chip chip--neutral" routerLink="/exams/new">Add Exam</button>
-        <button type="button" class="chip chip--neutral" routerLink="/exams">View All</button>
+      <div class="dashboard-card">
+        <p class="dashboard-card__header">
+          <img src="/svg/bolt.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
+          Quick Actions
+        </p>
+        <a class="quick-action" routerLink="/admin/students">
+          <img src="/svg/user-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
+          <span>Add Student</span>
+          <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
+        </a>
+        <a class="quick-action" routerLink="/admin/teachers">
+          <img src="/svg/users-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
+          <span>Add Teacher</span>
+          <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
+        </a>
+        <a class="quick-action" routerLink="/admin/announcements">
+          <img src="/svg/speakerphone.svg" alt="" class="quick-action__icon" aria-hidden="true" />
+          <span>Add Announcement</span>
+          <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
+        </a>
+        <a class="quick-action" routerLink="/admin/exams">
+          <img src="/svg/calendar-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
+          <span>Schedule Exam</span>
+          <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
+        </a>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <section class="dashboard__row dashboard__row--two">
+      <div class="dashboard-card">
+        <p class="dashboard-card__header">
+          <img src="/svg/building-bank.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
+          Total Collections
+          <span class="dashboard-card__header-value">{{ formatPkr(summary.fees_collected_this_month) }}</span>
+        </p>
+        <div class="dashboard-card__chips">
+          <a routerLink="/admin/fees" class="chip chip--neutral">View Details</a>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <p class="dashboard-card__header">
+          <img src="/svg/calendar.svg" alt="" class="dashboard-card__header-icon" aria-hidden="true" />
+          Exam Schedule
+          <span class="dashboard-card__header-value">{{ summary.upcoming_exams_count }} Upcoming</span>
+        </p>
+        <div class="dashboard-card__chips">
+          <a class="chip chip--neutral" routerLink="/admin/exams">View All</a>
+        </div>
+      </div>
+    </section>
+  }
 </main>

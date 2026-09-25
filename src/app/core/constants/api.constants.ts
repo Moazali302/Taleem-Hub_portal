@@ -82,6 +82,9 @@ export const API = {
     UPDATE: (id: string) => `/announcements/${id}`,
     DELETE: (id: string) => `/announcements/${id}`
   },
+  ADMIN: {
+    DASHBOARD: '/admin/dashboard',
+  },
   SUPER_ADMIN: {
     CREATE_SCHOOL: '/schools/create-school',
      LIST_SCHOOLS: '/schools', 
