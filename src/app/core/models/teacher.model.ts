@@ -24,6 +24,7 @@ export interface CreateTeacherPayload {
   email: string;
   specialty: string;
   rank: TeacherRank;
+  password:string;
 }
 
 export const TEACHER_RANK_OPTIONS: { value: TeacherRank; label: string }[] = [

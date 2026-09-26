@@ -49,17 +49,25 @@
 
       <div class="add-teacher__field">
         <label for="phone">Phone Number <span>*</span></label>
-        <input id="phone" type="text" formControlName="phone" placeholder="0300 1234567" />
+        <input id="phone" type="text" formControlName="phone" placeholder="+923001234567" />
         @if (isInvalid('phone')) {
           <p class="add-teacher__error">Enter a valid phone number.</p>
         }
       </div>
 
-      <div class="add-teacher__field">
+            <div class="add-teacher__field">
         <label for="email">Email <span>*</span></label>
         <input id="email" type="email" formControlName="email" placeholder="teacher@school.pk" />
         @if (isInvalid('email')) {
           <p class="add-teacher__error">Enter a valid email address.</p>
+        }
+      </div>
+
+      <div class="add-teacher__field">
+        <label for="password">Password <span>*</span></label>
+        <input id="password" type="password" formControlName="password" placeholder="Minimum 8 characters" autocomplete="new-password" />
+        @if (isInvalid('password')) {
+          <p class="add-teacher__error">Password must be 8–25 characters.</p>
         }
       </div>
 

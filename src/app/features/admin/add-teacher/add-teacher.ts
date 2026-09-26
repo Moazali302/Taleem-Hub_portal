@@ -43,10 +43,11 @@ export class AddTeacherComponent implements OnInit {
   form = this.fb.group({
     teacher_name: ['', [Validators.required]],
     qualification: ['', [Validators.required]],
-    phone: ['', [Validators.required, Validators.pattern(/^[\d\s()-]{6,}$/)]],
+    phone: ['', [Validators.required, Validators.pattern(/^\+92[0-9]{10}$/)]],
     email: ['', [Validators.required, Validators.email]],
     specialty: ['', [Validators.required]],
     rank: this.fb.nonNullable.control(TEACHER_RANK_OPTIONS[0].value, [Validators.required]),
+    password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(25)]],
   });
 
   constructor(
@@ -117,6 +118,7 @@ export class AddTeacherComponent implements OnInit {
       email: raw.email ?? '',
       specialty: raw.specialty ?? '',
       rank: raw.rank,
+      password: raw.password ?? ''
     };
 
     this.isSubmitting = true;

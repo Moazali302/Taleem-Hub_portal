@@ -20,13 +20,13 @@ export const API = {
     FEE_HISTORY: (id: string) => `/students/${id}/fee-history`,
     ATTENDANCE: (id: string) => `/students/${id}/attendance`
   },
-  TEACHERS: {
-    LIST: '/teachers',
-    CREATE: '/teachers',
-    GET: (id: string) => `/teachers/${id}`,
-    UPDATE: (id: string) => `/teachers/${id}`,
-    DELETE: (id: string) => `/teachers/${id}`
-  },
+   TEACHERS: {
+  LIST: '/teachers', // was a function with schoolId — corrected per actual controller (@Get() with no path)
+  CREATE: '/teachers/CreateTeacher',
+  GET: (id: string) => `/teachers/${id}`,
+  UPDATE: (id: string) => `/teachers/UpdateTeacher${id}`, // see note below — no slash before :id in @Patch('UpdateTeacher:id')
+  DELETE: (id: string) => `/teachers/DeleteTeacher${id}`
+},
   CLASSES: {
     LIST: '/classes',
     CREATE: '/classes',
