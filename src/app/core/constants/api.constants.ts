@@ -21,7 +21,7 @@ export const API = {
     ATTENDANCE: (id: string) => `/students/${id}/attendance`
   },
    TEACHERS: {
-  LIST: '/teachers', // was a function with schoolId — corrected per actual controller (@Get() with no path)
+  LIST: '/teachers/GetAllTeachers',// was a function with schoolId — corrected per actual controller (@Get() with no path)
   CREATE: '/teachers/CreateTeacher',
   GET: (id: string) => `/teachers/${id}`,
   UPDATE: (id: string) => `/teachers/UpdateTeacher${id}`, // see note below — no slash before :id in @Patch('UpdateTeacher:id')

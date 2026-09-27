@@ -26,7 +26,7 @@ export class AdminTeachersService {
   //   }
   //   return this.api.get<TeacherListItem[]>(API.TEACHERS.LIST(schoolId));
   // }
-   getAllTeachers(): Observable<ApiResponse<TeacherListItem[]>> {
+  getAllTeachers(): Observable<ApiResponse<TeacherListItem[]>> {
   return this.api.get<TeacherListItem[]>(API.TEACHERS.LIST);
 }
 

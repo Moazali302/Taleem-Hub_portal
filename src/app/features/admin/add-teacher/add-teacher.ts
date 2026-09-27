@@ -12,6 +12,7 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { AdminTeachersService } from '@app/core/services/admin-teachers.service';
 import { ToastService } from '@app/core/services/toast.service';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
+import { LoaderComponent } from '@app/shared/components/loader/loader.component';
 import {
   CreateTeacherPayload,
   TeacherListItem,
@@ -23,7 +24,7 @@ export type TeacherFormMode = 'create' | 'edit' | 'view';
 @Component({
   selector: 'app-add-teacher',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent,LoaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './add-teacher.html',
   styleUrl: './add-teacher.scss',

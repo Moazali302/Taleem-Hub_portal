@@ -88,7 +88,11 @@
       <app-button type="button" variant="outline" (click)="onClose()">Close</app-button>
       @if (mode !== 'view') {
         <app-button type="submit" variant="primary" [disabled]="isSubmitting">
+          @if(isSubmitting){
+            <app-loader/>
+          } @else{
           {{ submitLabel }}
+          }
         </app-button>
       }
     </div>
