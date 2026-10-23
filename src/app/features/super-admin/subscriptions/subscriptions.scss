@@ -1,0 +1,114 @@
+$navy: #17306f;
+$navy-dark: #0c1c4d;
+$muted: #6b7694;
+
+.subscriptions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: $navy-dark;
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+
+    @media (max-width: 900px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 480px) { grid-template-columns: 1fr; }
+  }
+
+  &__card {
+    padding: 20px;
+    border-radius: 16px;
+    background: #ffffff;
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px;
+    padding: 9px 14px;
+    border: 1px solid #e3e7f1;
+    border-radius: 10px;
+
+    img { width: 16px; height: 16px; opacity: 0.5; }
+
+    input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      color: inherit;
+
+      &::placeholder { color: #9aa3bd; }
+    }
+  }
+
+  &__select,
+  &__export {
+    padding: 9px 14px;
+    border: 1px solid #e3e7f1;
+    border-radius: 10px;
+    background: #ffffff;
+    font-family: inherit;
+    font-size: 13px;
+    color: $navy-dark;
+    cursor: pointer;
+
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+
+  &__export:hover:not(:disabled) { background: #f4f6fb; }
+
+  &__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 48px 16px;
+    font-size: 14px;
+    color: $muted;
+
+    p { margin: 0; }
+    &--error p { color: #b42318; }
+  }
+}
+
+// Theme the shared AG Grid (Quartz) through its CSS variables — no component changes.
+:host ::ng-deep .subscriptions__grid {
+  --ag-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ag-font-size: 13px;
+  --ag-foreground-color: #{$navy-dark};
+  --ag-background-color: #ffffff;
+  --ag-header-background-color: #f1f4fb;
+  --ag-header-text-color: #{$muted};
+  --ag-header-font-size: 11px;
+  --ag-header-font-weight: 600;
+  --ag-row-border-color: #eef0f6;
+  --ag-border-color: #eef0f6;
+  --ag-wrapper-border-radius: 12px;
+  --ag-row-hover-color: #f8f9fd;
+
+  .ag-header-cell-text {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .ag-paging-panel {
+    color: $muted;
+    font-size: 12px;
+  }
+}

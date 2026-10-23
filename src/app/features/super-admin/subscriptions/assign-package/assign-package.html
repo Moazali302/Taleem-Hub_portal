@@ -1,0 +1,57 @@
+<header class="assign-package__header">
+  <button type="button" class="assign-package__back" aria-label="Close" (click)="onClose()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+  <div>
+    <h2 class="assign-package__title">{{ heading }}</h2>
+    <p class="assign-package__subtitle">{{ subtitle }}</p>
+  </div>
+</header>
+
+<form class="assign-package__form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="assign-package__field">
+    <label for="school_id">School <span>*</span></label>
+    <select id="school_id" formControlName="school_id">
+      <option [ngValue]="0" disabled>Select a school</option>
+      @for (school of schools; track school.school_id) {
+        <option [ngValue]="school.school_id">{{ school.school_name }}</option>
+      }
+    </select>
+    @if (isInvalid('school_id')) {
+      <p class="assign-package__error">Please select a school.</p>
+    }
+  </div>
+
+  <div class="assign-package__field">
+    <label for="plan">Plan <span>*</span></label>
+    <select id="plan" formControlName="plan">
+      @for (option of planOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="assign-package__field">
+    <label for="billing_cycle">Billing cycle <span>*</span></label>
+    <select id="billing_cycle" formControlName="billing_cycle">
+      @for (option of cycleOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+  <p class="assign-package__price">
+    Amount <strong>PKR {{ amount | number }}</strong>
+  </p>
+
+  <div class="assign-package__actions">
+    <button type="button" class="assign-package__btn assign-package__btn--ghost" (click)="onClose()">
+      Cancel
+    </button>
+    <button type="submit" class="assign-package__btn" [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Saving…' : 'Save Package' }}
+    </button>
+  </div>
+</form>

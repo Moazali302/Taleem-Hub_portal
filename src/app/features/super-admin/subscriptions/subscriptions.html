@@ -1,0 +1,86 @@
+<main class="subscriptions">
+  <app-page-header title="Subscriptions" subtitle="Plans, billing and renewals.">
+    <button type="button" class="page-header__action" (click)="openAssignPackage()">
+      Assign Package
+    </button>
+  </app-page-header>
+
+  <section class="subscriptions__stats" aria-label="Subscriptions summary">
+    @for (card of summaryCards; track card.label) {
+      <app-summary-card [data]="card" />
+    }
+  </section>
+
+  <section class="subscriptions__card">
+    <div class="subscriptions__toolbar">
+      <div class="subscriptions__search">
+        <img src="/svg/search.svg" alt="" aria-hidden="true" />
+        <input
+          type="text"
+          placeholder="Search by school..."
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          aria-label="Search by school"
+        />
+      </div>
+
+      <select
+        class="subscriptions__select"
+        [ngModel]="planFilter"
+        (ngModelChange)="onPlanFilterChange($event)"
+        aria-label="Filter by plan"
+      >
+        <option value="all">All Plans</option>
+        @for (option of planOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+
+      <button
+        type="button"
+        class="subscriptions__export"
+        [disabled]="filteredSubscriptions.length === 0"
+        (click)="exportCsv()"
+      >
+        Export
+      </button>
+    </div>
+
+    @if (isLoading) {
+      <div class="subscriptions__state" role="status">
+        <app-loader />
+        <p>Loading subscriptions…</p>
+      </div>
+    } @else if (hasError) {
+      <div class="subscriptions__state subscriptions__state--error" role="alert">
+        <p>{{ errorMessage }}</p>
+        <button type="button" class="subscriptions__export" (click)="loadSubscriptions()">Try again</button>
+      </div>
+    } @else if (filteredSubscriptions.length === 0) {
+      <div class="subscriptions__state" role="status">
+        <p>No subscriptions found.</p>
+      </div>
+    } @else {
+      <div class="subscriptions__grid">
+        <app-ag-grid-table
+          [rowData]="filteredSubscriptions"
+          [columnDefs]="columnDefs"
+          [rowHeight]="rowHeight"
+          [dashboard]="false"
+          tabId="subscriptions"
+        />
+      </div>
+    }
+  </section>
+
+  <app-sidenav [isOpen]="isSidenavOpen" panelWidth="480px" (close)="closeSidenav()">
+    @if (isSidenavOpen) {
+      <app-assign-package
+        [schools]="subscriptions"
+        [subscription]="selectedSubscription"
+        (closeClicked)="closeSidenav()"
+        (saved)="onPackageSaved()"
+      />
+    }
+  </app-sidenav>
+</main>

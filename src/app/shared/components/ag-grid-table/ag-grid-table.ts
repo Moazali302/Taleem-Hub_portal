@@ -25,6 +25,8 @@ export class AgGridTableComponent<T = any> implements OnChanges {
   @Input() tabId: string = '';
   @Input() rowSelection: 'single' | 'multiple' = 'single';
   @Input() dashboard: boolean = true;
+  /** Row height in px — defaults to the original 80 so existing grids are unchanged. */
+  @Input() rowHeight: number = 80;
   @Output() rowClickedEvent = new EventEmitter<T>();
   @Output() selectionChangedEvent = new EventEmitter<SelectionChangedEvent<T>>();
   @Output() gridReadyEvent = new EventEmitter<{ api: GridApi<T>; tabId: string }>();

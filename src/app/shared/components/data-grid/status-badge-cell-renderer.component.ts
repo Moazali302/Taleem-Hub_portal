@@ -12,6 +12,8 @@ export interface StatusBadgeColor {
 /** Pass a custom colorMap via colDef.cellRendererParams for non-default statuses. */
 export interface StatusBadgeParams extends ICellRendererParams {
   colorMap?: Record<string, StatusBadgeColor>;
+  /** Hide the leading dot (plain pill). Defaults to true. */
+  showDot?: boolean;
 }
 
 const DEFAULT_COLOR_MAP: Record<string, StatusBadgeColor> = {
@@ -47,7 +49,9 @@ const FALLBACK_COLOR: StatusBadgeColor = { bg: '#f3f4f6', text: '#4b5563', dot: 
   imports: [CommonModule],
   template: `
     <span class="status-badge" [style.background]="color.bg" [style.color]="color.text">
-      <span class="status-badge__dot" [style.background]="color.dot"></span>
+      @if (showDot) {
+        <span class="status-badge__dot" [style.background]="color.dot"></span>
+      }
       {{ label }}
     </span>
   `,
@@ -79,6 +83,7 @@ const FALLBACK_COLOR: StatusBadgeColor = { bg: '#f3f4f6', text: '#4b5563', dot: 
 })
 export class StatusBadgeCellRendererComponent implements ICellRendererAngularComp {
   label = '';
+  showDot = true;
   color: StatusBadgeColor = FALLBACK_COLOR;
 
   agInit(params: StatusBadgeParams): void {
@@ -93,6 +98,7 @@ export class StatusBadgeCellRendererComponent implements ICellRendererAngularCom
   private setValue(params: StatusBadgeParams): void {
     const value = (params.value ?? '').toString();
     this.label = value;
+    this.showDot = params.showDot ?? true;
 
     const map = { ...DEFAULT_COLOR_MAP, ...(params.colorMap ?? {}) };
     this.color = map[value.toLowerCase()] ?? FALLBACK_COLOR;

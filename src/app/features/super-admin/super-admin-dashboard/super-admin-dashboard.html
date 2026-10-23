@@ -1,25 +1,11 @@
 <main class="dashboard">
-  <header class="dashboard__header">
-    <div>
-      <h1 class="dashboard__title">Dashboard</h1>
-      <p class="dashboard__subtitle">Platform health at a glance.</p>
-    </div>
-    <a routerLink="/super-admin/analytics" class="dashboard__cta">View Full Report</a>
-  </header>
+  <app-page-header title="Dashboard" subtitle="Platform health at a glance.">
+    <a routerLink="/super-admin/analytics" class="page-header__action">View Full Report</a>
+  </app-page-header>
 
   <section class="dashboard__stats" aria-label="Platform summary">
     @for (stat of stats; track stat.label) {
-      <article class="stat" [class]="stat.accent ? 'stat stat--' + stat.accent : 'stat'">
-        <p class="stat__label">{{ stat.label }}</p>
-        <p class="stat__value">{{ stat.value }}</p>
-        <p
-          class="stat__caption"
-          [class.stat__caption--positive]="stat.captionTone === 'positive'"
-          [class.stat__caption--negative]="stat.captionTone === 'negative'"
-        >
-          {{ stat.caption }}
-        </p>
-      </article>
+      <app-summary-card [data]="stat" />
     }
   </section>
 

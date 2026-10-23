@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ActivityItem } from '@app/core/models/activity.model';
 import { AnalyticsPoint } from '@app/core/models/analytics.model';
-import {
-  DashboardStat,
-  ExpiringSubscriptionItem,
-  FeeCollectionSummary,
-} from '@app/core/models/dashboard.model';
+import { ExpiringSubscriptionItem, FeeCollectionSummary } from '@app/core/models/dashboard.model';
+import { SummaryCardData } from '@app/core/models/summary-card.model';
+import { SummaryCardComponent } from '@app/shared/components/summary-card/summary-card';
+import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
 import { TimeAgoPipe } from '@app/pipe/time-ago.pipe';
 
 interface ChartPoint {
@@ -23,7 +22,7 @@ const DONUT_RADIUS = 52;
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, TimeAgoPipe],
+  imports: [CommonModule, RouterLink, TimeAgoPipe, SummaryCardComponent, PageHeaderComponent],
   templateUrl: './super-admin-dashboard.html',
   styleUrl: './super-admin-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,12 +31,12 @@ export class SuperAdminDashboardComponent {
   // TODO(backend): replace the mock data below with a DashboardService call
   // once the super-admin dashboard endpoint is ready.
 
-  readonly stats: DashboardStat[] = [
+  readonly stats: SummaryCardData[] = [
     { label: 'Total Schools', value: 24, caption: '+3.2% this month', captionTone: 'positive' },
     { label: 'Active Students', value: '5,842', caption: '+1.1%', captionTone: 'positive' },
     { label: 'Total Teachers', value: 412, caption: '-0.5%', captionTone: 'negative' },
-    { label: 'Expiring Subscriptions', value: 6, caption: '2 urgent', captionTone: 'neutral', accent: 'warning' },
-    { label: 'Open Complaints', value: 18, caption: '5 critical', captionTone: 'neutral', accent: 'danger' },
+    { label: 'Expiring Subscriptions', value: 6, caption: '2 urgent', accent: 'warning' },
+    { label: 'Open Complaints', value: 18, caption: '5 critical', accent: 'danger' },
   ];
 
   readonly revenueTotalLabel = 'PKR 18.4M this month';

@@ -1,0 +1,13 @@
+<article class="summary-card" [class]="data.accent ? 'summary-card summary-card--' + data.accent : 'summary-card'">
+  <p class="summary-card__label">{{ data.label }}</p>
+  <p class="summary-card__value">{{ data.value }}</p>
+  @if (data.caption) {
+    <p
+      class="summary-card__caption"
+      [class.summary-card__caption--positive]="data.captionTone === 'positive'"
+      [class.summary-card__caption--negative]="data.captionTone === 'negative'"
+    >
+      {{ data.caption }}
+    </p>
+  }
+</article>
