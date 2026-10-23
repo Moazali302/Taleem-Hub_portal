@@ -25,8 +25,6 @@ import {SidebarConfig} from '@core/models/sidbar-menu.model';
 export class SidebarComponent {
   @Input() role: Role | null = null;
 
-  readonly logoSrc = '/images/side-logo.png';
-
   config: SidebarConfig | null = null;
 
   constructor(private readonly authService: AuthService) {

@@ -1,23 +1,23 @@
-:host {
-  display: flex;
+// Sidebar is position:fixed (see sidebar.scss) and removed from normal flow,
+// so the main column is offset by its width instead of using flexbox for it.
+.super-admin-layout__main {
+  margin-left: 260px; // = sidebar width
   min-height: 100vh;
-  background: var(--th-bg);
+  display: flex;
+  flex-direction: column;
+  background: #f4f6fb;
 }
 
-app-sidebar {
-  flex: none;
+// Header stays visible while page content scrolls underneath it.
+:host ::ng-deep app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: block;
+  background: #f4f6fb;
 }
 
-.super-admin-layout {
-  &__main {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    min-width: 0; // lets wide grids/charts shrink instead of overflowing the page
-  }
-
-  &__content {
-    flex: 1;
-    padding: 0 32px 32px;
-  }
+.super-admin-layout__content {
+  flex: 1;
+  padding: 8px 32px 32px;
 }

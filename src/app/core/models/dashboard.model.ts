@@ -12,6 +12,7 @@ export interface ExamItem {
 export interface ExpiringSubscriptionItem {
   schoolName: string;
   expiresIn: string; // e.g. "3 days"
+  plan?: string; // e.g. "Basic"
 }
 export interface ApprovaladminItem {
   initials: string;
@@ -31,4 +32,12 @@ export interface FeeCollectionSummary {
   billedAmount: string;
   pendingAmount: string;
   overdueCount: number;
+}
+
+export interface DashboardStat {
+  label: string;
+  value: string | number;
+  caption: string;
+  captionTone: 'positive' | 'negative' | 'neutral';
+  accent?: 'warning' | 'danger';
 }
