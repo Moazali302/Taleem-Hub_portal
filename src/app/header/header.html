@@ -1,12 +1,7 @@
 <header class="app-header">
-  <div class="app-header__user-info">
-    <span class="app-header__user-name">{{ currentUser.name }}</span>
-    <span class="app-header__user-role">{{ currentUser.role }}</span>
-  </div>
-
   @if (showSearch) {
     <div class="app-header__search">
-      <img src="/svg/search.svg" alt="" class="app-header__search-icon" aria-hidden="true" />
+      <span class="th-icon app-header__search-icon" style="--icon-url: url('/svg/search.svg')" aria-hidden="true"></span>
       <input
         type="text"
         class="app-header__search-input"
@@ -21,13 +16,13 @@
     <div class="app-header__language">
       <button
         type="button"
-        class="app-header__language-trigger"
+        class="app-header__icon-btn"
         (click)="toggleLanguageMenu()"
         [attr.aria-expanded]="isLanguageMenuOpen"
         aria-haspopup="listbox"
         [attr.aria-label]="'Change language, current: ' + activeLanguageLabel"
       >
-        <img src="/svg/world.svg" alt="" aria-hidden="true" />
+        <span class="th-icon" style="--icon-url: url('/svg/world.svg')" aria-hidden="true"></span>
       </button>
 
       @if (isLanguageMenuOpen) {
@@ -47,7 +42,24 @@
       }
     </div>
 
+    <button
+      type="button"
+      class="app-header__icon-btn"
+      (click)="notificationsClick.emit()"
+      [attr.aria-label]="'Notifications, ' + unreadNotifications + ' unread'"
+    >
+      <span class="th-icon" style="--icon-url: url('/svg/bell.svg')" aria-hidden="true"></span>
+      @if (unreadNotifications > 0) {
+        <span class="app-header__badge"></span>
+      }
+    </button>
+
     <div class="app-header__divider"></div>
+
+    <div class="app-header__user-info">
+      <span class="app-header__user-name">{{ currentUser.name }}</span>
+      <span class="app-header__user-role">{{ currentUser.role }}</span>
+    </div>
 
     <div class="app-header__avatar">
       @if (currentUser.avatarUrl) {

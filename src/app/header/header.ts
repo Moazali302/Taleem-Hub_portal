@@ -26,12 +26,13 @@ export class HeaderComponent {
 
   /** Set to true on pages that need the search input; hidden by default to match this layout */
   @Input() showSearch = false;
-
+  @Input() unreadNotifications = 0;
+  @Output() notificationsClick = new EventEmitter<void>();
   @Output() searchChange = new EventEmitter<string>();
   @Output() languageChange = new EventEmitter<string>();
 
   isLanguageMenuOpen = false;
-
+  
   constructor(private elementRef: ElementRef<HTMLElement>) {}
 
   onSearchInput(value: string): void {

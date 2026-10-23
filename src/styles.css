@@ -33,4 +33,29 @@
       focus:border-primary-light focus:outline-none focus:ring-3 focus:ring-primary-light/15
       aria-invalid:border-error aria-invalid:focus:border-error aria-invalid:focus:ring-error/15;
   }
+  :root {
+  --th-navy-900: #0b1a44;
+  --th-navy-700: #14307a;
+  --th-gold: #f5b800;
+  --th-gold-soft: #ffd34d;
+  --th-ink: #0f1b3d;
+  --th-muted: #5a6787;
+  --th-border: #e3e8f3;
+  --th-surface: #ffffff;
+  --th-bg: #f4f6fb;
+  --th-sidebar-text: #c8d3f0;
+  --th-sidebar-muted: #9fb0dd;
+  --th-font: 'Plus Jakarta Sans', 'Inter', sans-serif;
+}
+
+/* Colours any mono SVG via CSS: set --icon-url on the element, colour comes from `color` */
+.th-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-url) center / contain no-repeat;
+  mask: var(--icon-url) center / contain no-repeat;
+}
 }
