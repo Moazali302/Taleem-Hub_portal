@@ -18,24 +18,20 @@ $sidebar-gold: #f5b800;
 .sidebar__brand {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 24px 20px 20px;
-}
-
-.sidebar__logo-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 16px;
-  border-radius: 14px;
-  background: #ffffff;
+  gap: 4px;
+  padding: 28px 24px 20px;
 }
 
 .sidebar__logo {
-  width: 100%;
-  max-width: 150px;
-  height: auto;
-  object-fit: contain;
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.sidebar__logo-accent {
+  color: $sidebar-gold;
 }
 
 .sidebar__role-label {
@@ -44,7 +40,6 @@ $sidebar-gold: #f5b800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.6);
-  padding-left: 4px;
 }
 
 // ---------- Nav ----------
