@@ -3,30 +3,50 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 14px 32px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 32px;
+  background: transparent;
 
   &__user-info {
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 2px;
-    line-height: 1.3;
+    line-height: 1.2;
   }
 
   &__user-name {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 600;
-    color: #111827;
-    letter-spacing: -0.01em;
+    color: #0c1c4d;
   }
 
   &__user-role {
-    font-size: 12.5px;
+    font-size: 10px;
     font-weight: 500;
-    color: #9ca3af;
+    color: #6b7694;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
+  }
+
+  &__divider {
+    width: 1px;
+    height: 24px;
+    background: #d6dbe8;
+  }
+
+  &__icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #4b5675;
+    cursor: pointer;
+
+    &:hover { color: #0c1c4d; }
   }
 
   &__search {
@@ -34,12 +54,11 @@
     align-items: center;
     gap: 10px;
     flex: 1;
-    max-width: 420px;
+    max-width: 360px;
     padding: 9px 16px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
+    border: none;
+    border-radius: 12px;
     background: #ffffff;
-    margin: 0 24px;
   }
 
   &__search-icon {
@@ -75,16 +94,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border: none;
-    background: transparent;
-    border-radius: 50%;
+    border-radius: 10px;
+    background: #ffffff;
     cursor: pointer;
 
     img { width: 19px; height: 19px; opacity: 0.65; }
 
-    &:hover { background: #f3f4f6; }
+    &:hover img { opacity: 0.9; }
   }
 
   &__language-menu {
@@ -118,18 +137,12 @@
     }
   }
 
-  &__divider {
-    width: 1px;
-    height: 22px;
-    background: #e5e7eb;
-  }
-
   &__avatar {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: #dbeafe;
-    color: #1d4ed8;
+    background: #17306f;
+    color: #f5b800;
     display: flex;
     align-items: center;
     justify-content: center;

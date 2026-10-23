@@ -1,9 +1,4 @@
 <header class="app-header">
-  <div class="app-header__user-info">
-    <span class="app-header__user-name">{{ currentUser.name }}</span>
-    <span class="app-header__user-role">{{ currentUser.role }}</span>
-  </div>
-
   @if (showSearch) {
     <div class="app-header__search">
       <img src="/svg/search.svg" alt="" class="app-header__search-icon" aria-hidden="true" />
@@ -47,7 +42,19 @@
       }
     </div>
 
+    <button type="button" class="app-header__icon-btn" aria-label="Notifications">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10.268 21a2 2 0 0 0 3.464 0" />
+        <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
+      </svg>
+    </button>
+
     <div class="app-header__divider"></div>
+
+    <div class="app-header__user-info">
+      <span class="app-header__user-name">{{ currentUser.name }}</span>
+      <span class="app-header__user-role">{{ currentUser.role }}</span>
+    </div>
 
     <div class="app-header__avatar">
       @if (currentUser.avatarUrl) {

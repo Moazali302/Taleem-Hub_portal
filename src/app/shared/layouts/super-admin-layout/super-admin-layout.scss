@@ -5,7 +5,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f5f6fa;
+  background: #f4f6fb;
 }
 
 // Header stays visible while page content scrolls underneath it.
@@ -14,12 +14,10 @@
   top: 0;
   z-index: 10;
   display: block;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  background: #f4f6fb;
 }
 
 .super-admin-layout__content {
   flex: 1;
-  padding: 24px 32px;
-  padding-left: 24px;
+  padding: 8px 32px 32px;
 }

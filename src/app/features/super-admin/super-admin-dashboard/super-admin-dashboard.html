@@ -1,111 +1,108 @@
 <main class="dashboard">
-  <h1 class="dashboard__title">
-    <img src="/svg/sidnav-dashboard.svg" alt="" class="dashboard__title-icon" aria-hidden="true" />
-    Dashboard
-  </h1>
+  <header class="dashboard__header">
+    <div>
+      <h1 class="dashboard__title">Dashboard</h1>
+      <p class="dashboard__subtitle">Platform health at a glance.</p>
+    </div>
+    <a routerLink="/super-admin/analytics" class="dashboard__cta">View Full Report</a>
+  </header>
 
-  <section class="dashboard__stats">
-    @for (card of statCards; track card.label) {
-      <app-stat-card [data]="card" />
+  <section class="dashboard__stats" aria-label="Platform summary">
+    @for (stat of stats; track stat.label) {
+      <article class="stat" [class]="stat.accent ? 'stat stat--' + stat.accent : 'stat'">
+        <p class="stat__label">{{ stat.label }}</p>
+        <p class="stat__value">{{ stat.value }}</p>
+        <p
+          class="stat__caption"
+          [class.stat__caption--positive]="stat.captionTone === 'positive'"
+          [class.stat__caption--negative]="stat.captionTone === 'negative'"
+        >
+          {{ stat.caption }}
+        </p>
+      </article>
     }
   </section>
 
-  <section class="dashboard__row">
-    <div class="dashboard-card dashboard-card--profit">
-      <app-profit-overview-card
-        [data]="profitOverview"
-        [trendPercent]="12.7">
-      </app-profit-overview-card>
-    </div>
+  <section class="dashboard__row dashboard__row--charts">
+    <article class="card">
+      <h2 class="card__title">Revenue Analytics · {{ revenueTotalLabel }}</h2>
 
-    <div class="dashboard-card dashboard-card--analytics">
-      <app-analytics-card
-        title="Analytics Overview"
-        [dataByRange]="analyticsData"
-        viewFullReportLink="/analytics"
-      />
-    </div>
+      <svg
+        class="revenue-chart"
+        [attr.viewBox]="chartViewBox"
+        preserveAspectRatio="none"
+        role="img"
+        aria-label="Revenue trend over the last 12 months"
+      >
+        <defs>
+          <linearGradient id="revenue-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#f5b800" stop-opacity="0.38" />
+            <stop offset="100%" stop-color="#f5b800" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        <path [attr.d]="chartAreaPath" fill="url(#revenue-gradient)" />
+        <path
+          [attr.d]="chartLinePath"
+          class="revenue-chart__line"
+          fill="none"
+          vector-effect="non-scaling-stroke"
+        />
+      </svg>
+    </article>
 
-    <div class="dashboard-card">
-      <p class="dashboard-card__header">Quick Actions</p>
-      <button type="button" class="quick-action" routerLink="/schools/new">
-        <img src="/svg/school.svg" alt="" class="quick-action__icon" aria-hidden="true" />
-        <span>Add School</span>
-        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
-      </button>
-      <button type="button" class="quick-action" routerLink="/expense">
-        <img src="/svg/user-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
-        <span>Add Expense</span>
-        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
-      </button>
-      <button type="button" class="quick-action" routerLink="/complaint">
-        <img src="/svg/complaint.svg" alt="" class="quick-action__icon" aria-hidden="true" />
-        <span>View Complaint </span>
-        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
-      </button>
-       <button type="button" class="quick-action" routerLink="/users/new">
-        <img src="/svg/user-plus.svg" alt="" class="quick-action__icon" aria-hidden="true" />
-        <span>Add Users</span>
-        <img src="/svg/chevron-right.svg" alt="" class="quick-action__arrow" aria-hidden="true" />
-      </button>
-    </div>
+    <article class="card card--center">
+      <h2 class="card__title">Fee Collection Rate</h2>
+
+      <div class="donut" role="img" [attr.aria-label]="feeCollection.ratePercent + '% of fees collected'">
+        <svg viewBox="0 0 140 140" class="donut__svg">
+          <circle class="donut__track" cx="70" cy="70" [attr.r]="donutRadius" />
+          <circle
+            class="donut__value"
+            cx="70"
+            cy="70"
+            [attr.r]="donutRadius"
+            [attr.stroke-dasharray]="donutCircumference"
+            [attr.stroke-dashoffset]="donutOffset"
+          />
+        </svg>
+        <span class="donut__label">{{ feeCollection.ratePercent }}%</span>
+      </div>
+
+      <p class="card__muted">
+        {{ feeCollection.collectedAmount }} of {{ feeCollection.billedAmount }} billed
+      </p>
+    </article>
   </section>
 
-  <section class="dashboard__row dashboard__row--two">
-     <div class="dashboard-card">
-  <div class="fee-rate">
-    <div class="fee-rate__header">
-      <span class="fee-rate__icon-wrap">
-        <img src="/svg/cash.svg" alt="" class="fee-rate__icon" aria-hidden="true" />
-      </span>
-      <p class="fee-rate__title">Fee Collection Rate</p>
+  <section class="dashboard__row dashboard__row--lists">
+    <article class="card">
+      <h2 class="card__title">Recent Activity</h2>
+      <ul class="list">
+        @for (item of recentActivities; track $index) {
+          <li class="list__item">
+            <span class="list__dot" aria-hidden="true"></span>
+            <div>
+              <p class="list__primary">{{ item.description }}</p>
+              <p class="list__secondary">{{ item.timestamp | timeAgo }}</p>
+            </div>
+          </li>
+        }
+      </ul>
+    </article>
 
-      <span
-        class="fee-rate__trend"
-        [class.fee-rate__trend--down]="feeCollection.trendDirection === 'down'"
-      >
-        <img
-          [src]="feeCollection.trendDirection === 'up' ? '/svg/trend-up.svg' : '/svg/trend-down.svg'"
-          alt=""
-          aria-hidden="true"
-        />
-        {{ feeCollection.trendDirection === 'up' ? '+' : '-' }}{{ feeCollection.trendPercent }}% vs last month
-      </span>
-    </div>
-
-    <p class="fee-rate__value">{{ feeCollection.ratePercent }}%</p>
-
-    <app-progress-bar [value]="feeCollection.ratePercent" color="green" [showPercentage]="false" />
-
-    <p class="fee-rate__caption">
-      {{ feeCollection.collectedAmount }} collected of {{ feeCollection.billedAmount }} billed this month
-    </p>
-
-    <div class="fee-rate__breakdown">
-      <div class="fee-rate__breakdown-item">
-        <span class="fee-rate__breakdown-label">Collected</span>
-        <span class="fee-rate__breakdown-value fee-rate__breakdown-value--success">{{ feeCollection.collectedAmount }}</span>
-      </div>
-      <div class="fee-rate__breakdown-divider"></div>
-      <div class="fee-rate__breakdown-item">
-        <span class="fee-rate__breakdown-label">Pending</span>
-        <span class="fee-rate__breakdown-value fee-rate__breakdown-value--warning">{{ feeCollection.pendingAmount }}</span>
-      </div>
-      <div class="fee-rate__breakdown-divider"></div>
-      <div class="fee-rate__breakdown-item">
-        <span class="fee-rate__breakdown-label">Overdue Accounts</span>
-        <span class="fee-rate__breakdown-value fee-rate__breakdown-value--danger">{{ feeCollection.overdueCount }}</span>
-      </div>
-    </div>
-
-    <div class="dashboard-card__chips">
-      <a routerLink="/fees" class="chip chip--neutral">View Details</a>
-      <a routerLink="/fees/defaulters" class="chip chip--danger">Defaulters List</a>
-    </div>
-  </div>
-</div>
-    <div class="dashboard-card dashboard-card--activity">
-  <app-activity-feed [items]="recentActivities" viewAllLink="/activity" maxHeight="240px" />
-</div>
+    <article class="card">
+      <h2 class="card__title">Subscriptions Expiring Soon</h2>
+      <ul class="list">
+        @for (item of expiringSubscriptions; track item.schoolName) {
+          <li class="list__item">
+            <span class="list__dot" aria-hidden="true"></span>
+            <div>
+              <p class="list__primary">{{ item.schoolName }} · {{ item.plan }}</p>
+              <p class="list__secondary">Expires in {{ item.expiresIn }}</p>
+            </div>
+          </li>
+        }
+      </ul>
+    </article>
   </section>
 </main>

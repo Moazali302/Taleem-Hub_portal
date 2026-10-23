@@ -1,8 +1,10 @@
 @if (config) {
   <aside class="sidebar">
     <div class="sidebar__brand">
-      <img [src]="logoSrc" alt="Taleem Hub" class="sidebar__logo" />
-      <!-- <span class="sidebar__role-label">{{ config.roleLabel }}</span> -->
+      <div class="sidebar__logo-card">
+        <img [src]="logoSrc" alt="Taleem Hub" class="sidebar__logo" />
+      </div>
+      <span class="sidebar__role-label">{{ config.roleLabel }}</span>
     </div>
 
     <nav class="sidebar__nav">
@@ -14,8 +16,8 @@
               routerLinkActive="sidebar__link--active"
               class="sidebar__link"
             >
-           <img [src]="item.icon" alt="" class="sidebar__link-icon" aria-hidden="true" />
-                <span>{{ item.label }}</span>
+              <span class="sidebar__icon" [style.--icon-url]="'url(' + item.icon + ')'" aria-hidden="true"></span>
+              <span>{{ item.label }}</span>
             </a>
           </li>
         }
@@ -24,7 +26,7 @@
 
     @if (config.footerAction; as action) {
       <a [routerLink]="[config.basePath, action.route]" class="sidebar__footer-btn">
-     <img [src]="action.icon" alt="" class="sidebar__footer-icon" aria-hidden="true" />
+        <span aria-hidden="true">+</span>
         {{ action.label }}
       </a>
     }
