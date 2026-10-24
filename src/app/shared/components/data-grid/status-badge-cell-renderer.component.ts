@@ -97,7 +97,7 @@ export class StatusBadgeCellRendererComponent implements ICellRendererAngularCom
 
   private setValue(params: StatusBadgeParams): void {
     const value = (params.value ?? '').toString();
-    this.label = value;
+    this.label = params.valueFormatted ?? value;
     this.showDot = params.showDot ?? true;
 
     const map = { ...DEFAULT_COLOR_MAP, ...(params.colorMap ?? {}) };
