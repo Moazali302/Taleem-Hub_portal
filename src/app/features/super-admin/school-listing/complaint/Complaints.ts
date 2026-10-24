@@ -64,8 +64,8 @@ const capitalize = (value: string): string => value.charAt(0).toUpperCase() + va
     SidenavComponent,
     LoaderComponent,
   ],
-  templateUrl: './complaints.html',
-  styleUrl: './complaints.scss',
+  templateUrl: './Complaints.html',
+  styleUrl: './Complaints.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ComplaintsComponent implements OnInit {
