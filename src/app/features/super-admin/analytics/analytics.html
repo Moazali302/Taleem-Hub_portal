@@ -1,0 +1,57 @@
+<main class="analytics">
+  <app-page-header
+    title="Analytics"
+    subtitle="Revenue, growth and engagement across the platform."
+  >
+    <button type="button" class="page-header__action" [disabled]="!analytics" (click)="exportReport()">
+      Export Report
+    </button>
+  </app-page-header>
+
+  @if (isLoading) {
+    <div class="analytics__state" role="status">
+      <app-loader />
+      <p>Loading analytics…</p>
+    </div>
+  } @else if (hasError) {
+    <div class="analytics__state analytics__state--error" role="alert">
+      <p>{{ errorMessage }}</p>
+      <button type="button" class="analytics__retry" (click)="load()">Try again</button>
+    </div>
+  } @else if (analytics) {
+    <section class="analytics__stats" aria-label="Platform summary">
+      @for (card of summaryCards; track card.label) {
+        <app-summary-card [data]="card" />
+      }
+    </section>
+
+    <section class="analytics__row analytics__row--revenue">
+      <app-card title="Revenue by Month (PKR M)">
+        <app-bar-chart
+          [data]="revenueByMonth"
+          [valueFormatter]="formatRevenueMonth"
+          ariaLabel="Revenue by month in PKR millions"
+        />
+      </app-card>
+
+      <app-card title="Schools by Package">
+        <ul class="analytics__packages">
+          @for (bar of packageBars; track bar.label) {
+            <li>
+              <app-progress-bar [label]="bar.label" [value]="bar.percent" [color]="bar.color" />
+            </li>
+          }
+        </ul>
+      </app-card>
+    </section>
+
+    <section class="analytics__row analytics__row--health">
+      @for (metric of healthMetrics; track metric.title) {
+        <app-card [title]="metric.title" [centered]="true">
+          <app-donut-chart [value]="metric.percent" [ariaLabel]="metric.percent + '% ' + metric.title" />
+          <p class="analytics__caption">{{ metric.caption }}</p>
+        </app-card>
+      }
+    </section>
+  }
+</main>

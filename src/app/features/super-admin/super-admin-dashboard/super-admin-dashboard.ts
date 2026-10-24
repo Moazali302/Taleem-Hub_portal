@@ -7,6 +7,8 @@ import { ExpiringSubscriptionItem, FeeCollectionSummary } from '@app/core/models
 import { SummaryCardData } from '@app/core/models/summary-card.model';
 import { SummaryCardComponent } from '@app/shared/components/summary-card/summary-card';
 import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
+import { CardComponent } from '@app/shared/components/Card/card';
+import { DonutChartComponent } from '@app/shared/components/DonutChart/donut-chart';
 import { TimeAgoPipe } from '@app/pipe/time-ago.pipe';
 
 interface ChartPoint {
@@ -17,12 +19,19 @@ interface ChartPoint {
 const CHART_WIDTH = 600;
 const CHART_HEIGHT = 200;
 const CHART_PADDING_Y = 16;
-const DONUT_RADIUS = 52;
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, TimeAgoPipe, SummaryCardComponent, PageHeaderComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    TimeAgoPipe,
+    SummaryCardComponent,
+    PageHeaderComponent,
+    CardComponent,
+    DonutChartComponent,
+  ],
   templateUrl: './super-admin-dashboard.html',
   styleUrl: './super-admin-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -85,18 +94,12 @@ export class SuperAdminDashboardComponent {
   readonly chartLinePath: string;
   readonly chartAreaPath: string;
 
-  // ---------- Fee collection donut ----------
-  readonly donutRadius = DONUT_RADIUS;
-  readonly donutCircumference = 2 * Math.PI * DONUT_RADIUS;
-  readonly donutOffset: number;
-
   constructor() {
     const points = this.toChartPoints(this.revenuePoints);
     this.chartLinePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
     this.chartAreaPath = points.length
       ? `${this.chartLinePath} L${points[points.length - 1].x},${CHART_HEIGHT} L${points[0].x},${CHART_HEIGHT} Z`
       : '';
-    this.donutOffset = this.donutCircumference * (1 - this.feeCollection.ratePercent / 100);
   }
 
   private toChartPoints(data: AnalyticsPoint[]): ChartPoint[] {

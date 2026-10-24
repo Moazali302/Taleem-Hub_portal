@@ -10,9 +10,7 @@
   </section>
 
   <section class="dashboard__row dashboard__row--charts">
-    <article class="card">
-      <h2 class="card__title">Revenue Analytics · {{ revenueTotalLabel }}</h2>
-
+    <app-card [title]="'Revenue Analytics · ' + revenueTotalLabel">
       <svg
         class="revenue-chart"
         [attr.viewBox]="chartViewBox"
@@ -34,35 +32,21 @@
           vector-effect="non-scaling-stroke"
         />
       </svg>
-    </article>
+    </app-card>
 
-    <article class="card card--center">
-      <h2 class="card__title">Fee Collection Rate</h2>
-
-      <div class="donut" role="img" [attr.aria-label]="feeCollection.ratePercent + '% of fees collected'">
-        <svg viewBox="0 0 140 140" class="donut__svg">
-          <circle class="donut__track" cx="70" cy="70" [attr.r]="donutRadius" />
-          <circle
-            class="donut__value"
-            cx="70"
-            cy="70"
-            [attr.r]="donutRadius"
-            [attr.stroke-dasharray]="donutCircumference"
-            [attr.stroke-dashoffset]="donutOffset"
-          />
-        </svg>
-        <span class="donut__label">{{ feeCollection.ratePercent }}%</span>
-      </div>
-
-      <p class="card__muted">
+    <app-card title="Fee Collection Rate" [centered]="true">
+      <app-donut-chart
+        [value]="feeCollection.ratePercent"
+        [ariaLabel]="feeCollection.ratePercent + '% of fees collected'"
+      />
+      <p class="dashboard__caption">
         {{ feeCollection.collectedAmount }} of {{ feeCollection.billedAmount }} billed
       </p>
-    </article>
+    </app-card>
   </section>
 
   <section class="dashboard__row dashboard__row--lists">
-    <article class="card">
-      <h2 class="card__title">Recent Activity</h2>
+    <app-card title="Recent Activity">
       <ul class="list">
         @for (item of recentActivities; track $index) {
           <li class="list__item">
@@ -74,10 +58,9 @@
           </li>
         }
       </ul>
-    </article>
+    </app-card>
 
-    <article class="card">
-      <h2 class="card__title">Subscriptions Expiring Soon</h2>
+    <app-card title="Subscriptions Expiring Soon">
       <ul class="list">
         @for (item of expiringSubscriptions; track item.schoolName) {
           <li class="list__item">
@@ -89,6 +72,6 @@
           </li>
         }
       </ul>
-    </article>
+    </app-card>
   </section>
 </main>

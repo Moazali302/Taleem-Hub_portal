@@ -13,7 +13,7 @@ export const SIDEBAR_MENUS: Record<Role, SidebarConfig> = {
       { label: 'Dashboard', icon: '/svg/sidnav-dashboard.svg', route: 'dashboard' },
       { label: 'Schools', icon: '/svg/school.svg', route: 'schools' },
       { label: 'Subscriptions', icon: '/svg/subscription.svg', route: 'subscriptions' },
-      {label: 'Users', icon:'/svg/users.svg', route:'users' },
+      // {label: 'Users', icon:'/svg/users.svg', route:'users' },
       { label: 'Announcements', icon: '/svg/announcement.svg', route: 'announcements' },
       { label: 'Complaints', icon: '/svg/complaint.svg', route: 'complaints' },
       { label: 'Analytics', icon: '/svg/analytics.svg', route: 'analytics' },

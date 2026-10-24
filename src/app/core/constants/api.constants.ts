@@ -97,6 +97,7 @@ export const API = {
     REVENUE: '/super-admin/revenue',
     AUDIT_LOGS: '/super-admin/audit-logs',
     SUBSCRIPTIONS: '/super-admin/subscriptions',
+    ANALYTICS: '/super-admin/analytics',
     ANNOUNCEMENTS: '/super-admin/announcements',
     ANNOUNCEMENT: (id: string) => `/super-admin/announcements/${id}`,
     COMPLAINTS: '/super-admin/complaints',
