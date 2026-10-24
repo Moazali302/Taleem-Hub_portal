@@ -12,39 +12,16 @@
   </section>
 
   <section class="subscriptions__card">
-    <div class="subscriptions__toolbar">
-      <div class="subscriptions__search">
-        <img src="/svg/search.svg" alt="" aria-hidden="true" />
-        <input
-          type="text"
-          placeholder="Search by school..."
-          [ngModel]="searchTerm"
-          (ngModelChange)="onSearchChange($event)"
-          aria-label="Search by school"
-        />
-      </div>
-
-      <select
-        class="subscriptions__select"
-        [ngModel]="planFilter"
-        (ngModelChange)="onPlanFilterChange($event)"
-        aria-label="Filter by plan"
-      >
-        <option value="all">All Plans</option>
-        @for (option of planOptions; track option.value) {
-          <option [value]="option.value">{{ option.label }}</option>
-        }
-      </select>
-
-      <button
-        type="button"
-        class="subscriptions__export"
-        [disabled]="filteredSubscriptions.length === 0"
-        (click)="exportCsv()"
-      >
-        Export
-      </button>
-    </div>
+    <app-grid-toolbar
+      class="subscriptions__toolbar"
+      searchPlaceholder="Search by school..."
+      allLabel="All Plans"
+      [filterOptions]="planOptions"
+      [exportDisabled]="filteredSubscriptions.length === 0"
+      (searchChange)="onSearchChange($event)"
+      (filterChange)="onPlanFilterChange($event)"
+      (exportClick)="exportCsv()"
+    />
 
     @if (isLoading) {
       <div class="subscriptions__state" role="status">
@@ -54,7 +31,7 @@
     } @else if (hasError) {
       <div class="subscriptions__state subscriptions__state--error" role="alert">
         <p>{{ errorMessage }}</p>
-        <button type="button" class="subscriptions__export" (click)="loadSubscriptions()">Try again</button>
+        <button type="button" class="subscriptions__retry" (click)="loadSubscriptions()">Try again</button>
       </div>
     } @else if (filteredSubscriptions.length === 0) {
       <div class="subscriptions__state" role="status">

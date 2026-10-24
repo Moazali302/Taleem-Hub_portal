@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ColDef } from 'ag-grid-community';
 import { AgGridTableComponent, COMPACT_ROW_HEIGHT } from '@app/shared/components/ag-grid-table/ag-grid-table';
 import { GridIconsComponent } from '@app/shared/components/ag-Grid/grid-icons/grid-icons';
@@ -25,6 +24,7 @@ import { SubscriptionsService } from '@app/core/services/subscriptions.service';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 import { downloadCsv } from '@app/shared/utlis/csv-export.util';
 import { AssignPackageComponent } from './assign-package/assign-package';
+import { GridToolbarComponent as GridToolbarComponent } from '@app/shared/grid-tool-bar/grid-toolbar';
 
 const PLAN_COLORS: Record<string, StatusBadgeColor> = {
   basic: { bg: '#eef1f8', text: '#3b4a73', dot: '#3b4a73' },
@@ -53,14 +53,15 @@ const formatDate = (iso: string): string => dateFormatter.format(new Date(iso));
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
     PageHeaderComponent,
     SummaryCardComponent,
+    GridToolbarComponent,
     AgGridTableComponent,
     SidenavComponent,
     AssignPackageComponent,
     LoaderComponent,
-  ],
+    GridToolbarComponent
+],
   templateUrl: './subscriptions.html',
   styleUrl: './subscriptions.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -178,8 +179,8 @@ export class SubscriptionsComponent implements OnInit {
     this.applyFilters();
   }
 
-  onPlanFilterChange(value: SubscriptionPlan | 'all'): void {
-    this.planFilter = value;
+  onPlanFilterChange(value: string): void {
+    this.planFilter = value as SubscriptionPlan | 'all';
     this.applyFilters();
   }
 

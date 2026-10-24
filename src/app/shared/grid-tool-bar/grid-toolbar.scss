@@ -1,0 +1,48 @@
+:host { display: block; }
+
+.grid-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px;
+    padding: 9px 14px;
+    border: 1px solid #e3e7f1;
+    border-radius: 10px;
+
+    img { width: 16px; height: 16px; opacity: 0.5; }
+
+    input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      color: #0c1c4d;
+
+      &::placeholder { color: #9aa3bd; }
+    }
+  }
+
+  &__control {
+    padding: 9px 14px;
+    border: 1px solid #e3e7f1;
+    border-radius: 10px;
+    background: #ffffff;
+    font-family: inherit;
+    font-size: 13px;
+    color: #0c1c4d;
+    cursor: pointer;
+
+    &:hover:not(:disabled) { background: #f4f6fb; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+}
