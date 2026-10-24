@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, GridApi, GridReadyEvent, RowClickedEvent, SelectionChangedEvent } from 'ag-grid-community';
 
+/** Row height used by the compact super-admin listings (Subscriptions, Announcements, ...). */
+export const COMPACT_ROW_HEIGHT = 52;
+
 /**
  * Generic, reusable AG Grid table wrapper — manages rows/columns/pagination
  * for every listing screen. Faithful port of an existing, battle-tested

@@ -97,6 +97,8 @@ export const API = {
     REVENUE: '/super-admin/revenue',
     AUDIT_LOGS: '/super-admin/audit-logs',
     SUBSCRIPTIONS: '/super-admin/subscriptions',
+    ANNOUNCEMENTS: '/super-admin/announcements',
+    ANNOUNCEMENT: (id: string) => `/super-admin/announcements/${id}`,
     ASSIGN_PACKAGE: (id: string) => `/super-admin/schools/${id}/package`,
     DEMO_REQUESTS: '/super-admin/demo-request',
     DEMO_REQUEST_STATUS:(id:string)=>'/super-admin/demo-request/${id}'

@@ -1,0 +1,79 @@
+<main class="announcements">
+  <app-page-header
+    title="Announcements"
+    subtitle="Broadcast updates to all schools or a selection."
+  >
+    <button type="button" class="page-header__action" (click)="startNewAnnouncement()">
+      + New Announcement
+    </button>
+  </app-page-header>
+
+  <div class="announcements__layout">
+    <section class="announcements__card" aria-label="Compose announcement">
+      <app-announcement-compose
+        [audienceOptions]="audienceOptions"
+        (sent)="onAnnouncementSent()"
+      />
+    </section>
+
+    <section class="announcements__card" aria-label="Announcement history">
+      <h2 class="announcements__card-title">History</h2>
+
+      @if (isLoading) {
+        <div class="announcements__state" role="status">
+          <app-loader />
+          <p>Loading announcements…</p>
+        </div>
+      } @else if (hasError) {
+        <div class="announcements__state announcements__state--error" role="alert">
+          <p>{{ errorMessage }}</p>
+          <button type="button" class="announcements__retry" (click)="load()">Try again</button>
+        </div>
+      } @else if (announcements.length === 0) {
+        <div class="announcements__state" role="status">
+          <p>No announcements sent yet.</p>
+        </div>
+      } @else {
+        <div class="announcements__grid">
+          <app-ag-grid-table
+            [rowData]="announcements"
+            [columnDefs]="columnDefs"
+            [rowHeight]="rowHeight"
+            [dashboard]="false"
+            tabId="announcements"
+          />
+        </div>
+      }
+    </section>
+  </div>
+
+  <app-sidenav [isOpen]="isSidenavOpen" panelWidth="480px" (close)="closeSidenav()">
+    @if (isSidenavOpen && selectedAnnouncement; as announcement) {
+      <header class="detail__header">
+        <button type="button" class="detail__back" aria-label="Close" (click)="closeSidenav()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <h2 class="detail__title">{{ announcement.title }}</h2>
+      </header>
+
+      <dl class="detail__meta">
+        <div>
+          <dt>Audience</dt>
+          <dd>{{ audienceLabel(announcement) }}</dd>
+        </div>
+        <div>
+          <dt>{{ announcement.status === 'scheduled' ? 'Scheduled for' : 'Sent' }}</dt>
+          <dd>{{ formatDateTime(announcement.sent_at) }}</dd>
+        </div>
+        <div>
+          <dt>Status</dt>
+          <dd class="detail__status">{{ announcement.status }}</dd>
+        </div>
+      </dl>
+
+      <p class="detail__message">{{ announcement.message }}</p>
+    }
+  </app-sidenav>
+</main>
