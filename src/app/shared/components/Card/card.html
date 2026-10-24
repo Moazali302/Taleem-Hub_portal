@@ -1,0 +1,6 @@
+<article class="card" [class.card--centered]="centered">
+  @if (title) {
+    <h2 class="card__title">{{ title }}</h2>
+  }
+  <ng-content />
+</article>

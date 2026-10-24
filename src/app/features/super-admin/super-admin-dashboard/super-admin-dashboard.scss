@@ -2,7 +2,6 @@ $navy: #17306f;
 $navy-dark: #0c1c4d;
 $gold: #f5b800;
 $muted: #6b7694;
-$surface: #ffffff;
 
 .dashboard {
   display: flex;
@@ -21,6 +20,12 @@ $surface: #ffffff;
     @media (max-width: 480px)  { grid-template-columns: 1fr; }
   }
 
+  &__caption {
+    margin: 14px 0 0;
+    font-size: 12px;
+    color: $muted;
+  }
+
   &__row {
     display: grid;
     gap: 16px;
@@ -35,31 +40,6 @@ $surface: #ffffff;
   }
 }
 
-// ---------- Generic card ----------
-.card {
-  display: flex;
-  flex-direction: column;
-  padding: 20px 22px;
-  border-radius: 16px;
-  background: $surface;
-
-  &--center { align-items: center; }
-
-  &__title {
-    align-self: flex-start;
-    margin: 0 0 16px;
-    font-family: 'Manrope', 'Inter', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-  }
-
-  &__muted {
-    margin: 14px 0 0;
-    font-size: 12px;
-    color: $muted;
-  }
-}
-
 // ---------- Revenue chart ----------
 .revenue-chart {
   width: 100%;
@@ -70,44 +50,6 @@ $surface: #ffffff;
     stroke-width: 3;
     stroke-linejoin: round;
     stroke-linecap: round;
-  }
-}
-
-// ---------- Fee collection donut ----------
-.donut {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  margin-top: 8px;
-
-  &__svg {
-    width: 100%;
-    height: 100%;
-    transform: rotate(-90deg);
-  }
-
-  &__track,
-  &__value {
-    fill: none;
-    stroke-width: 14;
-  }
-
-  &__track { stroke: #e8ecf6; }
-
-  &__value {
-    stroke: $navy;
-    stroke-linecap: round;
-  }
-
-  &__label {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Manrope', 'Inter', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
   }
 }
 

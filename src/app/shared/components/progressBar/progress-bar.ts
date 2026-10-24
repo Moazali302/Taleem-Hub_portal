@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 })
 export class ProgressBarComponent {
   @Input({ required: true }) value = 0; // 0-100
-  @Input() color: 'navy' | 'green' | 'orange' | 'red' = 'navy';
+  @Input() color: 'navy' | 'green' | 'orange' | 'red' | 'gold' = 'navy';
   @Input() label?: string;
   @Input() showPercentage = true;
 }
