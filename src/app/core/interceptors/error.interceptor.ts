@@ -3,6 +3,7 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ToastService } from '../services/toast.service';
+import { API } from '../constants/api.constants';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
@@ -11,6 +12,11 @@ export class ErrorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
+        // Silent session restore (page load / guard) failing with 401 just means "not logged in" — no toast.
+        if (error.status === 401 && request.url.includes(API.AUTH.REFRESH_TOKEN)) {
+          return throwError(() => error);
+        }
+
         let errorMessage = 'An unknown error occurred!';
         if (error.error instanceof ErrorEvent) {
           errorMessage = error.error.message;
