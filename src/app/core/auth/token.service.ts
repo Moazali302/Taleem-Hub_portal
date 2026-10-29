@@ -10,6 +10,7 @@ interface DecodedTaleemToken {
   email: string;
   role: string;
   schoolId: string;
+  type: 'access';
   iat: number;
   exp: number;
 }

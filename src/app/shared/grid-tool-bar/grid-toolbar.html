@@ -1,0 +1,35 @@
+<div class="grid-toolbar">
+  <div class="grid-toolbar__search">
+    <img src="/svg/search.svg" alt="" aria-hidden="true" />
+    <input
+      #searchInput
+      type="text"
+      [placeholder]="searchPlaceholder"
+      [attr.aria-label]="searchPlaceholder"
+      (input)="searchChange.emit(searchInput.value)"
+    />
+  </div>
+
+  @if (filterOptions.length) {
+    <select
+      #filterSelect
+      class="grid-toolbar__control"
+      [attr.aria-label]="allLabel"
+      (change)="filterChange.emit(filterSelect.value)"
+    >
+      <option value="all">{{ allLabel }}</option>
+      @for (option of filterOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  }
+
+  <button
+    type="button"
+    class="grid-toolbar__control"
+    [disabled]="exportDisabled"
+    (click)="exportClick.emit()"
+  >
+    Export
+  </button>
+</div>

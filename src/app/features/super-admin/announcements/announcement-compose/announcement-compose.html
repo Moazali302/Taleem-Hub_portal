@@ -1,0 +1,45 @@
+<form class="compose" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <h2 class="compose__title">Compose</h2>
+
+  <div class="compose__field">
+    <label for="announcement-title">Title</label>
+    <input
+      #titleInput
+      id="announcement-title"
+      type="text"
+      formControlName="title"
+      placeholder="e.g. Scheduled maintenance this Sunday"
+      [maxlength]="titleMaxLength"
+    />
+    @if (isInvalid('title')) {
+      <p class="compose__error">Title is required.</p>
+    }
+  </div>
+
+  <div class="compose__field">
+    <label for="announcement-message">Message</label>
+    <textarea
+      id="announcement-message"
+      rows="4"
+      formControlName="message"
+      placeholder="Write the announcement schools will receive"
+      [maxlength]="messageMaxLength"
+    ></textarea>
+    @if (isInvalid('message')) {
+      <p class="compose__error">Message is required.</p>
+    }
+  </div>
+
+  <div class="compose__field">
+    <label for="announcement-audience">Audience</label>
+    <select id="announcement-audience" formControlName="audience">
+      @for (option of audienceOptions; track option.value) {
+        <option [value]="option.value">{{ optionLabel(option) }}</option>
+      }
+    </select>
+  </div>
+
+  <button type="submit" class="compose__submit" [disabled]="isSubmitting">
+    {{ isSubmitting ? 'Sending…' : 'Send Announcement' }}
+  </button>
+</form>

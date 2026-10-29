@@ -1,0 +1,63 @@
+<main class="subscriptions">
+  <app-page-header title="Subscriptions" subtitle="Plans, billing and renewals.">
+    <button type="button" class="page-header__action" (click)="openAssignPackage()">
+      Assign Package
+    </button>
+  </app-page-header>
+
+  <section class="subscriptions__stats" aria-label="Subscriptions summary">
+    @for (card of summaryCards; track card.label) {
+      <app-summary-card [data]="card" />
+    }
+  </section>
+
+  <section class="subscriptions__card">
+    <app-grid-toolbar
+      class="subscriptions__toolbar"
+      searchPlaceholder="Search by school..."
+      allLabel="All Plans"
+      [filterOptions]="planOptions"
+      [exportDisabled]="filteredSubscriptions.length === 0"
+      (searchChange)="onSearchChange($event)"
+      (filterChange)="onPlanFilterChange($event)"
+      (exportClick)="exportCsv()"
+    />
+
+    @if (isLoading) {
+      <div class="subscriptions__state" role="status">
+        <app-loader />
+        <p>Loading subscriptions…</p>
+      </div>
+    } @else if (hasError) {
+      <div class="subscriptions__state subscriptions__state--error" role="alert">
+        <p>{{ errorMessage }}</p>
+        <button type="button" class="subscriptions__retry" (click)="loadSubscriptions()">Try again</button>
+      </div>
+    } @else if (filteredSubscriptions.length === 0) {
+      <div class="subscriptions__state" role="status">
+        <p>No subscriptions found.</p>
+      </div>
+    } @else {
+      <div class="subscriptions__grid">
+        <app-ag-grid-table
+          [rowData]="filteredSubscriptions"
+          [columnDefs]="columnDefs"
+          [rowHeight]="rowHeight"
+          [dashboard]="false"
+          tabId="subscriptions"
+        />
+      </div>
+    }
+  </section>
+
+  <app-sidenav [isOpen]="isSidenavOpen" panelWidth="480px" (close)="closeSidenav()">
+    @if (isSidenavOpen) {
+      <app-assign-package
+        [schools]="subscriptions"
+        [subscription]="selectedSubscription"
+        (closeClicked)="closeSidenav()"
+        (saved)="onPackageSaved()"
+      />
+    }
+  </app-sidenav>
+</main>

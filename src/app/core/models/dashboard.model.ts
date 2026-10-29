@@ -33,11 +33,3 @@ export interface FeeCollectionSummary {
   pendingAmount: string;
   overdueCount: number;
 }
-
-export interface DashboardStat {
-  label: string;
-  value: string | number;
-  caption: string;
-  captionTone: 'positive' | 'negative' | 'neutral';
-  accent?: 'warning' | 'danger';
-}

@@ -15,6 +15,7 @@ export interface LoginResult {
   token?: string;
   role?: Role;
   redirectTo?: string;
+  user?: User;
 }
 
 /** verifyOtp() result (mirrors backend AuthService.verifyOtp()). */
@@ -50,11 +51,13 @@ export class AuthService {
   }): Observable<LoginResult> {
     return this.authPost<LoginResult>(API.AUTH.LOGIN, credentials).pipe(
       tap((result) => {
-        // Only the cookie-reuse case returns a token straight from login().
-        // Role lives inside the JWT itself (TokenService decodes it), so no
-        // separate user save is needed or possible here.
+        // Only the trusted-session case returns a token straight from login()
+        // (OTP skipped); it now includes `user` too, same shape as verify-otp.
         if (result?.success && result.token) {
           this.tokenService.saveToken(result.token);
+          if (result.user) {
+            this.tokenService.saveUser(result.user);
+          }
         }
       }),
     );

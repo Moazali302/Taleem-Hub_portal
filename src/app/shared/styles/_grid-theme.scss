@@ -1,0 +1,28 @@
+// Navy theme for the shared AG Grid (Quartz) via its CSS variables — include it
+// from a screen's :host ::ng-deep wrapper so no grid component has to change.
+//
+//   :host ::ng-deep .my-screen__grid { @include grid-theme.super-admin-grid; }
+@mixin super-admin-grid {
+  --ag-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ag-font-size: 13px;
+  --ag-foreground-color: #0c1c4d;
+  --ag-background-color: #ffffff;
+  --ag-header-background-color: #f1f4fb;
+  --ag-header-text-color: #6b7694;
+  --ag-header-font-size: 11px;
+  --ag-header-font-weight: 600;
+  --ag-row-border-color: #eef0f6;
+  --ag-border-color: #eef0f6;
+  --ag-wrapper-border-radius: 12px;
+  --ag-row-hover-color: #f8f9fd;
+
+  .ag-header-cell-text {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .ag-paging-panel {
+    color: #6b7694;
+    font-size: 12px;
+  }
+}

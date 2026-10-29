@@ -7,8 +7,8 @@ import {
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, filter, switchMap, take } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, finalize, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { TokenService } from '../auth/token.service';
 import { API } from '../constants/api.constants';
@@ -21,16 +21,18 @@ interface RefreshResponse {
 }
 
 /**
- * On a 401, tries once to silently mint a fresh access token via the
- * httpOnly session cookie (POST /auth/refresh-token) before giving up and
- * forcing a logout. If several requests 401 around the same time, only the
- * first triggers a refresh call — the rest wait for it and retry with the
- * new token, instead of firing a refresh call each.
+ * On a 401 from a protected endpoint, tries once to silently mint a fresh access token via
+ * the httpOnly refresh cookie (POST /auth/refresh-token), then retries the original request.
+ *
+ * - /auth/* endpoints (login, verify-otp, resend-otp, forgot/reset-password, logout, refresh)
+ *   are never refreshed: a 401 there means "wrong credentials/OTP" or "no session", not
+ *   "access token expired" — refreshing would wrongly bounce the user to the login page.
+ * - Concurrent 401s share ONE in-flight refresh call. If it fails, every waiting request
+ *   fails with it (no request is left hanging, so the global loader can't get stuck).
  */
 @Injectable()
 export class RefreshInterceptor implements HttpInterceptor {
-  private isRefreshing = false;
-  private refreshedToken$ = new BehaviorSubject<string | null>(null);
+  private refresh$: Observable<string> | null = null;
 
   constructor(
     private tokenService: TokenService,
@@ -39,9 +41,7 @@ export class RefreshInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Never try to "refresh" in response to the refresh call itself —
-    // that would recurse forever.
-    if (request.url.includes(API.AUTH.REFRESH_TOKEN)) {
+    if (request.url.includes('/auth/')) {
       return next.handle(request);
     }
 
@@ -50,52 +50,38 @@ export class RefreshInterceptor implements HttpInterceptor {
         if (error.status !== 401) {
           return throwError(() => error);
         }
-        return this.handle401(request, next);
+
+        return this.refreshAccessToken().pipe(
+          switchMap((token) => next.handle(this.attachToken(request, token))),
+        );
       }),
     );
   }
 
-  private handle401(
-    request: HttpRequest<any>,
-    next: HttpHandler,
-  ): Observable<HttpEvent<any>> {
-    if (!this.isRefreshing) {
-      this.isRefreshing = true;
-      this.refreshedToken$.next(null);
-
+  private refreshAccessToken(): Observable<string> {
+    if (!this.refresh$) {
       const baseUrl = environment.apiUrl.replace(/\/$/, '');
 
-      return this.http
-        .post<RefreshResponse>(
-          `${baseUrl}${API.AUTH.REFRESH_TOKEN}`,
-          {},
-          { withCredentials: true },
-        )
+      this.refresh$ = this.http
+        .post<RefreshResponse>(`${baseUrl}${API.AUTH.REFRESH_TOKEN}`, {}, { withCredentials: true })
         .pipe(
-          switchMap((res) => {
-            this.isRefreshing = false;
-            this.tokenService.saveToken(res.token);
-            this.refreshedToken$.next(res.token);
-            return next.handle(this.attachToken(request, res.token));
-          }),
-          catchError((refreshError) => {
-            // Session cookie itself is gone/expired — nothing left to try.
-            this.isRefreshing = false;
-            this.tokenService.removeToken();
-            this.tokenService.removeUser();
-            this.router.navigate(['/auth/login']);
+          map((res) => res.token),
+          tap((token) => this.tokenService.saveToken(token)),
+          catchError((refreshError: HttpErrorResponse) => {
+            // Only a rejected session ends the login; a network blip must not log the user out.
+            if (refreshError.status === 401 || refreshError.status === 403) {
+              this.tokenService.removeToken();
+              this.tokenService.removeUser();
+              this.router.navigate(['/auth/login']);
+            }
             return throwError(() => refreshError);
           }),
+          finalize(() => (this.refresh$ = null)),
+          shareReplay({ bufferSize: 1, refCount: false }),
         );
     }
 
-    // A refresh is already in flight for another request — wait for it
-    // instead of firing a second one, then retry with the token it produced.
-    return this.refreshedToken$.pipe(
-      filter((token): token is string => token !== null),
-      take(1),
-      switchMap((token) => next.handle(this.attachToken(request, token))),
-    );
+    return this.refresh$;
   }
 
   private attachToken(request: HttpRequest<any>, token: string): HttpRequest<any> {

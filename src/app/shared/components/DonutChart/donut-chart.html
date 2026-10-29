@@ -1,0 +1,20 @@
+<div
+  class="donut"
+  role="img"
+  [attr.aria-label]="ariaLabel || percent + '%'"
+  [style.width.px]="size"
+  [style.height.px]="size"
+>
+  <svg class="donut__svg" [attr.viewBox]="'0 0 ' + viewBoxSize + ' ' + viewBoxSize">
+    <circle class="donut__track" [attr.cx]="center" [attr.cy]="center" [attr.r]="radius" />
+    <circle
+      class="donut__value"
+      [attr.cx]="center"
+      [attr.cy]="center"
+      [attr.r]="radius"
+      [attr.stroke-dasharray]="circumference"
+      [attr.stroke-dashoffset]="dashOffset"
+    />
+  </svg>
+  <span class="donut__label" [style.font-size.px]="labelFontSize">{{ percent }}%</span>
+</div>

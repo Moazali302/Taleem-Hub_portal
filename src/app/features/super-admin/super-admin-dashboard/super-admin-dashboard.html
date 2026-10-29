@@ -1,32 +1,16 @@
 <main class="dashboard">
-  <header class="dashboard__header">
-    <div>
-      <h1 class="dashboard__title">Dashboard</h1>
-      <p class="dashboard__subtitle">Platform health at a glance.</p>
-    </div>
-    <a routerLink="/super-admin/analytics" class="dashboard__cta">View Full Report</a>
-  </header>
+  <app-page-header title="Dashboard" subtitle="Platform health at a glance.">
+    <a routerLink="/super-admin/analytics" class="page-header__action">View Full Report</a>
+  </app-page-header>
 
   <section class="dashboard__stats" aria-label="Platform summary">
     @for (stat of stats; track stat.label) {
-      <article class="stat" [class]="stat.accent ? 'stat stat--' + stat.accent : 'stat'">
-        <p class="stat__label">{{ stat.label }}</p>
-        <p class="stat__value">{{ stat.value }}</p>
-        <p
-          class="stat__caption"
-          [class.stat__caption--positive]="stat.captionTone === 'positive'"
-          [class.stat__caption--negative]="stat.captionTone === 'negative'"
-        >
-          {{ stat.caption }}
-        </p>
-      </article>
+      <app-summary-card [data]="stat" />
     }
   </section>
 
   <section class="dashboard__row dashboard__row--charts">
-    <article class="card">
-      <h2 class="card__title">Revenue Analytics · {{ revenueTotalLabel }}</h2>
-
+    <app-card [title]="'Revenue Analytics · ' + revenueTotalLabel">
       <svg
         class="revenue-chart"
         [attr.viewBox]="chartViewBox"
@@ -48,35 +32,21 @@
           vector-effect="non-scaling-stroke"
         />
       </svg>
-    </article>
+    </app-card>
 
-    <article class="card card--center">
-      <h2 class="card__title">Fee Collection Rate</h2>
-
-      <div class="donut" role="img" [attr.aria-label]="feeCollection.ratePercent + '% of fees collected'">
-        <svg viewBox="0 0 140 140" class="donut__svg">
-          <circle class="donut__track" cx="70" cy="70" [attr.r]="donutRadius" />
-          <circle
-            class="donut__value"
-            cx="70"
-            cy="70"
-            [attr.r]="donutRadius"
-            [attr.stroke-dasharray]="donutCircumference"
-            [attr.stroke-dashoffset]="donutOffset"
-          />
-        </svg>
-        <span class="donut__label">{{ feeCollection.ratePercent }}%</span>
-      </div>
-
-      <p class="card__muted">
+    <app-card title="Fee Collection Rate" [centered]="true">
+      <app-donut-chart
+        [value]="feeCollection.ratePercent"
+        [ariaLabel]="feeCollection.ratePercent + '% of fees collected'"
+      />
+      <p class="dashboard__caption">
         {{ feeCollection.collectedAmount }} of {{ feeCollection.billedAmount }} billed
       </p>
-    </article>
+    </app-card>
   </section>
 
   <section class="dashboard__row dashboard__row--lists">
-    <article class="card">
-      <h2 class="card__title">Recent Activity</h2>
+    <app-card title="Recent Activity">
       <ul class="list">
         @for (item of recentActivities; track $index) {
           <li class="list__item">
@@ -88,10 +58,9 @@
           </li>
         }
       </ul>
-    </article>
+    </app-card>
 
-    <article class="card">
-      <h2 class="card__title">Subscriptions Expiring Soon</h2>
+    <app-card title="Subscriptions Expiring Soon">
       <ul class="list">
         @for (item of expiringSubscriptions; track item.schoolName) {
           <li class="list__item">
@@ -103,6 +72,6 @@
           </li>
         }
       </ul>
-    </article>
+    </app-card>
   </section>
 </main>

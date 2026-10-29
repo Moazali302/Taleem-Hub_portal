@@ -1,0 +1,39 @@
+:host { display: block; }
+
+.bar-chart {
+  display: flex;
+  gap: 16px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  &__column {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__plot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    height: 150px;
+  }
+
+  &__bar {
+    width: 60%;
+    max-width: 56px;
+    border-radius: 6px;
+    background: #17306f;
+    transition: height 0.3s ease;
+
+    &--highlight { background: #f5b800; }
+  }
+
+  &__label {
+    font-size: 11px;
+    color: #6b7694;
+  }
+}

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ActivityItem } from '@app/core/models/activity.model';
 import { AnalyticsPoint } from '@app/core/models/analytics.model';
-import {
-  DashboardStat,
-  ExpiringSubscriptionItem,
-  FeeCollectionSummary,
-} from '@app/core/models/dashboard.model';
+import { ExpiringSubscriptionItem, FeeCollectionSummary } from '@app/core/models/dashboard.model';
+import { SummaryCardData } from '@app/core/models/summary-card.model';
+import { SummaryCardComponent } from '@app/shared/components/summary-card/summary-card';
+import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
+import { CardComponent } from '@app/shared/components/Card/card';
+import { DonutChartComponent } from '@app/shared/components/DonutChart/donut-chart';
 import { TimeAgoPipe } from '@app/pipe/time-ago.pipe';
 
 interface ChartPoint {
@@ -18,12 +19,19 @@ interface ChartPoint {
 const CHART_WIDTH = 600;
 const CHART_HEIGHT = 200;
 const CHART_PADDING_Y = 16;
-const DONUT_RADIUS = 52;
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, TimeAgoPipe],
+  imports: [
+    CommonModule,
+    RouterLink,
+    TimeAgoPipe,
+    SummaryCardComponent,
+    PageHeaderComponent,
+    CardComponent,
+    DonutChartComponent,
+  ],
   templateUrl: './super-admin-dashboard.html',
   styleUrl: './super-admin-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,12 +40,12 @@ export class SuperAdminDashboardComponent {
   // TODO(backend): replace the mock data below with a DashboardService call
   // once the super-admin dashboard endpoint is ready.
 
-  readonly stats: DashboardStat[] = [
+  readonly stats: SummaryCardData[] = [
     { label: 'Total Schools', value: 24, caption: '+3.2% this month', captionTone: 'positive' },
     { label: 'Active Students', value: '5,842', caption: '+1.1%', captionTone: 'positive' },
     { label: 'Total Teachers', value: 412, caption: '-0.5%', captionTone: 'negative' },
-    { label: 'Expiring Subscriptions', value: 6, caption: '2 urgent', captionTone: 'neutral', accent: 'warning' },
-    { label: 'Open Complaints', value: 18, caption: '5 critical', captionTone: 'neutral', accent: 'danger' },
+    { label: 'Expiring Subscriptions', value: 6, caption: '2 urgent', accent: 'warning' },
+    { label: 'Open Complaints', value: 18, caption: '5 critical', accent: 'danger' },
   ];
 
   readonly revenueTotalLabel = 'PKR 18.4M this month';
@@ -86,18 +94,12 @@ export class SuperAdminDashboardComponent {
   readonly chartLinePath: string;
   readonly chartAreaPath: string;
 
-  // ---------- Fee collection donut ----------
-  readonly donutRadius = DONUT_RADIUS;
-  readonly donutCircumference = 2 * Math.PI * DONUT_RADIUS;
-  readonly donutOffset: number;
-
   constructor() {
     const points = this.toChartPoints(this.revenuePoints);
     this.chartLinePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
     this.chartAreaPath = points.length
       ? `${this.chartLinePath} L${points[points.length - 1].x},${CHART_HEIGHT} L${points[0].x},${CHART_HEIGHT} Z`
       : '';
-    this.donutOffset = this.donutCircumference * (1 - this.feeCollection.ratePercent / 100);
   }
 
   private toChartPoints(data: AnalyticsPoint[]): ChartPoint[] {

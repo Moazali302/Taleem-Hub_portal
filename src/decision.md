@@ -39,23 +39,37 @@ NestJS, PostgreSQL, TypeORM.
      caused a real production bug once when they drifted).
    - Access token: short-lived (15 min), returned in the response body,
      stored in `localStorage`, attached via `Authorization: Bearer` header
-     by `AuthInterceptor`.
-   - Session token: long-lived (24h), set as an **httpOnly** cookie
-     (`taleem_token`), never exposed to JS. Used only by
-     `POST /auth/refresh-token` to silently mint a new access token.
-   - `RefreshInterceptor` (frontend) catches 401s, calls refresh-token,
-     queues concurrent requests during the refresh, retries the original
-     request. Registered **last** in the interceptor array (innermost) so
+     by `AuthInterceptor`. It is the **only** credential the API accepts on
+     business endpoints (backend reads the Bearer header only, and rejects
+     any JWT without `type: 'access'`).
+   - Refresh token: **opaque random string** (not a JWT), set as an
+     **httpOnly** cookie `taleem_rt` with `path=/v1/auth` (so it is never
+     sent to business endpoints), never exposed to JS. Backend stores only its
+     SHA-256 hash in the `refresh_sessions` table (one row per device).
+     Rotated on every `POST /auth/refresh-token`; sliding 24h lifetime.
+     A 15s grace window accepts the just-rotated token (parallel tabs);
+     replaying an older token revokes the whole session. Logout, password
+     reset, deactivated user or rejected school all revoke sessions.
+     `refresh-token` and `logout` also reject browser requests whose
+     `Origin` is not `FRONTEND_URL` (CSRF defence, cookie is SameSite=None
+     in production).
+   - `RefreshInterceptor` (frontend) catches 401s on **non-`/auth/`**
+     endpoints only (a 401 from login/verify-otp means wrong credentials/OTP,
+     not an expired token), shares one in-flight refresh call across all
+     concurrent requests (failure propagates to all of them), retries the
+     original request. Registered **last** in the interceptor array (innermost) so
      it sees a 401 before `ErrorInterceptor`/`AuthInterceptor` do.
    - `AuthGuard` is async: if the access token looks expired on a page
      load, it tries a silent refresh before redirecting to login (a plain
      client-side expiry check would bypass the whole refresh mechanism on
      reloads).
-   - `logout()` calls the backend `/auth/logout` (clears the cookie) —
+   - `logout()` calls the backend `/auth/logout` (revokes the session and clears the cookie) —
      never just clear frontend storage alone.
-   - When `/auth/refresh-token` fails (cookie missing/invalid/expired),
+   - When `/auth/refresh-token` fails (cookie missing/invalid/expired/revoked),
      the backend actively clears the cookie (`clearAuthCookie()`) rather
      than leaving a dead cookie sitting in the browser.
+   - Deploy note: the `refresh_sessions` table must exist in the DB
+     (see backend `001_create_refresh_sessions.sql`) — `DB_SYNCHRONIZE` is off.
 
 2. **Multi-tenancy is enforced via the JWT payload's `schoolId`** — not a
    custom header. (A `TenantInterceptor` that sent an `X-Tenant-ID` header
