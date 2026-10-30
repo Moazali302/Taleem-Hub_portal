@@ -43,7 +43,7 @@
               {{ statusLabel | titlecase }}
             </span>
             @if (detail.plan) {
-              <span class="school-detail__badge school-detail__badge--plan">{{ detail.plan | titlecase }}</span>
+              <span class="school-detail__badge school-detail__badge--plan">{{ planLabel }}</span>
             }
           </div>
         </div>
@@ -124,8 +124,8 @@
           </p>
         }
         <dl class="school-detail__rows school-detail__rows--subscription">
-          <div><dt>Plan</dt><dd>{{ detail.plan ? (detail.plan | titlecase) : 'Not provided' }}</dd></div>
-          <div><dt>Billing</dt><dd>{{ detail.billing_cycle ? (detail.billing_cycle | titlecase) : 'Not provided' }}</dd></div>
+          <div><dt>Plan</dt><dd>{{ planLabel }}</dd></div>
+          <div><dt>Billing</dt><dd>{{ billingCycleLabel }}</dd></div>
           <div>
             <dt>Amount</dt>
             <dd>

@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
-import { SchoolDetail, SuperAdminService } from '@app/core/services/super-admin.service';
+import { SchoolDetail, SchoolDropdownOptions, SuperAdminService } from '@app/core/services/super-admin.service';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 
 @Component({
@@ -15,6 +15,7 @@ import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SchoolDetailComponent implements OnInit {
+  readonly schoolOptions = signal<SchoolDropdownOptions | null>(null);
   school: SchoolDetail | null = null;
   private schoolSlug = '';
   isLoading = true;
@@ -29,6 +30,16 @@ export class SchoolDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.superAdminService.getSchoolDropdownOptions().subscribe({
+      next: (response) => {
+        this.schoolOptions.set(response.data);
+        this.cdr.markForCheck();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.toaster.error(getHttpErrorMessage(error));
+      },
+    });
+
     const slug = this.route.snapshot.paramMap.get('schoolSlug') ?? '';
     this.schoolSlug = slug;
     const navigationState = history.state as { schoolId?: unknown; schoolSlug?: unknown };
@@ -94,7 +105,37 @@ export class SchoolDetailComponent implements OnInit {
   }
 
   get statusLabel(): string {
-    return this.school?.status === 'approved' ? 'Active' : this.school?.status ?? '';
+    const status = this.school?.status;
+    if (!status) return '';
+
+    const apiStatus = this.schoolOptions()?.statuses.find((option) => option === status);
+    return apiStatus ? this.optionLabel(apiStatus) : 'Status unavailable';
+  }
+
+  get planLabel(): string {
+    const plan = this.school?.plan;
+    if (!plan) return 'Not provided';
+
+    const apiPlan = this.schoolOptions()?.plans.find((option) => option.value === plan);
+    return apiPlan ? this.optionLabel(apiPlan.value) : 'Plan unavailable';
+  }
+
+  get billingCycleLabel(): string {
+    const billingCycle = this.school?.billing_cycle;
+    if (!billingCycle) return 'Not provided';
+
+    const apiBillingCycle = this.schoolOptions()?.billing_cycles.find((option) => option === billingCycle);
+    return apiBillingCycle ? this.optionLabel(apiBillingCycle) : 'Billing cycle unavailable';
+  }
+
+  optionLabel(value: string | null): string {
+    if (!value) return '';
+
+    return value
+      .split(/[_\s-]+/)
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(' ');
   }
 
   get renewalDays(): number | null {

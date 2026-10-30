@@ -1,11 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { SchoolPlan, SchoolStatus } from '@app/core/models/school.model';
-import { SchoolForEdit, SuperAdminService, UpdateSchoolPayload } from '@app/core/services/super-admin.service';
+import {
+  SchoolDropdownOptions,
+  SchoolForEdit,
+  SuperAdminService,
+  UpdateSchoolPayload,
+} from '@app/core/services/super-admin.service';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 
 @Component({
@@ -19,25 +24,9 @@ import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 export class SchoolEditComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
-  readonly planOptions: { value: SchoolPlan; label: string }[] = [
-    { value: 'free_trial', label: 'Free Trial' },
-    { value: 'basic', label: 'Basic' },
-    { value: 'advance', label: 'Advanced' },
-    { value: 'premium', label: 'Premium' },
-  ];
-
-  readonly statusOptions: { value: SchoolStatus; label: string }[] = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'rejected', label: 'Rejected' },
-    { value: 'inactive', label: 'Inactive' },
-    { value: 'closed', label: 'Closed' },
-  ];
-
-  readonly billingCycleOptions = [
-    { value: 'monthly', label: 'Monthly' },
-    { value: 'yearly', label: 'Annual' },
-  ];
+  readonly schoolOptions = signal<SchoolDropdownOptions | null>(null);
+  optionsLoading = true;
+  optionsError: string | null = null;
 
   readonly form = this.fb.group({
     school_name: ['', Validators.required],
@@ -76,6 +65,7 @@ export class SchoolEditComponent implements OnInit {
     const stateId = Number(navigationState.schoolId);
     if (navigationState.schoolSlug === slug && Number.isSafeInteger(stateId) && stateId > 0) {
       this.schoolId = stateId;
+      this.loadSchoolOptions();
       this.loadSchoolForEdit();
       return;
     }
@@ -83,9 +73,32 @@ export class SchoolEditComponent implements OnInit {
     this.superAdminService.getSchoolIdBySlug(slug).subscribe({
       next: (id) => {
         this.schoolId = id;
+        this.loadSchoolOptions();
         this.loadSchoolForEdit();
       },
       error: (error: HttpErrorResponse) => this.showLoadError(error),
+    });
+  }
+
+  reloadSchoolOptions(): void {
+    this.optionsLoading = true;
+    this.optionsError = null;
+    this.loadSchoolOptions();
+  }
+
+  private loadSchoolOptions(): void {
+    this.superAdminService.getSchoolDropdownOptions().subscribe({
+      next: (response) => {
+        this.schoolOptions.set(response.data);
+        this.optionsLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.optionsLoading = false;
+        this.optionsError = getHttpErrorMessage(error);
+        this.toaster.error(this.optionsError);
+        this.cdr.markForCheck();
+      },
     });
   }
 
@@ -126,6 +139,15 @@ export class SchoolEditComponent implements OnInit {
     return !!control && control.invalid && (control.dirty || control.touched);
   }
 
+  optionLabel(value: string | null): string {
+    if (!value) return '';
+    return value
+      .split(/[_\s-]+/)
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(' ');
+  }
+
   cancel(): void {
     if (this.schoolId > 0) {
       void this.router.navigate(['/super-admin/schools', this.schoolSlug], {
@@ -138,6 +160,12 @@ export class SchoolEditComponent implements OnInit {
   }
 
   onSubmit(): void {
+    const options = this.schoolOptions();
+    if (!options) {
+      this.toaster.error('School options are unavailable. Reload the options before saving.');
+      return;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -146,6 +174,18 @@ export class SchoolEditComponent implements OnInit {
     const values = this.form.getRawValue();
     if (!values.plan) {
       this.form.controls.plan.setErrors({ required: true });
+      return;
+    }
+    if (!values.status || !options.statuses.includes(values.status)) {
+      this.form.controls.status.setErrors({ required: true });
+      return;
+    }
+    if (!options.plans.some((plan) => plan.value === values.plan)) {
+      this.form.controls.plan.setErrors({ required: true });
+      return;
+    }
+    if (!options.billing_cycles.includes(values.billing_cycle ?? '')) {
+      this.form.controls.billing_cycle.setErrors({ required: true });
       return;
     }
 

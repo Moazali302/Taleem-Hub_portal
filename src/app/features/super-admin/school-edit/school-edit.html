@@ -31,6 +31,12 @@
     </section>
   } @else if (school) {
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="school-edit__form">
+      @if (optionsError) {
+        <div class="school-edit__options-error" role="alert">
+          <span>{{ optionsError }}</span>
+          <button type="button" (click)="reloadSchoolOptions()">Retry options</button>
+        </div>
+      }
       <div class="school-edit__top-grid">
         <section class="school-edit__card">
           <h2>School Details</h2>
@@ -65,9 +71,12 @@
             </label>
             <label class="school-edit__field">
               <span>Status</span>
-              <select formControlName="status">
-                @for (option of statusOptions; track option.value) {
-                  <option [value]="option.value">{{ option.label }}</option>
+              <select formControlName="status" [attr.aria-busy]="optionsLoading">
+                @if (optionsLoading) {
+                  <option [value]="school.status" disabled>Loading statuses...</option>
+                }
+                @for (status of schoolOptions()?.statuses ?? []; track status) {
+                  <option [value]="status">{{ optionLabel(status) }}</option>
                 }
               </select>
             </label>
@@ -79,18 +88,24 @@
           <div class="school-edit__fields">
             <label class="school-edit__field">
               <span>Plan</span>
-              <select formControlName="plan" [attr.aria-invalid]="isInvalid('plan')">
-                @for (option of planOptions; track option.value) {
-                  <option [value]="option.value">{{ option.label }}</option>
+              <select formControlName="plan" [attr.aria-invalid]="isInvalid('plan')" [attr.aria-busy]="optionsLoading">
+                @if (optionsLoading) {
+                  <option [value]="school.plan ?? ''" disabled>Loading plans...</option>
+                }
+                @for (plan of schoolOptions()?.plans ?? []; track plan.value) {
+                  <option [value]="plan.value">{{ optionLabel(plan.value) }}</option>
                 }
               </select>
               @if (isInvalid('plan')) { <small>Select a plan.</small> }
             </label>
             <label class="school-edit__field">
               <span>Billing cycle</span>
-              <select formControlName="billing_cycle">
-                @for (option of billingCycleOptions; track option.value) {
-                  <option [value]="option.value">{{ option.label }}</option>
+              <select formControlName="billing_cycle" [attr.aria-busy]="optionsLoading">
+                @if (optionsLoading) {
+                  <option [value]="school.billing_cycle ?? ''" disabled>Loading billing cycles...</option>
+                }
+                @for (cycle of schoolOptions()?.billing_cycles ?? []; track cycle) {
+                  <option [value]="cycle">{{ optionLabel(cycle) }}</option>
                 }
               </select>
             </label>

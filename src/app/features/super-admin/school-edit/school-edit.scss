@@ -49,6 +49,31 @@
     gap: 14px;
   }
 
+  &__options-error {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid #f3c7c4;
+    border-radius: 10px;
+    background: #fff7f6;
+    color: #a62b24;
+    font-size: 12px;
+
+    button {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border: 1px solid #e8b2ae;
+      border-radius: 7px;
+      background: #fff;
+      color: inherit;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  }
+
   &__top-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
