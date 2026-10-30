@@ -8,7 +8,7 @@ import { ButtonComponent } from '@shared/components/button/button.component';
 import { DataGridComponent } from '@app/shared/components/ag-Grid/data-grid.component';
 import { StatusBadgeCellRendererComponent, StatusBadgeParams } from '@shared/components/data-grid/status-badge-cell-renderer.component';
 import { RowActionsCellRendererComponent, RowActionsParams } from '@app/shared/components/data-grid/rowaction';
-import { School, SchoolPlan, SchoolStatus } from '../../../core/models/school.model';
+import { School, SchoolStatus } from '../../../core/models/school.model';
 import { AddAdminSchoolComponent } from '../add-school/add-admin-school';
 import { SidenavComponent } from '@app/shared/components/sidenav.component/sidenav';
 import { SuperAdminService, SchoolListItem, CreateSchoolData } from '../../../core/services/super-admin.service';
@@ -69,7 +69,13 @@ columnDefs: ColDef<School>[] = [
     sortable: false,
     cellRenderer: StatusBadgeCellRendererComponent,
     cellRendererParams: {
-      colorMap: { trial: { bg: '#fef3c7', text: '#b45309', dot: '#f59e0b' } },
+      colorMap: {
+        pending: { bg: '#fff7ed', text: '#c2410c', dot: '#f97316' },
+        approved: { bg: '#dcfce7', text: '#15803d', dot: '#22c55e' },
+        rejected: { bg: '#fee2e2', text: '#b91c1c', dot: '#ef4444' },
+        inactive: { bg: '#f3f4f6', text: '#4b5563', dot: '#9ca3af' },
+        closed: { bg: '#e0e7ff', text: '#4338ca', dot: '#6366f1' },
+      },
     } as Partial<StatusBadgeParams>,
   },
   { field: 'owner_name', headerName: 'Owner', flex: 1, minWidth: 150 },
@@ -92,6 +98,13 @@ columnDefs: ColDef<School>[] = [
 
   searchTerm = '';
   statusFilter: SchoolStatus | 'all' = 'all';
+  readonly statusOptions: SchoolStatus[] = [
+    'pending',
+    'approved',
+    'rejected',
+    'inactive',
+    'closed',
+  ];
   isAddSchoolOpen = false;
 
   constructor(
@@ -158,18 +171,18 @@ columnDefs: ColDef<School>[] = [
     school_id: item.school_id,
     school_name: item.school_name,
     city: item.city ?? '',
-    plan: (item.plan as SchoolPlan) ?? null,
+    plan: item.plan ?? null,
     owner_name: item.owner_name ?? '',
     email: item.owner_email ?? '',
     phone: item.owner_phone ?? '',
-    status: this.normalizeStatus(item.status),
+    status: item.status,
     created_at: item.created_at,
   };
 }
 
  private refreshStatCards(): void {
   const total = this.schools.length;
-  const active = this.schools.filter((s) => s.status === 'active').length;
+  const active = this.schools.filter((s) => s.status === 'approved').length;
   const pending = this.schools.filter((s) => s.status === 'pending').length;
 
   this.statCards = this.statCards.map((card) => {
@@ -180,8 +193,4 @@ columnDefs: ColDef<School>[] = [
   });
 }
 
-  private normalizeStatus(status: string): SchoolStatus {
-    if (status === 'approved') return 'active';
-    return status as SchoolStatus;
-  }
 }

@@ -38,9 +38,9 @@
         aria-label="Filter by status"
       >
         <option value="all">All Status</option>
-        <option value="active">Active</option>
-        <option value="pending">Pending</option>
-        <option value="inactive">Inactive</option>
+        @for (status of statusOptions; track status) {
+          <option [value]="status">{{ status | titlecase }}</option>
+        }
       </select>
 
       <button type="button" class="school-listing__export-btn" (click)="onExport()">

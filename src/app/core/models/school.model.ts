@@ -1,5 +1,5 @@
-export type SchoolStatus = 'active' | 'pending' | 'inactive' | 'rejected' | 'trial';
-export type SchoolPlan = 'free_trial' | 'basic' | 'advanced' | 'premium';
+export type SchoolStatus = 'pending' | 'approved' | 'rejected' | 'inactive' | 'closed';
+export type SchoolPlan = 'free_trial' | 'basic' | 'advance' | 'premium';
 
 export interface School {
   id: number;

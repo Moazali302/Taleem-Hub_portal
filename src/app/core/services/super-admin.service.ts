@@ -3,17 +3,21 @@ import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { API } from '../constants/api.constants';
 import { ApiResponse } from '../models/api-response.model';
+import { SchoolPlan, SchoolStatus } from '../models/school.model';
 import { DemoRequest,DemoRequestStatus } from '../models/demo-request.model';
+
+export type CreateSchoolStatus = SchoolStatus;
+export type CreateSchoolPlan = SchoolPlan;
 
 export interface CreateSchoolPayload {
   school_name: string;
   city: string;
   school_address: string;
   phone: string;
-  plan: string;
+  plan: CreateSchoolPlan;
   billing_cycle: string;
   start_date: string;
-  status?: string;
+  status: CreateSchoolStatus;
   owner_name: string;
   owner_email: string;
   owner_phone: string;
@@ -46,11 +50,11 @@ export interface SchoolListItem {
   school_id: string;
   city?: string | null;
   phone?: string | null;
-  plan?: string | null;
+  plan?: SchoolPlan | null;
   billing_cycle?: string | null;
   start_date?: string | null;
   student_limit?: number | null;
-  status: string;
+  status: SchoolStatus;
   created_at: string;
   updated_at: string;
   owner_name?: string;

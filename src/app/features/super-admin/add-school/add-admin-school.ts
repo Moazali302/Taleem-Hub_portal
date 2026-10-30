@@ -7,6 +7,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import {
   SuperAdminService,
+  CreateSchoolPlan,
+  CreateSchoolStatus,
   CreateSchoolData,
   CreateSchoolPayload,
 } from '../../../core/services/super-admin.service';
@@ -18,14 +20,15 @@ interface SelectOption {
   label: string;
 }
 
-interface PlanOption extends SelectOption {
+interface PlanOption extends Omit<SelectOption, 'value'> {
+  value: CreateSchoolPlan;
   studentLimit: number | null; // null = unlimited
 }
 
 const PLAN_OPTIONS: PlanOption[] = [
   { value: 'free_trial', label: 'Free Trial', studentLimit: null },
   { value: 'basic', label: 'Basic', studentLimit: 500 },
-  { value: 'advanced', label: 'Advanced', studentLimit: 1500 },
+  { value: 'advance', label: 'Advanced', studentLimit: 1500 },
   { value: 'premium', label: 'Premium', studentLimit: 4000 },
 ];
 
@@ -34,10 +37,12 @@ const BILLING_CYCLE_OPTIONS: SelectOption[] = [
   { value: 'yearly', label: 'Annual' },
 ];
 
-const STATUS_OPTIONS: SelectOption[] = [
-  { value: 'active', label: 'Active' },
+const STATUS_OPTIONS: (SelectOption & { value: CreateSchoolStatus })[] = [
   { value: 'pending', label: 'Pending' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'rejected', label: 'Rejected' },
   { value: 'inactive', label: 'Inactive' },
+  { value: 'closed', label: 'Closed' },
 ];
 
 @Component({
@@ -71,8 +76,14 @@ export class AddAdminSchoolComponent implements OnInit, OnDestroy {
     city: ['', [Validators.required]],
     school_address: ['', [Validators.required]],
     phone: ['', [Validators.required, Validators.pattern(/^[\d\s()-]{6,}$/)]],
-    status: ['active', [Validators.required]],
-    plan: ['', [Validators.required]],
+    status: this.fb.control<CreateSchoolStatus>('pending', {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
+    plan: this.fb.control<CreateSchoolPlan | ''>('', {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
     billing_cycle: ['yearly', [Validators.required]],
     start_date: [this.today(), [Validators.required]],
     owner_name: ['', [Validators.required]],
@@ -121,10 +132,15 @@ export class AddAdminSchoolComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const raw = this.form.getRawValue();
+    if (!this.isCreateSchoolPlan(raw.plan)) {
+      this.form.controls.plan.setErrors({ required: true });
+      return;
+    }
+
     this.isSubmitting = true;
     this.duplicateEmailError.set(null);
 
-    const raw = this.form.getRawValue();
     const payload: CreateSchoolPayload = {
       school_name: raw.school_name!,
       city: raw.city!,
@@ -164,6 +180,10 @@ export class AddAdminSchoolComponent implements OnInit, OnDestroy {
     const option = PLAN_OPTIONS.find((p) => p.value === plan);
     if (!option) return 'Select a plan';
     return option.studentLimit === null ? 'Unlimited' : option.studentLimit.toLocaleString('en-US');
+  }
+
+  private isCreateSchoolPlan(plan: string): plan is CreateSchoolPlan {
+    return PLAN_OPTIONS.some((option) => option.value === plan);
   }
 
   private today(): string {
