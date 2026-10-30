@@ -2,50 +2,38 @@ import { Component } from '@angular/core';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
 
-const MAX_INITIALS = 2;
-
-/**
- * Generic AG Grid cell: round initials avatar + name. Reused wherever a row
- * is identified by a school / person / organisation name.
- */
 @Component({
   selector: 'app-avatar-name-cell',
   standalone: true,
   template: `
-    <span class="avatar-name">
-      <span class="avatar-name__avatar" aria-hidden="true">{{ initials }}</span>
+    <div class="avatar-name">
+      <span class="avatar-name__avatar">{{ initials }}</span>
       <span class="avatar-name__text">{{ name }}</span>
-    </span>
+    </div>
   `,
   styles: [
     `
       .avatar-name {
-        display: inline-flex;
+        display: flex;
         align-items: center;
         gap: 12px;
-        min-width: 0;
       }
-
       .avatar-name__avatar {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background: #e6ebfa;
-        color: #17306f;
-        font-size: 10px;
+        color: #1a3270;
+        font-size: 11px;
         font-weight: 700;
-        letter-spacing: 0.02em;
+        flex-shrink: 0;
       }
-
       .avatar-name__text {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-weight: 600;
+        font-weight: 700;
+        color: #0f1b3d;
       }
     `,
   ],
@@ -64,12 +52,13 @@ export class AvatarNameCellRendererComponent implements ICellRendererAngularComp
   }
 
   private setValue(params: ICellRendererParams): void {
-    this.name = (params.value ?? '').toString();
+    this.name = (params.value ?? '').toString().trim();
     this.initials = this.name
       .split(/\s+/)
       .filter(Boolean)
-      .slice(0, MAX_INITIALS)
-      .map((word) => word[0].toUpperCase())
-      .join('');
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join('')
+      .toUpperCase();
   }
 }

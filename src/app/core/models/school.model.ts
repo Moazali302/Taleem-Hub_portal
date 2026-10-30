@@ -1,10 +1,12 @@
-export type SchoolStatus = 'active' | 'pending' | 'inactive' | 'rejected';
+export type SchoolStatus = 'active' | 'pending' | 'inactive' | 'rejected' | 'trial';
+export type SchoolPlan = 'free_trial' | 'basic' | 'advanced' | 'premium';
 
-/** Mirrors backend School entity — only the fields the UI actually displays. */
 export interface School {
   id: number;
   school_id: string;
   school_name: string;
+  city: string;
+  plan: SchoolPlan | null;
   owner_name: string;
   email: string;
   phone: string;

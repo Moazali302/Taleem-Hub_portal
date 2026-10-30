@@ -7,11 +7,17 @@ import { DemoRequest,DemoRequestStatus } from '../models/demo-request.model';
 
 export interface CreateSchoolPayload {
   school_name: string;
+  city: string;
   school_address: string;
+  phone: string;
+  plan: string;
+  billing_cycle: string;
+  start_date: string;
+  status?: string;
   owner_name: string;
-  owner_number: string;
-  email: string;
-  password: string;
+  owner_email: string;
+  owner_phone: string;
+  owner_password: string;
 }
 
 export interface CreateSchoolData {
@@ -38,6 +44,12 @@ export interface SchoolListItem {
   school_name: string;
   school_address: string;
   school_id: string;
+  city?: string | null;
+  phone?: string | null;
+  plan?: string | null;
+  billing_cycle?: string | null;
+  start_date?: string | null;
+  student_limit?: number | null;
   status: string;
   created_at: string;
   updated_at: string;

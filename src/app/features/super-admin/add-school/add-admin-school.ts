@@ -1,53 +1,43 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Output,
-  AfterViewInit,
-  OnDestroy,
-  ElementRef,
-  ViewChild,
-  ViewChildren,
-  QueryList,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, takeUntil } from 'rxjs';
 import { ButtonComponent } from '@shared/components/button/button.component';
-import { SuperAdminService, CreateSchoolData } from '../../../core/services/super-admin.service';
+import {
+  SuperAdminService,
+  CreateSchoolData,
+  CreateSchoolPayload,
+} from '../../../core/services/super-admin.service';
 import { ApiResponse } from '@app/core/models/api-response.model';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 
-export interface AddSchoolPayload {
-  school_name: string;
-  school_address: string;
-  owner_name: string;
-  owner_number: string;
-  email: string;
-  password: string;
-}
-
-interface DialCode {
-  code: string;
-  flag: string;
+interface SelectOption {
+  value: string;
   label: string;
 }
 
-type PasswordStrength = 'weak' | 'medium' | 'strong' | '';
-type SectionId = 'school-info' | 'owner-info' | 'credentials';
+interface PlanOption extends SelectOption {
+  studentLimit: number | null; // null = unlimited
+}
 
-const DIAL_CODES: DialCode[] = [
-  { code: '+1', flag: '🇺🇸', label: 'US' },
-  { code: '+44', flag: '🇬🇧', label: 'UK' },
-  { code: '+91', flag: '🇮🇳', label: 'IN' },
-  { code: '+92', flag: '🇵🇰', label: 'PK' },
-  { code: '+971', flag: '🇦🇪', label: 'AE' },
-  { code: '+61', flag: '🇦🇺', label: 'AU' },
-  { code: '+49', flag: '🇩🇪', label: 'DE' },
-  { code: '+33', flag: '🇫🇷', label: 'FR' },
+const PLAN_OPTIONS: PlanOption[] = [
+  { value: 'free_trial', label: 'Free Trial', studentLimit: null },
+  { value: 'basic', label: 'Basic', studentLimit: 500 },
+  { value: 'advanced', label: 'Advanced', studentLimit: 1500 },
+  { value: 'premium', label: 'Premium', studentLimit: 4000 },
+];
+
+const BILLING_CYCLE_OPTIONS: SelectOption[] = [
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'yearly', label: 'Annual' },
+];
+
+const STATUS_OPTIONS: SelectOption[] = [
+  { value: 'active', label: 'Active' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'inactive', label: 'Inactive' },
 ];
 
 @Component({
@@ -58,41 +48,37 @@ const DIAL_CODES: DialCode[] = [
   templateUrl: './add-admin-school.html',
   styleUrl: './add-admin-school.scss',
 })
-export class AddAdminSchoolComponent implements AfterViewInit, OnDestroy {
+export class AddAdminSchoolComponent implements OnInit, OnDestroy {
   @Output() closeClicked = new EventEmitter<void>();
   @Output() schoolAdded = new EventEmitter<ApiResponse<CreateSchoolData>>();
 
-  @ViewChild('scrollContainer') private scrollContainerRef?: ElementRef<HTMLElement>;
-  @ViewChildren('sectionRef') private sectionRefs?: QueryList<ElementRef<HTMLElement>>;
+  readonly planOptions = PLAN_OPTIONS;
+  readonly billingCycleOptions = BILLING_CYCLE_OPTIONS;
+  readonly statusOptions = STATUS_OPTIONS;
 
   showPassword = false;
   isSubmitting = false;
 
-  readonly sections: { id: SectionId; label: string }[] = [
-    { id: 'school-info', label: 'School Info' },
-    { id: 'owner-info', label: 'Owner Info' },
-    { id: 'credentials', label: 'Credentials' },
-  ];
-  readonly dialCodes = DIAL_CODES;
-
   // UI-only state (not part of the submitted payload)
-  activeSectionIndex = signal(0);
-  passwordStrength = signal<PasswordStrength>('');
+  studentLimitLabel = signal('Select a plan');
   duplicateEmailError = signal<string | null>(null);
 
-  private observer?: IntersectionObserver;
   private readonly destroy$ = new Subject<void>();
-
   private readonly fb = new FormBuilder();
 
   form = this.fb.group({
     school_name: ['', [Validators.required]],
+    city: ['', [Validators.required]],
     school_address: ['', [Validators.required]],
+    phone: ['', [Validators.required, Validators.pattern(/^[\d\s()-]{6,}$/)]],
+    status: ['active', [Validators.required]],
+    plan: ['', [Validators.required]],
+    billing_cycle: ['yearly', [Validators.required]],
+    start_date: [this.today(), [Validators.required]],
     owner_name: ['', [Validators.required]],
-    owner_dial_code: ['+1', [Validators.required]],
-    owner_number: ['', [Validators.required, Validators.pattern(/^[\d\s()-]{6,}$/)]],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    owner_email: ['', [Validators.required, Validators.email]],
+    owner_phone: ['', [Validators.required, Validators.pattern(/^[\d\s()-]{6,}$/)]],
+    owner_password: ['', [Validators.required, Validators.minLength(8)]],
   });
 
   constructor(
@@ -100,15 +86,13 @@ export class AddAdminSchoolComponent implements AfterViewInit, OnDestroy {
     private readonly toaster: ToastrService,
   ) {}
 
-  ngAfterViewInit(): void {
-    this.setupStepperObserver();
-
-    this.form.get('password')!.valueChanges
+  ngOnInit(): void {
+    this.form.get('plan')!.valueChanges
       .pipe(takeUntil(this.destroy$))
-      .subscribe((value) => this.passwordStrength.set(this.calculatePasswordStrength(value ?? '')));
+      .subscribe((plan) => this.studentLimitLabel.set(this.getStudentLimitLabel(plan)));
 
     // Clear the duplicate-email banner as soon as the user edits the email again
-    this.form.get('email')!.valueChanges
+    this.form.get('owner_email')!.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         if (this.duplicateEmailError()) {
@@ -118,7 +102,6 @@ export class AddAdminSchoolComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.observer?.disconnect();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -128,17 +111,8 @@ export class AddAdminSchoolComponent implements AfterViewInit, OnDestroy {
     return !!control && control.invalid && (control.dirty || control.touched);
   }
 
-  isValidTouched(controlName: string): boolean {
-    const control = this.form.get(controlName);
-    return !!control && control.valid && (control.dirty || control.touched);
-  }
-
   onClose(): void {
     this.closeClicked.emit();
-  }
-
-  scrollToSection(index: number): void {
-    this.sectionRefs?.get(index)?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   onSubmit(): void {
@@ -151,13 +125,19 @@ export class AddAdminSchoolComponent implements AfterViewInit, OnDestroy {
     this.duplicateEmailError.set(null);
 
     const raw = this.form.getRawValue();
-    const payload: AddSchoolPayload = {
+    const payload: CreateSchoolPayload = {
       school_name: raw.school_name!,
+      city: raw.city!,
       school_address: raw.school_address!,
+      phone: raw.phone!,
+      plan: raw.plan!,
+      billing_cycle: raw.billing_cycle!,
+      start_date: raw.start_date!,
+      status: raw.status!,
       owner_name: raw.owner_name!,
-      owner_number: `${raw.owner_dial_code} ${raw.owner_number}`.trim(),
-      email: raw.email!,
-      password: raw.password!,
+      owner_email: raw.owner_email!,
+      owner_phone: raw.owner_phone!,
+      owner_password: raw.owner_password!,
     };
 
     this.superAdminService.createSchool(payload).subscribe({
@@ -171,14 +151,23 @@ export class AddAdminSchoolComponent implements AfterViewInit, OnDestroy {
 
         if (this.isDuplicateEmailError(err)) {
           this.duplicateEmailError.set('This email is already registered to another school account.');
-          this.form.get('email')?.markAsTouched();
-          this.scrollToSection(2);
+          this.form.get('owner_email')?.markAsTouched();
           return;
         }
 
         this.toaster.error(getHttpErrorMessage(err));
       },
     });
+  }
+
+  private getStudentLimitLabel(plan: string | null): string {
+    const option = PLAN_OPTIONS.find((p) => p.value === plan);
+    if (!option) return 'Select a plan';
+    return option.studentLimit === null ? 'Unlimited' : option.studentLimit.toLocaleString('en-US');
+  }
+
+  private today(): string {
+    return new Date().toLocaleDateString('en-CA'); // yyyy-MM-dd in local time
   }
 
   /**
@@ -189,39 +178,5 @@ export class AddAdminSchoolComponent implements AfterViewInit, OnDestroy {
     if (err.status === 409) return true;
     const message = (err.error?.message ?? '').toString().toLowerCase();
     return message.includes('email') && (message.includes('already') || message.includes('exist'));
-  }
-
-  private calculatePasswordStrength(value: string): PasswordStrength {
-    if (!value) return '';
-    let score = 0;
-    if (value.length >= 8) score++;
-    if (value.length >= 12) score++;
-    if (/[a-z]/.test(value) && /[A-Z]/.test(value)) score++;
-    if (/\d/.test(value)) score++;
-    if (/[^A-Za-z0-9]/.test(value)) score++;
-
-    if (score <= 2) return 'weak';
-    if (score <= 3) return 'medium';
-    return 'strong';
-  }
-
-  private setupStepperObserver(): void {
-    const root = this.scrollContainerRef?.nativeElement;
-    if (!root || !this.sectionRefs) return;
-
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        const mostVisible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!mostVisible) return;
-
-        const index = this.sectionRefs!.toArray().findIndex((ref) => ref.nativeElement === mostVisible.target);
-        if (index !== -1) this.activeSectionIndex.set(index);
-      },
-      { root, threshold: [0.3, 0.6] },
-    );
-
-    this.sectionRefs.forEach((ref) => this.observer!.observe(ref.nativeElement));
   }
 }

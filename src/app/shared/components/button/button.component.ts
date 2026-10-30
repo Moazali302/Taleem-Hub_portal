@@ -5,7 +5,7 @@ export type ButtonVariant = 'primary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md';
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-on-primary hover:opacity-90',
+  primary: 'bg-brand text-on-primary shadow-sm hover:bg-brand-dark',
   outline: 'border border-gray-300 bg-white text-gray-900 hover:bg-gray-50',
   ghost: 'bg-transparent text-primary hover:bg-primary/10',
   danger: 'bg-red-600 text-white hover:bg-red-700',
@@ -13,7 +13,7 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
   sm: 'px-3.5 py-1.5 text-sm',
-  md: 'px-5 py-2.5 text-sm',
+  md: 'px-6 py-3 text-sm',
 };
 
 /**
@@ -66,7 +66,7 @@ export class ButtonComponent {
   @Input() fullWidth = false;
 
   private readonly base =
-    'inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center gap-2 rounded-lg font-bold transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed';
 
   get isSvgPath(): boolean {
     return !!this.icon && (this.icon.includes('/') || this.icon.endsWith('.svg'));

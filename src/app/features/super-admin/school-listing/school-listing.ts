@@ -6,14 +6,16 @@ import { StatCardComponent } from '@app/shared/components/stat-card/stat-card';
 import { StatCardData } from '@app/shared/components/stat-card/stat-card-model';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { DataGridComponent } from '@app/shared/components/ag-Grid/data-grid.component';
-import { StatusBadgeCellRendererComponent } from '@shared/components/data-grid/status-badge-cell-renderer.component';
+import { StatusBadgeCellRendererComponent, StatusBadgeParams } from '@shared/components/data-grid/status-badge-cell-renderer.component';
 import { RowActionsCellRendererComponent, RowActionsParams } from '@app/shared/components/data-grid/rowaction';
-import { School, SchoolStatus } from '../../../core/models/school.model';
+import { School, SchoolPlan, SchoolStatus } from '../../../core/models/school.model';
 import { AddAdminSchoolComponent } from '../add-school/add-admin-school';
 import { SidenavComponent } from '@app/shared/components/sidenav.component/sidenav';
 import { SuperAdminService, SchoolListItem, CreateSchoolData } from '../../../core/services/super-admin.service';
 import { ToastService } from '@app/core/services/toast.service';
 import { ApiResponse } from '@app/core/models/api-response.model';
+import { PlanBadgeCellRendererComponent } from '@app/shared/components/data-grid/plan-badge-cell-renderer.component';
+import { AvatarNameCellRendererComponent } from '@app/shared/components/data-grid/avatar-name-cell-renderer.component';
 @Component({
   selector: 'app-school-listing',
   standalone: true,
@@ -42,29 +44,36 @@ export class SchoolsListingComponent implements OnInit {
   schools: School[] = [];
   isLoading = false;
 
-  columnDefs: ColDef<School>[] = [
-    { field: 'school_name', headerName: 'School Name', flex: 2, minWidth: 220 },
-    { field: 'school_id', headerName: 'School ID', flex: 1, minWidth: 110 },
-    {
-      field: 'status',
-      headerName: 'Status',
-      flex: 1,
-      minWidth: 120,
-      sortable: false,
-      cellRenderer: StatusBadgeCellRendererComponent,
-    },
-    { field: 'owner_name', headerName: 'Owner Name', flex: 1, minWidth: 160 },
-    { field: 'created_at',
-       headerName: 'Created Date',
-        flex: 1, 
-        minWidth: 140,
-        valueFormatter: (params) =>
-       new Date(params.value).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }),
-       },
+columnDefs: ColDef<School>[] = [
+  {
+    field: 'school_name',
+    headerName: 'School Name',
+    flex: 2,
+    minWidth: 240,
+    cellRenderer: AvatarNameCellRendererComponent,
+  },
+  { field: 'school_id', headerName: 'School ID', flex: 1.5, minWidth: 160 },
+  { field: 'city', headerName: 'City', flex: 1, minWidth: 110 },
+  {
+    field: 'plan',
+    headerName: 'Plan',
+    flex: 1,
+    minWidth: 120,
+    cellRenderer: PlanBadgeCellRendererComponent,
+  },
+  {
+    field: 'status',
+    headerName: 'Status',
+    flex: 1,
+    minWidth: 120,
+    sortable: false,
+    cellRenderer: StatusBadgeCellRendererComponent,
+    cellRendererParams: {
+      colorMap: { trial: { bg: '#fef3c7', text: '#b45309', dot: '#f59e0b' } },
+    } as Partial<StatusBadgeParams>,
+  },
+  { field: 'owner_name', headerName: 'Owner', flex: 1, minWidth: 150 },
+  
     {
       colId: 'actions',
       headerName: '',
@@ -143,19 +152,20 @@ export class SchoolsListingComponent implements OnInit {
     this.loadSchools();
   }
 
-  private toSchoolRow(item: SchoolListItem): School {
-    return {
-      id: item.id,
-      school_id: item.school_id,
-      school_name: item.school_name,
-      owner_name: item.owner_name ?? '',
-      email: item.owner_email ?? '',
-      phone: item.owner_phone ?? '',
-      status: this.normalizeStatus(item.status),
-      created_at: item.created_at,
-      // package: item.package ?? null,
-    };
-  }
+ private toSchoolRow(item: SchoolListItem): School {
+  return {
+    id: item.id,
+    school_id: item.school_id,
+    school_name: item.school_name,
+    city: item.city ?? '',
+    plan: (item.plan as SchoolPlan) ?? null,
+    owner_name: item.owner_name ?? '',
+    email: item.owner_email ?? '',
+    phone: item.owner_phone ?? '',
+    status: this.normalizeStatus(item.status),
+    created_at: item.created_at,
+  };
+}
 
  private refreshStatCards(): void {
   const total = this.schools.length;
