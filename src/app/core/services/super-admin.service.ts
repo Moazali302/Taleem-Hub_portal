@@ -16,6 +16,7 @@ export interface CreateSchoolPayload {
   school_address: string;
   phone: string;
   plan: CreateSchoolPlan;
+  student_limit: number | null;
   billing_cycle: string;
   start_date: string;
   status: CreateSchoolStatus;
@@ -23,6 +24,15 @@ export interface CreateSchoolPayload {
   owner_email: string;
   owner_phone: string;
   owner_password: string;
+}
+
+export interface SchoolDropdownOptions {
+  statuses: CreateSchoolStatus[];
+  plans: {
+    value: CreateSchoolPlan;
+    student_limit: number | null;
+  }[];
+  billing_cycles: string[];
 }
 
 export interface CreateSchoolData {
@@ -130,6 +140,10 @@ export class SuperAdminService {
 
   getAllSchools(): Observable<ApiResponse<SchoolListItem[]>> {
     return this.api.get<SchoolListItem[]>(API.SUPER_ADMIN.SCHOOLS);
+  }
+
+  getSchoolDropdownOptions(): Observable<ApiResponse<SchoolDropdownOptions>> {
+    return this.api.get<SchoolDropdownOptions>(API.SUPER_ADMIN.SCHOOL_OPTIONS);
   }
 
   getSchoolIdBySlug(slug: string): Observable<number> {

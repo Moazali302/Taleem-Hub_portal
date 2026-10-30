@@ -21,3 +21,108 @@
     background: transparent;
   }
 }
+
+  .school-select__control {
+    display: flex;
+    box-sizing: border-box;
+    width: 100%;
+    height: 44px;
+    align-items: center;
+    border: 1px solid #d5dae6;
+    border-radius: 10px;
+    background: #f3f5fa;
+    padding: 0 14px;
+    color: theme('colors.primary');
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+
+    &:hover {
+      border-color: #b7c1d5;
+    }
+
+    &.mat-mdc-select-focused {
+      border-color: #14307a;
+      outline: none;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgb(20 48 122 / 10%);
+    }
+
+    &[aria-invalid='true'] {
+      border-color: theme('colors.error');
+    }
+  }
+
+  :host ::ng-deep .school-select__control .mat-mdc-select-trigger {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    align-items: center;
+  }
+
+  :host ::ng-deep .school-select__control .mat-mdc-select-value {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    color: #0d1f45;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  :host ::ng-deep .school-select__control .mat-mdc-select-value-text {
+    display: flex;
+    align-items: center;
+    line-height: normal;
+  }
+
+  :host ::ng-deep .school-select__control .mat-mdc-select-min-line {
+    line-height: normal;
+  }
+
+  :host ::ng-deep .school-select__control .mat-mdc-select-placeholder {
+    color: #78839a;
+    font-weight: 400;
+  }
+
+  :host ::ng-deep .school-select__control .mat-mdc-select-arrow {
+    color: #64748b;
+  }
+
+.school-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding: 8px 0;
+  white-space: normal;
+
+  &__copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 3px;
+    line-height: 1.25;
+  }
+
+  &__title {
+    color: #17213d;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  &__description {
+    color: #78839a;
+    font-size: 11px;
+    font-weight: 400;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .school-select__control {
+    transition: none;
+  }
+}

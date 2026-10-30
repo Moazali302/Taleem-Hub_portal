@@ -91,6 +91,7 @@ export const API = {
     CREATE_SCHOOL: '/schools/create-school',
      LIST_SCHOOLS: '/schools', 
     SCHOOLS: '/super-admin/GetAllSchools',
+    SCHOOL_OPTIONS: '/schools/GetAllStatuses',
     SCHOOL_DETAIL: (id: string) => `/schools/GetSchoolDetail?id=${encodeURIComponent(id)}`,
     SCHOOL_FOR_EDIT: (id: string) => `/schools/GetSchoolForEdit?id=${encodeURIComponent(id)}`,
     SCHOOL: (id: string) => `/schools/update-school?id=${encodeURIComponent(id)}`,

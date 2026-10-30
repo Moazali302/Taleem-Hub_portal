@@ -61,3 +61,41 @@
   mask: var(--icon-url) center / contain no-repeat;
 }
 }
+
+.school-options-panel.mat-mdc-select-panel {
+  max-height: 320px;
+  padding: 7px;
+  border: 1px solid #e8ebf3;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow:
+    0 14px 35px rgb(16 32 75 / 14%),
+    0 3px 8px rgb(16 32 75 / 5%);
+}
+
+.school-options-panel .mat-mdc-option {
+  min-height: 54px;
+  border-radius: 9px;
+  padding: 0 10px;
+  transition: background-color 140ms ease;
+}
+
+.school-options-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled),
+.school-options-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: #f2f5fc;
+}
+
+.school-options-panel .mat-mdc-option .mdc-list-item__primary-text {
+  width: 100%;
+}
+
+.school-options-panel .mat-mdc-option.mdc-list-item--disabled {
+  color: #78839a;
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .school-options-panel .mat-mdc-option {
+    transition: none;
+  }
+}
