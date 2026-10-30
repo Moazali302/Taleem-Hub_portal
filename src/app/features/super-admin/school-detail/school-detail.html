@@ -1,0 +1,165 @@
+<main class="school-detail">
+  <header class="school-detail__page-header">
+    <div>
+      <h1>School Details</h1>
+      <p class="school-detail__breadcrumb">
+        <button type="button" (click)="backToSchools()">Schools</button>
+        @if (school) {
+          <span aria-hidden="true">›</span>
+          <span>{{ school.school_name }}</span>
+        }
+      </p>
+    </div>
+    <div class="school-detail__header-actions">
+      @if (school) {
+        <button class="school-detail__edit-button" type="button" (click)="editSchool()">Edit School</button>
+      }
+      <button class="school-detail__back-button" type="button" (click)="backToSchools()">
+        Back to schools
+      </button>
+    </div>
+  </header>
+
+  @if (isLoading) {
+    <section class="school-detail__state" role="status" aria-live="polite">
+      <span class="school-detail__spinner" aria-hidden="true"></span>
+      <span>Loading school details…</span>
+    </section>
+  } @else if (errorMessage) {
+    <section class="school-detail__state school-detail__state--error" role="alert">
+      <h2>Unable to load school details</h2>
+      <p>{{ errorMessage }}</p>
+      <button type="button" (click)="backToSchools()">Return to schools</button>
+    </section>
+  } @else if (school; as detail) {
+    <section class="school-detail__hero" aria-label="School summary">
+      <div class="school-detail__identity">
+        <div class="school-detail__avatar" aria-hidden="true">{{ schoolInitials }}</div>
+        <div class="school-detail__identity-copy">
+          <h2>{{ detail.school_name }}</h2>
+          <p>{{ detail.school_id }}<span aria-hidden="true"> · </span>{{ detail.city || 'City not provided' }}</p>
+          <div class="school-detail__badges">
+            <span class="school-detail__badge" [class.school-detail__badge--inactive]="detail.status !== 'approved'">
+              {{ statusLabel | titlecase }}
+            </span>
+            @if (detail.plan) {
+              <span class="school-detail__badge school-detail__badge--plan">{{ detail.plan | titlecase }}</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <dl class="school-detail__hero-meta">
+        <div>
+          <dt>Owner</dt>
+          <dd>{{ detail.owner_name || 'Not provided' }}</dd>
+        </div>
+        <div>
+          <dt>Phone</dt>
+          <dd>{{ detail.owner_phone || detail.phone || 'Not provided' }}</dd>
+        </div>
+        <div>
+          <dt>Created</dt>
+          <dd>{{ detail.created_at ? (detail.created_at | date: 'MMM d, y') : 'Not provided' }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="school-detail__metrics" aria-label="School metrics">
+      <article class="school-detail__metric">
+        <p>Students</p>
+        <strong>{{ detail.students_count | number }}</strong>
+        @if (studentUsagePercent !== null) {
+          <span>{{ studentUsagePercent }}% of capacity</span>
+        } @else {
+          <span>Enrollment</span>
+        }
+      </article>
+      <article class="school-detail__metric">
+        <p>Teachers</p>
+        <strong>{{ detail.teachers_count | number }}</strong>
+        <span>Currently registered</span>
+      </article>
+      <article class="school-detail__metric">
+        <p>Student limit</p>
+        <strong>{{ detail.student_limit === null ? 'Unlimited' : (detail.student_limit | number) }}</strong>
+        <span>Plan capacity</span>
+      </article>
+      <article class="school-detail__metric school-detail__metric--amount">
+        <p>Subscription amount</p>
+        <strong>
+          @if (detail.amount !== null) {
+            {{ detail.currency || 'PKR' }} {{ detail.amount | number: '1.0-0' }}
+          } @else {
+            Not provided
+          }
+        </strong>
+        <span>{{ detail.billing_cycle ? (detail.billing_cycle | titlecase) + ' billing' : 'Billing amount' }}</span>
+      </article>
+    </section>
+
+    <section class="school-detail__panels">
+      <article class="school-detail__panel">
+        <h2>School Information</h2>
+        <dl class="school-detail__rows">
+          <div><dt>Owner</dt><dd>{{ detail.owner_name || 'Not provided' }}</dd></div>
+          <div><dt>Email</dt><dd>{{ detail.owner_email || 'Not provided' }}</dd></div>
+          <div><dt>Phone</dt><dd>{{ detail.owner_phone || detail.phone || 'Not provided' }}</dd></div>
+          <div><dt>City</dt><dd>{{ detail.city || 'Not provided' }}</dd></div>
+          <div><dt>Address</dt><dd>{{ detail.school_address || 'Not provided' }}</dd></div>
+        </dl>
+      </article>
+
+      <article class="school-detail__panel">
+        <h2>Subscription &amp; Usage</h2>
+        @if (renewalDays !== null) {
+          <p class="school-detail__renewal">
+            @if (renewalDays > 0) {
+              Renews in {{ renewalDays }} {{ renewalDays === 1 ? 'day' : 'days' }}
+            } @else if (renewalDays === 0) {
+              Renews today
+            } @else {
+              Renewal date passed
+            }
+          </p>
+        }
+        <dl class="school-detail__rows school-detail__rows--subscription">
+          <div><dt>Plan</dt><dd>{{ detail.plan ? (detail.plan | titlecase) : 'Not provided' }}</dd></div>
+          <div><dt>Billing</dt><dd>{{ detail.billing_cycle ? (detail.billing_cycle | titlecase) : 'Not provided' }}</dd></div>
+          <div>
+            <dt>Amount</dt>
+            <dd>
+              @if (detail.amount !== null) {
+                {{ detail.currency || 'PKR' }} {{ detail.amount | number: '1.0-0' }}
+              } @else {
+                Not provided
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>Renews</dt>
+            <dd>{{ detail.end_date ? (detail.end_date | date: 'MMM d, y') : 'Not provided' }}</dd>
+          </div>
+        </dl>
+
+        @if (studentUsagePercent !== null) {
+          <div class="school-detail__usage">
+            <div class="school-detail__usage-label">
+              <span>Students: {{ detail.students_count | number }} of {{ detail.student_limit | number }}</span>
+              <strong>{{ studentUsagePercent }}%</strong>
+            </div>
+            <div class="school-detail__progress" role="progressbar"
+              [attr.aria-valuenow]="studentUsagePercent > 100 ? 100 : studentUsagePercent"
+              [attr.aria-valuemin]="0"
+              [attr.aria-valuemax]="100"
+              [attr.aria-label]="'Student capacity usage: ' + studentUsagePercent + '%'">
+              <span [style.width.%]="studentUsagePercent > 100 ? 100 : studentUsagePercent"></span>
+            </div>
+          </div>
+        } @else {
+          <p class="school-detail__usage-unavailable">Student capacity is not limited for this plan.</p>
+        }
+      </article>
+    </section>
+  }
+</main>

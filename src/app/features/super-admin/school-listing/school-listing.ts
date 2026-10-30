@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ColDef } from 'ag-grid-community';
 import { StatCardComponent } from '@app/shared/components/stat-card/stat-card';
 import { StatCardData } from '@app/shared/components/stat-card/stat-card-model';
@@ -16,6 +17,7 @@ import { ToastService } from '@app/core/services/toast.service';
 import { ApiResponse } from '@app/core/models/api-response.model';
 import { PlanBadgeCellRendererComponent } from '@app/shared/components/data-grid/plan-badge-cell-renderer.component';
 import { AvatarNameCellRendererComponent } from '@app/shared/components/data-grid/avatar-name-cell-renderer.component';
+import { schoolRouteSlug } from '@app/core/utils/school-route.util';
 @Component({
   selector: 'app-school-listing',
   standalone: true,
@@ -89,8 +91,19 @@ columnDefs: ColDef<School>[] = [
       pinned: 'right',
       cellRenderer: RowActionsCellRendererComponent,
       cellRendererParams: {
-        onView: (row: School) => console.log('view', row),
-        onEdit: (row: School) => console.log('edit', row),
+        viewLabel: 'View Details',
+        onView: (row: School) => {
+          const slug = schoolRouteSlug(row, this.schools);
+          void this.router.navigate(['/super-admin/schools', slug], {
+            state: { schoolId: row.id, schoolSlug: slug },
+          });
+        },
+        onEdit: (row: School) => {
+          const slug = schoolRouteSlug(row, this.schools);
+          void this.router.navigate(['/super-admin/schools', slug, 'edit'], {
+            state: { schoolId: row.id, schoolSlug: slug },
+          });
+        },
         onDelete: (row: School) => console.log('delete', row),
       } as Partial<RowActionsParams<School>>,
     },
@@ -111,6 +124,7 @@ columnDefs: ColDef<School>[] = [
     private readonly superAdminService: SuperAdminService,
     private readonly toaster: ToastService,
     private readonly cdr: ChangeDetectorRef,
+    private readonly router: Router,
   ) {}
 
   ngOnInit(): void {

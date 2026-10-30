@@ -1,0 +1,140 @@
+<main class="school-edit">
+  <header class="school-edit__header">
+    <div>
+      <h1>Edit School</h1>
+      <p class="school-edit__breadcrumb">
+        <button type="button" (click)="cancel()">Schools</button>
+        <span aria-hidden="true">›</span>
+        @if (school) {
+          <button type="button" (click)="cancel()">{{ school.school_name }}</button>
+        } @else {
+          <span>School</span>
+        }
+        <span aria-hidden="true">›</span>
+        <span>Edit</span>
+      </p>
+    </div>
+  </header>
+
+  @if (isLoading) {
+    <section class="school-edit__state" role="status" aria-live="polite">
+      <span class="school-edit__spinner" aria-hidden="true"></span>
+      <span>Loading school for editing…</span>
+    </section>
+  } @else if (errorMessage) {
+    <section class="school-edit__state school-edit__state--error" role="alert">
+      <h2>Unable to load school for editing</h2>
+      <p>{{ errorMessage }}</p>
+      <button type="button" class="school-edit__button school-edit__button--secondary" (click)="cancel()">
+        Back to school details
+      </button>
+    </section>
+  } @else if (school) {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="school-edit__form">
+      <div class="school-edit__top-grid">
+        <section class="school-edit__card">
+          <h2>School Details</h2>
+          <div class="school-edit__fields">
+            <label class="school-edit__field">
+              <span>School name</span>
+              <input type="text" formControlName="school_name" [attr.aria-invalid]="isInvalid('school_name')" />
+              @if (isInvalid('school_name')) { <small>School name is required.</small> }
+            </label>
+            <label class="school-edit__field">
+              <span>School ID</span>
+              <input type="text" [value]="school.school_id" readonly />
+            </label>
+            <label class="school-edit__field">
+              <span>City</span>
+              <input type="text" formControlName="city" [attr.aria-invalid]="isInvalid('city')" />
+              @if (isInvalid('city')) { <small>City is required.</small> }
+            </label>
+            <label class="school-edit__field">
+              <span>Address</span>
+              <input type="text" formControlName="school_address" [attr.aria-invalid]="isInvalid('school_address')" />
+              @if (isInvalid('school_address')) { <small>Address is required.</small> }
+            </label>
+            <label class="school-edit__field">
+              <span>Phone</span>
+              <input type="tel" formControlName="phone" [attr.aria-invalid]="isInvalid('phone')" />
+              @if (isInvalid('phone')) { <small>Enter a valid phone number.</small> }
+            </label>
+            <label class="school-edit__field">
+              <span>Created</span>
+              <input type="text" [value]="school.created_at | date: 'MMM d, y'" readonly />
+            </label>
+            <label class="school-edit__field">
+              <span>Status</span>
+              <select formControlName="status">
+                @for (option of statusOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="school-edit__card">
+          <h2>Package</h2>
+          <div class="school-edit__fields">
+            <label class="school-edit__field">
+              <span>Plan</span>
+              <select formControlName="plan" [attr.aria-invalid]="isInvalid('plan')">
+                @for (option of planOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+              @if (isInvalid('plan')) { <small>Select a plan.</small> }
+            </label>
+            <label class="school-edit__field">
+              <span>Billing cycle</span>
+              <select formControlName="billing_cycle">
+                @for (option of billingCycleOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </label>
+            <label class="school-edit__field">
+              <span>Start date</span>
+              <input type="date" formControlName="start_date" />
+            </label>
+            <label class="school-edit__field">
+              <span>Student limit</span>
+              <input type="number" min="0" formControlName="student_limit" />
+              @if (isInvalid('student_limit')) { <small>Student limit must be zero or more.</small> }
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <section class="school-edit__card school-edit__owner">
+        <h2>Owner Account</h2>
+        <div class="school-edit__fields">
+          <label class="school-edit__field">
+            <span>Owner name</span>
+            <input type="text" formControlName="owner_name" [attr.aria-invalid]="isInvalid('owner_name')" />
+            @if (isInvalid('owner_name')) { <small>Owner name is required.</small> }
+          </label>
+          <label class="school-edit__field">
+            <span>Owner email</span>
+            <input type="email" formControlName="owner_email" [attr.aria-invalid]="isInvalid('owner_email')" />
+            @if (isInvalid('owner_email')) { <small>Enter a valid owner email.</small> }
+          </label>
+          <label class="school-edit__field">
+            <span>Phone</span>
+            <input type="tel" formControlName="owner_phone" [attr.aria-invalid]="isInvalid('owner_phone')" />
+            @if (isInvalid('owner_phone')) { <small>Enter a valid owner phone number.</small> }
+          </label>
+        </div>
+        <div class="school-edit__actions">
+          <button class="school-edit__button" type="submit" [disabled]="isSaving">
+            {{ isSaving ? 'Saving…' : 'Save Changes' }}
+          </button>
+          <button class="school-edit__button school-edit__button--secondary" type="button" (click)="cancel()" [disabled]="isSaving">
+            Cancel
+          </button>
+        </div>
+      </section>
+    </form>
+  }
+</main>
