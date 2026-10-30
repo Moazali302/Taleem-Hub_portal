@@ -145,6 +145,13 @@ export class AnnouncementsComponent implements OnInit {
     this.announcementsService.getAnnouncements().subscribe({
       next: (res) => {
         this.announcements = res.data;
+        this.hasError = false;
+        this.errorMessage = '';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.hasError = true;
+        this.errorMessage = getHttpErrorMessage(err);
         this.cdr.markForCheck();
       },
     });
