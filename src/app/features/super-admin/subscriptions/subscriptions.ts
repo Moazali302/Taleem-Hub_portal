@@ -16,9 +16,10 @@ import { ICustomCellRenderer } from '@app/core/models/custom-cell-renderer.model
 import { CustomCellEvent } from '@app/core/models/custom-cell-event.model';
 import { SummaryCardData } from '@app/core/models/summary-card.model';
 import {
+  SUBSCRIPTION_LIST_PLAN_OPTIONS,
   SUBSCRIPTION_PLAN_OPTIONS,
   SubscriptionListItem,
-  SubscriptionPlan,
+  SubscriptionListPlan,
 } from '@app/core/models/subscription.model';
 import { SubscriptionsService } from '@app/core/services/subscriptions.service';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
@@ -30,6 +31,7 @@ const PLAN_COLORS: Record<string, StatusBadgeColor> = {
   basic: { bg: '#eef1f8', text: '#3b4a73', dot: '#3b4a73' },
   advanced: { bg: '#e0e7fb', text: '#17306f', dot: '#17306f' },
   premium: { bg: '#fdf1cc', text: '#8a5a00', dot: '#8a5a00' },
+  free_trial: { bg: '#dcfce7', text: '#15803d', dot: '#22c55e' },
 };
 
 const STATUS_COLORS: Record<string, StatusBadgeColor> = {
@@ -46,7 +48,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 
 const capitalize = (value: string): string => value.charAt(0).toUpperCase() + value.slice(1);
 const formatAmount = (amount: number): string => `PKR ${amount.toLocaleString('en-US')}`;
-const formatDate = (iso: string): string => dateFormatter.format(new Date(iso));
+const formatDate = (iso?: string): string => (iso ? dateFormatter.format(new Date(iso)) : '-');
 
 @Component({
   selector: 'app-subscriptions',
@@ -68,7 +70,7 @@ const formatDate = (iso: string): string => dateFormatter.format(new Date(iso));
 })
 export class SubscriptionsComponent implements OnInit {
   readonly rowHeight = COMPACT_ROW_HEIGHT;
-  readonly planOptions = SUBSCRIPTION_PLAN_OPTIONS;
+  readonly planOptions = SUBSCRIPTION_LIST_PLAN_OPTIONS;
 
   summaryCards: SummaryCardData[] = [];
   subscriptions: SubscriptionListItem[] = [];
@@ -79,7 +81,7 @@ export class SubscriptionsComponent implements OnInit {
   errorMessage = '';
 
   searchTerm = '';
-  planFilter: SubscriptionPlan | 'all' = 'all';
+  planFilter: SubscriptionListPlan | 'all' = 'all';
 
   isSidenavOpen = false;
   selectedSubscription: SubscriptionListItem | null = null;
@@ -168,7 +170,8 @@ export class SubscriptionsComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.hasError = true;
-        this.errorMessage = getHttpErrorMessage(err);
+        this.errorMessage =
+          err instanceof Error && !('error' in err) ? err.message : getHttpErrorMessage(err);
         this.cdr.markForCheck();
       },
     });
@@ -180,7 +183,7 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   onPlanFilterChange(value: string): void {
-    this.planFilter = value as SubscriptionPlan | 'all';
+    this.planFilter = value as SubscriptionListPlan | 'all';
     this.applyFilters();
   }
 
@@ -190,8 +193,8 @@ export class SubscriptionsComponent implements OnInit {
       { header: 'Plan', value: (row) => capitalize(row.plan) },
       { header: 'Billing', value: (row) => capitalize(row.billing_cycle) },
       { header: 'Amount (PKR)', value: (row) => row.amount },
-      { header: 'Expires', value: (row) => row.expires_at },
-      { header: 'Status', value: (row) => capitalize(row.status) },
+      { header: 'Expires', value: (row) => row.expires_at ?? '-' },
+      { header: 'Status', value: (row) => capitalize(row.status ?? '-') },
     ], this.filteredSubscriptions);
   }
 
@@ -226,16 +229,19 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   private buildSummaryCards(): SummaryCardData[] {
-    const countByPlan = (plan: SubscriptionPlan) =>
+    const countByPlan = (plan: SubscriptionListPlan) =>
       this.subscriptions.filter((row) => row.plan === plan).length;
-    const expiringSoon = this.subscriptions.filter((row) => row.status !== 'active').length;
 
     return [
-      ...SUBSCRIPTION_PLAN_OPTIONS.map((option) => ({
+      ...SUBSCRIPTION_LIST_PLAN_OPTIONS.map((option) => ({
         label: option.label,
         value: countByPlan(option.value),
       })),
-      { label: 'Expiring Soon', value: expiringSoon, accent: 'warning' as const },
+      {
+        label: 'Expiring Soon',
+        value: this.subscriptions.filter((row) => row.status && row.status !== 'active').length,
+        accent: 'warning' as const,
+      },
     ];
   }
 }

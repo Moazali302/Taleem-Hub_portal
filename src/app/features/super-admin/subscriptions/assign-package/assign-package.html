@@ -13,12 +13,18 @@
 <form class="assign-package__form" [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="assign-package__field">
     <label for="school_id">School <span>*</span></label>
-    <select id="school_id" formControlName="school_id">
+    <select id="school_id" formControlName="school_id" (focus)="loadSchools()">
       <option [ngValue]="0" disabled>Select a school</option>
-      @for (school of schools; track school.school_id) {
-        <option [ngValue]="school.school_id">{{ school.school_name }}</option>
+      @if (schoolsLoading) {
+        <option [ngValue]="0" disabled>Loading schools...</option>
+      }
+      @for (school of schools; track school.id) {
+        <option [ngValue]="school.id">{{ school.school_name }}</option>
       }
     </select>
+    @if (schoolsError) {
+      <p class="assign-package__error">{{ schoolsError }}</p>
+    }
     @if (isInvalid('school_id')) {
       <p class="assign-package__error">Please select a school.</p>
     }

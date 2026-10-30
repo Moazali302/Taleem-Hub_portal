@@ -50,10 +50,9 @@
     }
   </section>
 
-  <app-sidenav [isOpen]="isSidenavOpen" panelWidth="480px" (close)="closeSidenav()">
+  <app-sidenav [isOpen]="isSidenavOpen" panelWidth="640px" (close)="closeSidenav()">
     @if (isSidenavOpen) {
       <app-assign-package
-        [schools]="subscriptions"
         [subscription]="selectedSubscription"
         (closeClicked)="closeSidenav()"
         (saved)="onPackageSaved()"

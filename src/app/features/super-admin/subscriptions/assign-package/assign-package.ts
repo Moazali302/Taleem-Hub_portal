@@ -17,6 +17,7 @@ import {
   SubscriptionListItem,
 } from '@app/core/models/subscription.model';
 import { SubscriptionsService } from '@app/core/services/subscriptions.service';
+import { SchoolListItem, SuperAdminService } from '@app/core/services/super-admin.service';
 import { ToastService } from '@app/core/services/toast.service';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 
@@ -29,8 +30,6 @@ import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignPackageComponent implements OnInit {
-  /** Schools that can be assigned a package. */
-  @Input({ required: true }) schools: SubscriptionListItem[] = [];
   /** When set, the school is fixed and its current plan is pre-selected ("change package"). */
   @Input() subscription: SubscriptionListItem | null = null;
 
@@ -39,7 +38,11 @@ export class AssignPackageComponent implements OnInit {
 
   readonly planOptions = SUBSCRIPTION_PLAN_OPTIONS;
   readonly cycleOptions = BILLING_CYCLE_OPTIONS;
+  schools: SchoolListItem[] = [];
+  schoolsLoading = false;
+  schoolsError = '';
   isSubmitting = false;
+  private schoolsLoaded = false;
 
   private readonly fb = new FormBuilder();
 
@@ -51,6 +54,7 @@ export class AssignPackageComponent implements OnInit {
 
   constructor(
     private readonly subscriptionsService: SubscriptionsService,
+    private readonly superAdminService: SuperAdminService,
     private readonly toaster: ToastService,
     private readonly cdr: ChangeDetectorRef,
   ) {}
@@ -59,11 +63,33 @@ export class AssignPackageComponent implements OnInit {
     if (this.subscription) {
       this.form.patchValue({
         school_id: this.subscription.school_id,
-        plan: this.subscription.plan,
+        plan: this.subscription.plan === 'free_trial' ? SUBSCRIPTION_PLAN_OPTIONS[0].value : this.subscription.plan,
         billing_cycle: this.subscription.billing_cycle,
       });
       this.form.controls.school_id.disable();
     }
+  }
+
+  loadSchools(): void {
+    if (this.schoolsLoaded || this.schoolsLoading || this.subscription) {
+      return;
+    }
+
+    this.schoolsLoading = true;
+    this.schoolsError = '';
+    this.superAdminService.getAllSchools().subscribe({
+      next: (response) => {
+        this.schools = response.data;
+        this.schoolsLoaded = true;
+        this.schoolsLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        this.schoolsLoading = false;
+        this.schoolsError = getHttpErrorMessage(error);
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   get heading(): string {

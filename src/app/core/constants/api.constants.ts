@@ -107,6 +107,8 @@ export const API = {
     COMPLAINTS_SUMMARY: '/super-admin/complaints/summary',
     COMPLAINT_STATUS: (id: string) => `/super-admin/complaints/${id}/status`,
     ASSIGN_PACKAGE: (id: string) => `/super-admin/schools/${id}/package`,
+    GET_ALL_PACKAGES: '/super-admin/GetAllPackages',
+    UPDATE_PACKAGE: '/super-admin/updatePackage',
     DEMO_REQUESTS: '/super-admin/demo-request',
     DEMO_REQUEST_STATUS:(id:string)=>'/super-admin/demo-request/${id}'
   }
