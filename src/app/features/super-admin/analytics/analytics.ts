@@ -1,69 +1,54 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { AnalyticsPoint } from '@app/core/models/analytics.model';
-import { PlatformAnalytics } from '@app/core/models/Platform analytics.model';
-import { SUBSCRIPTION_PLAN_OPTIONS, SubscriptionPlan } from '@app/core/models/subscription.model';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject, Subscription, takeUntil } from 'rxjs';
+import { AnalyticsDashboardRange, SuperAdminAnalyticsDashboard } from '@app/core/models/super-admin-analytics.model';
 import { SummaryCardData } from '@app/core/models/summary-card.model';
 import { PlatformAnalyticsService } from '@app/core/services/PlatformAnalyticsService';
-import { BarChartComponent } from '@app/shared/components/BarChart/bar-chart';
 import { CardComponent } from '@app/shared/components/Card/card';
-import { DonutChartComponent } from '@app/shared/components/DonutChart/donut-chart';
 import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
-import { ProgressBarComponent } from '@app/shared/components/progressBar/progress-bar';
 import { SummaryCardComponent } from '@app/shared/components/summary-card/summary-card';
 import { downloadCsv } from '@app/shared/utlis/csv-export.util';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 
-interface PackageBar {
+interface NewSchoolBar {
   label: string;
-  percent: number;
-  color: 'navy' | 'gold' | 'green';
+  count: number;
+  height: number;
+  showLabel: boolean;
 }
 
-interface HealthMetric {
-  title: string;
-  caption: string;
-  percent: number;
+interface AnalyticsShareRow {
+  label: string;
+  count: number;
+  percentage: number;
+  color: string;
 }
-
-const PACKAGE_COLORS: Record<SubscriptionPlan, PackageBar['color']> = {
-  basic: 'navy',
-  advanced: 'gold',
-  premium: 'green',
-};
-
-const PLAN_LABELS = Object.fromEntries(
-  SUBSCRIPTION_PLAN_OPTIONS.map((option) => [option.value, option.label]),
-) as Record<SubscriptionPlan, string>;
-
-const formatPkrMillions = (amount: number): string => `PKR ${(amount / 1_000_000).toFixed(1)}M`;
-const formatSigned = (value: number, suffix = ''): string => `${value >= 0 ? '+' : ''}${value}${suffix}`;
 
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [
-    PageHeaderComponent,
-    SummaryCardComponent,
-    CardComponent,
-    BarChartComponent,
-    DonutChartComponent,
-    ProgressBarComponent,
-  ],
+  imports: [PageHeaderComponent, SummaryCardComponent, CardComponent],
   templateUrl: './analytics.html',
   styleUrl: './analytics.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AnalyticsComponent implements OnInit {
-  analytics: PlatformAnalytics | null = null;
-  summaryCards: SummaryCardData[] = [];
-  packageBars: PackageBar[] = [];
-  healthMetrics: HealthMetric[] = [];
+export class AnalyticsComponent implements OnInit, OnDestroy {
+  readonly ranges: { value: AnalyticsDashboardRange; label: string }[] = [
+    { value: '7D', label: '7D' },
+    { value: '30D', label: '30D' },
+    { value: '90D', label: '90D' },
+    { value: '12M', label: '12M' },
+  ];
 
+  range: AnalyticsDashboardRange = '30D';
+  dashboard: SuperAdminAnalyticsDashboard | null = null;
   isLoading = false;
+  isRefreshing = false;
   hasError = false;
   errorMessage = '';
+  lastUpdated: Date | null = null;
 
-  readonly formatRevenueMonth = (value: number): string => `PKR ${value}M`;
+  private readonly destroy$ = new Subject<void>();
+  private request?: Subscription;
 
   constructor(
     private readonly analyticsService: PlatformAnalyticsService,
@@ -74,91 +59,191 @@ export class AnalyticsComponent implements OnInit {
     this.load();
   }
 
-  get revenueByMonth(): AnalyticsPoint[] {
-    return this.analytics?.revenue_by_month ?? [];
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.request?.unsubscribe();
   }
 
-  load(): void {
-    this.isLoading = true;
-    this.hasError = false;
+  get summaryCards(): SummaryCardData[] {
+    if (!this.dashboard) return [];
 
-    this.analyticsService.getAnalytics().subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        this.analytics = res.data;
-        this.summaryCards = this.buildSummaryCards(res.data);
-        this.packageBars = this.buildPackageBars(res.data);
-        this.healthMetrics = this.buildHealthMetrics(res.data);
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.hasError = true;
-        this.errorMessage = getHttpErrorMessage(err);
-        this.cdr.markForCheck();
-      },
-    });
-  }
+    const data = this.dashboard.summary;
+    const collectionChange = data.feeCollection.percentageChange;
+    const rateChange = data.feeCollection.collectionRate.percentagePointChange;
 
-  exportReport(): void {
-    const data = this.analytics;
-    if (!data) return;
-
-    const rows: { metric: string; value: string | number }[] = [
-      { metric: 'Revenue this month (PKR)', value: data.revenue_this_month },
-      { metric: 'New schools', value: data.new_schools },
-      { metric: 'Churn-risk schools', value: data.churn_risk_schools },
-      { metric: 'Avg. daily logins', value: data.avg_daily_logins },
-      ...data.revenue_by_month.map((point) => ({ metric: `Revenue ${point.label} (PKR M)`, value: point.value })),
-      ...data.package_distribution.map((share) => ({ metric: `${PLAN_LABELS[share.plan]} schools (%)`, value: share.percent })),
-      { metric: 'Fee collection (%)', value: data.fee_collection_percent },
-      { metric: 'Attendance marked (%)', value: data.attendance_marked_percent },
-      { metric: 'Results published (%)', value: data.results_published_percent },
-    ];
-
-    downloadCsv('platform-analytics.csv', [
-      { header: 'Metric', value: (row) => row.metric },
-      { header: 'Value', value: (row) => row.value },
-    ], rows);
-  }
-
-  private buildSummaryCards(data: PlatformAnalytics): SummaryCardData[] {
     return [
       {
-        label: 'This Month Revenue',
-        value: formatPkrMillions(data.revenue_this_month),
-        caption: formatSigned(data.revenue_trend_percent, '%'),
-        captionTone: data.revenue_trend_percent >= 0 ? 'positive' : 'negative',
+        label: 'Active Schools',
+        value: this.formatNumber(data.activeSchools.current),
+        caption: 'Currently approved',
       },
       {
-        label: 'New Schools',
-        value: data.new_schools,
-        caption: formatSigned(data.new_schools_trend),
-        captionTone: data.new_schools_trend >= 0 ? 'positive' : 'negative',
+        label: 'Total Students',
+        value: this.formatNumber(data.totalStudents.current),
+        caption: 'Active student records',
       },
-      { label: 'Churn-risk Schools', value: data.churn_risk_schools, caption: 'attention', accent: 'warning' },
       {
-        label: 'Avg. Daily Logins',
-        value: data.avg_daily_logins.toLocaleString('en-US'),
-        caption: formatSigned(data.avg_daily_logins_trend_percent, '%'),
-        captionTone: data.avg_daily_logins_trend_percent >= 0 ? 'positive' : 'negative',
+        label: 'Fee Collection',
+        value: this.formatCurrency(data.feeCollection.current, data.feeCollection.currency),
+        caption: collectionChange === null
+          ? 'No comparable collection data'
+          : `${this.formatSigned(collectionChange)} vs previous period`,
+        captionTone: collectionChange === null ? 'neutral' : collectionChange >= 0 ? 'positive' : 'negative',
+      },
+      {
+        label: 'Collection Rate',
+        value: this.formatPercentage(data.feeCollection.collectionRate.currentPercentage),
+        caption: rateChange === null
+          ? 'Rate comparison unavailable'
+          : `${this.formatSigned(rateChange, ' pp')} vs previous period`,
+        captionTone: rateChange === null ? 'neutral' : rateChange >= 0 ? 'positive' : 'negative',
       },
     ];
   }
 
-  private buildPackageBars(data: PlatformAnalytics): PackageBar[] {
-    return data.package_distribution.map((share) => ({
-      label: PLAN_LABELS[share.plan],
-      percent: share.percent,
-      color: PACKAGE_COLORS[share.plan],
+  get newSchoolBars(): NewSchoolBar[] {
+    const points = this.dashboard?.newSchools ?? [];
+    const maximum = Math.max(0, ...points.map((point) => point.count));
+    const labelInterval = Math.max(1, Math.ceil(points.length / 8));
+
+    return points.map((point, index) => ({
+      label: point.label,
+      count: point.count,
+      height: maximum === 0 ? 0 : (point.count / maximum) * 100,
+      showLabel: points.length <= 10 || index === 0 || index === points.length - 1 || index % labelInterval === 0,
     }));
   }
 
-  private buildHealthMetrics(data: PlatformAnalytics): HealthMetric[] {
+  get maxNewSchools(): number {
+    return Math.max(0, ...(this.dashboard?.newSchools ?? []).map((point) => point.count));
+  }
+
+  get subscriptionHealth(): AnalyticsShareRow[] {
+    const health = this.dashboard?.subscriptionHealth;
+    if (!health) return [];
     return [
-      { title: 'Fee Collection', caption: 'This month', percent: data.fee_collection_percent },
-      { title: 'Attendance Marked', caption: 'Platform-wide', percent: data.attendance_marked_percent },
-      { title: 'Results Published', caption: 'This term', percent: data.results_published_percent },
+      { label: 'Active', ...health.active, color: 'green' },
+      { label: 'Expiring soon', ...health.expiringSoon, color: 'gold' },
+      { label: 'Expired', ...health.expired, color: 'red' },
     ];
+  }
+
+  get demoStages(): AnalyticsShareRow[] {
+    const funnel = this.dashboard?.demoFunnel;
+    if (!funnel) return [];
+    return [
+      { label: 'Demo requests', ...funnel.demoRequests, color: 'navy' },
+      { label: 'Contacted', ...funnel.contacted, color: 'blue' },
+      { label: 'Converted', ...funnel.converted, color: 'green' },
+    ];
+  }
+
+  load(): void {
+    this.request?.unsubscribe();
+    this.isLoading = !this.dashboard;
+    this.isRefreshing = !!this.dashboard;
+    this.hasError = false;
+    this.errorMessage = '';
+
+    this.request = this.analyticsService.getAnalytics(this.range)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.dashboard = response.data;
+          this.isLoading = false;
+          this.isRefreshing = false;
+          this.lastUpdated = new Date();
+          this.cdr.markForCheck();
+        },
+        error: (error: unknown) => {
+          this.isLoading = false;
+          this.isRefreshing = false;
+          this.hasError = true;
+          this.errorMessage = getHttpErrorMessage(error);
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  selectRange(range: AnalyticsDashboardRange): void {
+    if (range === this.range) return;
+    this.range = range;
+    this.dashboard = null;
+    this.load();
+  }
+
+  formatNumber(value: number | null): string {
+    if (value === null || !Number.isFinite(value)) return '—';
+    return new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 }).format(value);
+  }
+
+  formatCurrency(value: number | null, currency = 'PKR'): string {
+    if (value === null || !Number.isFinite(value)) return '—';
+    return new Intl.NumberFormat('en-PK', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 0,
+    }).format(value);
+  }
+
+  formatPercentage(value: number | null): string {
+    if (value === null || !Number.isFinite(value)) return '—';
+    return `${new Intl.NumberFormat('en-PK', { maximumFractionDigits: 2 }).format(value)}%`;
+  }
+
+  formatSigned(value: number, suffix = '%'): string {
+    const sign = value > 0 ? '+' : '';
+    return `${sign}${new Intl.NumberFormat('en-PK', { maximumFractionDigits: 2 }).format(value)}${suffix}`;
+  }
+
+  formatDate(value: string): string {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+      ? '—'
+      : new Intl.DateTimeFormat('en-PK', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(date);
+  }
+
+  formatPeriodEnd(exclusiveEnd: string): string {
+    const date = new Date(exclusiveEnd);
+    if (Number.isNaN(date.getTime())) return '—';
+    date.setUTCDate(date.getUTCDate() - 1);
+    return this.formatDate(date.toISOString());
+  }
+
+  formatTime(value: Date): string {
+    return new Intl.DateTimeFormat('en-PK', { hour: 'numeric', minute: '2-digit' }).format(value);
+  }
+
+  exportReport(): void {
+    if (!this.dashboard) return;
+    const data = this.dashboard;
+    const rows: { metric: string; value: string | number }[] = [
+      { metric: 'Date range', value: data.range },
+      { metric: 'Active schools', value: data.summary.activeSchools.current },
+      { metric: 'Total students', value: data.summary.totalStudents.current },
+      { metric: 'Fee collection (PKR)', value: data.summary.feeCollection.current },
+      {
+        metric: 'Fee collection change (%)',
+        value: data.summary.feeCollection.percentageChange ?? 'Unavailable',
+      },
+      {
+        metric: 'Collection rate (%)',
+        value: data.summary.feeCollection.collectionRate.currentPercentage ?? 'Unavailable',
+      },
+      ...data.newSchools.map((point) => ({ metric: `New schools · ${point.label}`, value: point.count })),
+      { metric: 'Subscriptions · Active', value: data.subscriptionHealth.active.count },
+      { metric: 'Subscriptions · Expiring soon', value: data.subscriptionHealth.expiringSoon.count },
+      { metric: 'Subscriptions · Expired', value: data.subscriptionHealth.expired.count },
+      { metric: 'Demo requests', value: data.demoFunnel.demoRequests.count },
+      { metric: 'Contacted', value: data.demoFunnel.contacted.count },
+      { metric: 'Converted', value: data.demoFunnel.converted.count },
+      ...data.schoolsByCity.map((city) => ({ metric: `Schools · ${city.city}`, value: city.count })),
+    ];
+
+    downloadCsv('super-admin-analytics.csv', [
+      { header: 'Metric', value: (row) => row.metric },
+      { header: 'Value', value: (row) => row.value },
+    ], rows);
   }
 }

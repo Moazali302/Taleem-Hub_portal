@@ -100,7 +100,7 @@ export const API = {
     REVENUE: '/super-admin/revenue',
     AUDIT_LOGS: '/super-admin/audit-logs',
     SUBSCRIPTIONS: '/super-admin/subscriptions',
-    ANALYTICS: '/super-admin/analytics',
+    ANALYTICS: '/super-admin/analytics/dashboard',
     ANNOUNCEMENTS: '/super-admin/announcements',
     ANNOUNCEMENT_AUDIENCES: '/super-admin/announcements/audiences',
     ANNOUNCEMENT: (id: string) => `/super-admin/announcements/${id}`,
