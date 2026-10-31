@@ -1,77 +1,180 @@
-<main class="dashboard">
+<main class="dashboard" [attr.aria-busy]="isLoading || isRefreshing">
   <app-page-header title="Dashboard" subtitle="Platform health at a glance.">
-    <a routerLink="/super-admin/analytics" class="page-header__action">View Full Report</a>
+    <div class="dashboard__header-actions">
+      <button
+        type="button"
+        class="dashboard__refresh"
+        [disabled]="isLoading || isRefreshing"
+        (click)="load()"
+        aria-label="Refresh dashboard"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 7v5h-5M4 17v-5h5M5.6 9a7 7 0 0 1 11.6-2L20 12M4 12l2.8 5a7 7 0 0 0 11.6-2" />
+        </svg>
+      </button>
+      <a routerLink="/super-admin/analytics" class="page-header__action">View Full Report</a>
+    </div>
   </app-page-header>
 
-  <section class="dashboard__stats" aria-label="Platform summary">
-    @for (stat of stats; track stat.label) {
-      <app-summary-card [data]="stat" />
+  @if (isLoading && !dashboard) {
+    <div class="dashboard__state" role="status">
+      <span class="dashboard__spinner" aria-hidden="true"></span>
+      <p>Loading platform dashboard…</p>
+    </div>
+  } @else if (hasError && !dashboard) {
+    <div class="dashboard__state dashboard__state--error" role="alert">
+      <h2>Dashboard couldn’t be loaded</h2>
+      <p>{{ errorMessage }}</p>
+      <button type="button" class="dashboard__retry" (click)="load()">Try again</button>
+    </div>
+  } @else if (dashboard; as data) {
+    @if (hasError) {
+      <div class="dashboard__notice dashboard__notice--error" role="alert">
+        <span>{{ errorMessage }} Showing the last successfully loaded dashboard.</span>
+        <button type="button" (click)="load()">Retry</button>
+      </div>
     }
-  </section>
 
-  <section class="dashboard__row dashboard__row--charts">
-    <app-card [title]="'Revenue Analytics · ' + revenueTotalLabel">
-      <svg
-        class="revenue-chart"
-        [attr.viewBox]="chartViewBox"
-        preserveAspectRatio="none"
-        role="img"
-        aria-label="Revenue trend over the last 12 months"
-      >
-        <defs>
-          <linearGradient id="revenue-gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#f5b800" stop-opacity="0.38" />
-            <stop offset="100%" stop-color="#f5b800" stop-opacity="0" />
-          </linearGradient>
-        </defs>
-        <path [attr.d]="chartAreaPath" fill="url(#revenue-gradient)" />
-        <path
-          [attr.d]="chartLinePath"
-          class="revenue-chart__line"
-          fill="none"
-          vector-effect="non-scaling-stroke"
-        />
-      </svg>
-    </app-card>
+    <section class="dashboard__stats" aria-label="Platform summary">
+      @for (stat of summaryCards; track stat.label) {
+        <app-summary-card [data]="stat" />
+      }
+    </section>
 
-    <app-card title="Fee Collection Rate" [centered]="true">
-      <app-donut-chart
-        [value]="feeCollection.ratePercent"
-        [ariaLabel]="feeCollection.ratePercent + '% of fees collected'"
-      />
-      <p class="dashboard__caption">
-        {{ feeCollection.collectedAmount }} of {{ feeCollection.billedAmount }} billed
-      </p>
-    </app-card>
-  </section>
-
-  <section class="dashboard__row dashboard__row--lists">
-    <app-card title="Recent Activity">
-      <ul class="list">
-        @for (item of recentActivities; track $index) {
-          <li class="list__item">
-            <span class="list__dot" aria-hidden="true"></span>
+    <section class="dashboard__row dashboard__row--insights" aria-label="Platform financial insights">
+      @if (data.revenueAnalytics.available) {
+        <app-card title="Revenue Analytics">
+          <div class="dashboard__revenue-summary">
             <div>
-              <p class="list__primary">{{ item.description }}</p>
-              <p class="list__secondary">{{ item.timestamp | timeAgo }}</p>
+              <span class="dashboard__eyebrow">Current month revenue</span>
+              <strong>{{ formatCurrency(data.revenueAnalytics.currentMonthRevenue, data.revenueAnalytics.currency) }}</strong>
             </div>
-          </li>
-        }
-      </ul>
-    </app-card>
+            @if (data.revenueAnalytics.trend.length > 0) {
+              <span class="dashboard__revenue-note">Revenue trend available</span>
+            }
+          </div>
+          @if (data.revenueAnalytics.trend.length > 0) {
+            <div class="dashboard__trend" role="img" aria-label="Revenue trend values">
+              @for (point of data.revenueAnalytics.trend; track point.period) {
+                <div class="dashboard__trend-column" [title]="point.period + ': ' + formatCurrency(point.amount, data.revenueAnalytics.currency)">
+                  <span class="dashboard__trend-value">{{ formatCurrency(point.amount, data.revenueAnalytics.currency) }}</span>
+                  <span class="dashboard__trend-track">
+                    <span
+                      class="dashboard__trend-bar"
+                      [style.height.%]="trendHeight(point.amount, data.revenueAnalytics.trend)"
+                    ></span>
+                  </span>
+                  <span class="dashboard__trend-label">{{ point.period }}</span>
+                </div>
+              }
+            </div>
+          }
+        </app-card>
+      } @else {
+        <section class="dashboard__unavailable" aria-label="Revenue analytics unavailable">
+          <span class="dashboard__unavailable-icon" aria-hidden="true">$</span>
+          <div>
+            <h2>Revenue analytics unavailable</h2>
+            <p>{{ data.revenueAnalytics.reason || data.definitions['revenue'] }}</p>
+          </div>
+        </section>
+      }
 
-    <app-card title="Subscriptions Expiring Soon">
-      <ul class="list">
-        @for (item of expiringSubscriptions; track item.schoolName) {
-          <li class="list__item">
-            <span class="list__dot" aria-hidden="true"></span>
-            <div>
-              <p class="list__primary">{{ item.schoolName }} · {{ item.plan }}</p>
-              <p class="list__secondary">Expires in {{ item.expiresIn }}</p>
-            </div>
-          </li>
+      <app-card title="Fee Collection Rate" [centered]="true">
+        @if (data.feeCollection.available && data.feeCollection.rate !== null) {
+          <div class="dashboard__fee-rate">
+            <strong>{{ formatPercentage(data.feeCollection.rate) }}</strong>
+            <span>of fees due this month collected</span>
+          </div>
+        } @else {
+          <div class="dashboard__fee-rate dashboard__fee-rate--unavailable">
+            <strong>Not available</strong>
+            <span>{{ data.feeCollection.available ? 'The collection rate could not be calculated.' : 'Fee collection data is unavailable.' }}</span>
+          </div>
         }
-      </ul>
-    </app-card>
-  </section>
+        <dl class="dashboard__fee-totals" [attr.title]="data.feeCollection.definition">
+          <div>
+            <dt>Collected</dt>
+            <dd>{{ formatCurrency(data.feeCollection.collected, data.feeCollection.currency) }}</dd>
+          </div>
+          <div>
+            <dt>Expected</dt>
+            <dd>{{ formatCurrency(data.feeCollection.expected, data.feeCollection.currency) }}</dd>
+          </div>
+        </dl>
+        <p class="dashboard__caption">
+          {{ formatPeriod(data.feeCollection.period.from, data.feeCollection.period.toExclusive) }}
+        </p>
+      </app-card>
+    </section>
+
+    <section class="dashboard__row dashboard__row--lists" aria-label="Recent activity and upcoming expiries">
+      <app-card title="Recent Activity">
+        @if (data.recentActivity.length > 0) {
+          <ul class="dashboard-list">
+            @for (item of data.recentActivity; track item.id) {
+              <li class="dashboard-list__item">
+                <span class="dashboard-list__dot" aria-hidden="true"></span>
+                <div class="dashboard-list__content">
+                  <p class="dashboard-list__primary">{{ item.message }}</p>
+                  <p class="dashboard-list__secondary">{{ formatDate(item.createdAt) }}</p>
+                </div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="dashboard__empty">No recent platform activity.</p>
+        }
+      </app-card>
+
+      <app-card title="Subscriptions Expiring Soon">
+        @if (expiringSubscriptions.length > 0) {
+          <ul class="dashboard-list">
+            @for (item of expiringSubscriptions; track item.schoolId) {
+              <li class="dashboard-list__item">
+                <span
+                  class="dashboard-list__dot"
+                  [class.dashboard-list__dot--urgent]="item.isUrgent || item.daysRemaining <= data.summary.expiringSubscriptions.urgentWithinDays"
+                  aria-hidden="true"
+                ></span>
+                <div class="dashboard-list__content">
+                  <div class="dashboard-list__title-row">
+                    <p class="dashboard-list__primary">{{ item.schoolName }} · {{ item.planName }}</p>
+                    <span
+                      class="dashboard-list__badge"
+                      [class.dashboard-list__badge--urgent]="item.isUrgent || item.daysRemaining <= data.summary.expiringSubscriptions.urgentWithinDays"
+                    >
+                      {{ item.isUrgent || item.daysRemaining <= data.summary.expiringSubscriptions.urgentWithinDays ? 'Urgent' : 'Upcoming' }}
+                    </span>
+                  </div>
+                  <p class="dashboard-list__secondary">
+                    @if (item.daysRemaining === 0) {
+                      Expires today
+                    } @else {
+                      {{ item.daysRemaining }} day{{ item.daysRemaining === 1 ? '' : 's' }} remaining
+                    }
+                    · {{ formatDate(item.expiresAt) }}
+                  </p>
+                </div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="dashboard__empty">No subscriptions are expiring soon.</p>
+        }
+      </app-card>
+    </section>
+
+    <footer class="dashboard__footer">
+      @if (lastUpdated) {
+        <span>Updated {{ formatDate(lastUpdated.toISOString()) }}</span>
+      }
+      @if (isRefreshing) {
+        <span class="dashboard__refreshing" role="status">
+          <span class="dashboard__spinner dashboard__spinner--small" aria-hidden="true"></span>
+          Refreshing dashboard…
+        </span>
+      }
+    </footer>
+  }
 </main>
