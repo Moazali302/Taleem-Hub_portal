@@ -1,46 +1,66 @@
-export type ComplaintPriority = 'critical' | 'high' | 'normal';
-export type ComplaintStatus = 'open' | 'in_progress' | 'resolved';
+export type ComplaintPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export type ComplaintStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
+export type ComplaintSortBy = 'created_at' | 'updated_at' | 'status' | 'priority';
+export type ComplaintSortOrder = 'ASC' | 'DESC';
 
-/** One row of the super-admin Complaints listing (snake_case, like every API response). */
-export interface ComplaintListItem {
+export interface ComplaintPerson {
   id: number;
-  school_name: string;
+  name: string;
+}
+
+export interface Complaint {
+  id: string;
+  school: { id: number; name: string } | null;
   subject: string;
   description: string;
-  raised_by: string;
+  raisedBy: ComplaintPerson | null;
   priority: ComplaintPriority;
   status: ComplaintStatus;
-  created_at: string; // ISO date-time
+  remarks: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
-/** Platform-wide counters shown above the listing — computed by the backend, not from the page's rows. */
-export interface ComplaintsSummary {
-  open: number;
-  in_progress: number;
-  resolved_this_month: number;
-  resolved_trend_percent: number;
-  avg_response_hours: number;
+export interface ComplaintPage {
+  items: Complaint[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
-export interface UpdateComplaintStatusPayload {
-  status: ComplaintStatus;
+export interface ComplaintListQuery {
+  page: number;
+  limit: number;
+  search?: string;
+  priority?: ComplaintPriority;
+  status?: ComplaintStatus;
+  sortBy: ComplaintSortBy;
+  sortOrder: ComplaintSortOrder;
+}
+
+export interface UpdateComplaintPayload {
+  status?: ComplaintStatus;
+  remarks?: string;
 }
 
 export const COMPLAINT_PRIORITY_OPTIONS: { value: ComplaintPriority; label: string }[] = [
-  { value: 'critical', label: 'Critical' },
-  { value: 'high', label: 'High' },
-  { value: 'normal', label: 'Normal' },
+  { value: 'LOW', label: 'Low' },
+  { value: 'MEDIUM', label: 'Medium' },
+  { value: 'HIGH', label: 'High' },
+  { value: 'CRITICAL', label: 'Critical' },
+];
+
+export const COMPLAINT_STATUS_OPTIONS: { value: ComplaintStatus; label: string }[] = [
+  { value: 'OPEN', label: 'Open' },
+  { value: 'IN_PROGRESS', label: 'In Progress' },
+  { value: 'RESOLVED', label: 'Resolved' },
+  { value: 'CLOSED', label: 'Closed' },
 ];
 
 export const COMPLAINT_STATUS_LABELS: Record<ComplaintStatus, string> = {
-  open: 'Open',
-  in_progress: 'In Progress',
-  resolved: 'Resolved',
-};
-
-/** Status transitions the super admin can trigger from the detail panel. */
-export const COMPLAINT_NEXT_STATUS: Record<ComplaintStatus, ComplaintStatus[]> = {
-  open: ['in_progress', 'resolved'],
-  in_progress: ['resolved'],
-  resolved: [],
+  OPEN: 'Open',
+  IN_PROGRESS: 'In Progress',
+  RESOLVED: 'Resolved',
+  CLOSED: 'Closed',
 };

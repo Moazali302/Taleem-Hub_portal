@@ -28,6 +28,7 @@ export class AgGridTableComponent<T = any> implements OnChanges {
   @Input() tabId: string = '';
   @Input() rowSelection: 'single' | 'multiple' = 'single';
   @Input() dashboard: boolean = true;
+  @Input() pagination = true;
   /** Row height in px — defaults to the original 80 so existing grids are unchanged. */
   @Input() rowHeight: number = 80;
   @Output() rowClickedEvent = new EventEmitter<T>();

@@ -1,26 +1,50 @@
 <main class="complaints">
-  <app-page-header title="Complaints" subtitle="Issues raised across schools." />
-
-  <section class="complaints__stats" aria-label="Complaints summary">
-    @for (card of summaryCards; track card.label) {
-      <app-summary-card [data]="card" />
-    }
-  </section>
+  <app-page-header title="Complaints" subtitle="Review and manage issues raised across schools." />
 
   <section class="complaints__card">
     <app-grid-toolbar
       class="complaints__toolbar"
-      searchPlaceholder="Search complaints..."
-      allLabel="All Priority"
+      searchPlaceholder="Search by ID, school, subject, or requester..."
+      allLabel="All Priorities"
       [filterOptions]="priorityOptions"
-      [exportDisabled]="filteredComplaints.length === 0"
+      [exportDisabled]="complaints.length === 0"
       (searchChange)="onSearchChange($event)"
       (filterChange)="onPriorityFilterChange($event)"
       (exportClick)="exportCsv()"
     />
 
+    <div class="complaints__filters" aria-label="Complaint list filters">
+      <label class="complaints__filter">
+        <span>Status</span>
+        <select aria-label="Filter by status" (change)="onStatusFilterChange($any($event.target).value)">
+          <option value="">All statuses</option>
+          @for (option of statusOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="complaints__filter">
+        <span>Sort by</span>
+        <select [value]="sortBy" aria-label="Sort complaints by" (change)="onSortByChange($any($event.target).value)">
+          @for (option of sortOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="complaints__filter">
+        <span>Order</span>
+        <select [value]="sortOrder" aria-label="Sort order" (change)="onSortOrderChange($any($event.target).value)">
+          <option value="DESC">Newest first</option>
+          <option value="ASC">Oldest first</option>
+        </select>
+      </label>
+    </div>
+
     @if (isLoading) {
       <div class="complaints__state" role="status">
+        <span class="complaints__spinner" aria-hidden="true"></span>
         <p>Loading complaints…</p>
       </div>
     } @else if (hasError) {
@@ -28,76 +52,138 @@
         <p>{{ errorMessage }}</p>
         <button type="button" class="complaints__retry" (click)="load()">Try again</button>
       </div>
-    } @else if (filteredComplaints.length === 0) {
+    } @else if (complaints.length === 0) {
       <div class="complaints__state" role="status">
-        <p>No complaints found.</p>
+        <p>No complaints match your filters.</p>
       </div>
     } @else {
       <div class="complaints__grid">
         <app-ag-grid-table
-          [rowData]="filteredComplaints"
+          [rowData]="complaints"
           [columnDefs]="columnDefs"
           [rowHeight]="rowHeight"
           [dashboard]="false"
+          [pagination]="false"
           tabId="complaints"
         />
       </div>
+
+      <footer class="complaints__pagination" aria-label="Complaint list pagination">
+        <p class="complaints__range">
+          Showing <strong>{{ firstResult }}–{{ lastResult }}</strong> of <strong>{{ total }}</strong> complaints
+        </p>
+
+        <label class="complaints__page-size">
+          <span>Rows</span>
+          <select [value]="limit" aria-label="Rows per page" (change)="onLimitChange($any($event.target).value)">
+            @for (size of pageSizeOptions; track size) {
+              <option [value]="size">{{ size }}</option>
+            }
+          </select>
+        </label>
+
+        <div class="complaints__page-controls">
+          <span>Page {{ page }} of {{ totalPages }}</span>
+          <button type="button" aria-label="Previous page" [disabled]="page <= 1 || isLoading" (click)="goToPage(page - 1)">
+            <span aria-hidden="true">‹</span>
+          </button>
+          <button type="button" aria-label="Next page" [disabled]="page >= totalPages || isLoading" (click)="goToPage(page + 1)">
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </footer>
     }
   </section>
 
-  <app-sidenav [isOpen]="isSidenavOpen" panelWidth="480px" (close)="closeSidenav()">
-    @if (isSidenavOpen && selectedComplaint; as complaint) {
-      <header class="detail__header">
-        <button type="button" class="detail__back" aria-label="Close" (click)="closeSidenav()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-        <div>
-          <p class="detail__id">#{{ complaint.id }}</p>
-          <h2 class="detail__title">{{ complaint.subject }}</h2>
+  <app-sidenav [isOpen]="isSidenavOpen" panelWidth="560px" (close)="closeSidenav()">
+    @if (isSidenavOpen) {
+      @if (isDetailLoading) {
+        <div class="detail__state" role="status">
+          <span class="complaints__spinner" aria-hidden="true"></span>
+          <p>Loading complaint details…</p>
         </div>
-      </header>
-
-      <dl class="detail__meta">
-        <div>
-          <dt>School</dt>
-          <dd>{{ complaint.school_name }}</dd>
+      } @else if (detailError) {
+        <div class="detail__state detail__state--error" role="alert">
+          <p>{{ detailError }}</p>
+          <button type="button" class="complaints__retry" (click)="retryDetail()">Try again</button>
         </div>
-        <div>
-          <dt>Raised by</dt>
-          <dd>{{ complaint.raised_by }}</dd>
-        </div>
-        <div>
-          <dt>Priority</dt>
-          <dd>{{ priorityLabel(complaint.priority) }}</dd>
-        </div>
-        <div>
-          <dt>Status</dt>
-          <dd>{{ statusLabels[complaint.status] }}</dd>
-        </div>
-        <div class="detail__meta-wide">
-          <dt>Raised on</dt>
-          <dd>{{ formatDateTime(complaint.created_at) }}</dd>
-        </div>
-      </dl>
-
-      <p class="detail__message">{{ complaint.description }}</p>
-
-      @if (nextStatuses(complaint).length) {
-        <div class="detail__actions">
-          @for (status of nextStatuses(complaint); track status) {
-            <button
-              type="button"
-              class="detail__btn"
-              [class.detail__btn--ghost]="status !== 'resolved'"
-              [disabled]="isUpdatingStatus"
-              (click)="changeStatus(complaint, status)"
-            >
-              Mark as {{ statusLabels[status] }}
+      } @else if (selectedComplaint; as complaint) {
+        <form class="detail" [formGroup]="form" (ngSubmit)="saveChanges()">
+          <header class="detail__header">
+            <button type="button" class="detail__back" aria-label="Close" (click)="closeSidenav()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </button>
-          }
-        </div>
+            <div class="detail__heading">
+              <p class="detail__id">Complaint · {{ complaint.id }}</p>
+              <h2 class="detail__title">{{ complaint.subject }}</h2>
+            </div>
+          </header>
+
+          <div class="detail__body">
+            <dl class="detail__meta">
+              <div>
+                <dt>School</dt>
+                <dd>{{ complaint.school?.name ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt>Raised by</dt>
+                <dd>{{ complaint.raisedBy?.name ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt>Priority</dt>
+                <dd><span class="detail__priority" [class]="'detail__priority detail__priority--' + complaint.priority.toLowerCase()">{{ complaint.priority }}</span></dd>
+              </div>
+              <div>
+                <dt>Created at</dt>
+                <dd>{{ formatDateTime(complaint.createdAt) }}</dd>
+              </div>
+              <div class="detail__meta-wide">
+                <dt>Description</dt>
+                <dd class="detail__description">{{ complaint.description }}</dd>
+              </div>
+            </dl>
+
+            <label class="detail__field">
+              <span>Status</span>
+              <select formControlName="status">
+                @for (option of statusOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </label>
+
+            <label class="detail__field">
+              <span>Remarks <small>(optional)</small></span>
+              <textarea
+                formControlName="remarks"
+                rows="5"
+                maxlength="5000"
+                placeholder="Add an internal update or resolution note..."
+                [attr.aria-invalid]="form.controls.remarks.invalid && form.controls.remarks.touched"
+              ></textarea>
+              @if (form.controls.remarks.hasError('blank') && form.controls.remarks.touched) {
+                <small class="detail__error">Remarks cannot be blank. Leave the existing value unchanged or enter a note.</small>
+              } @else if (form.controls.remarks.hasError('maxlength') && form.controls.remarks.touched) {
+                <small class="detail__error">Remarks must be 5,000 characters or fewer.</small>
+              }
+              <small class="detail__hint">{{ form.controls.remarks.value.length }} / 5,000 characters</small>
+            </label>
+          </div>
+
+          <footer class="detail__footer">
+            <button type="button" class="detail__cancel" [disabled]="isSaving" (click)="closeSidenav()">Cancel</button>
+            <button type="submit" class="detail__save" [disabled]="isSaving || isDetailLoading">
+              @if (isSaving) {
+                <span class="complaints__spinner complaints__spinner--light" aria-hidden="true"></span>
+                Saving…
+              } @else {
+                Save changes
+              }
+            </button>
+          </footer>
+        </form>
       }
     }
   </app-sidenav>
