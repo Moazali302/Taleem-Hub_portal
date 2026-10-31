@@ -7,14 +7,14 @@ $page: #f3f5fa;
 :host {
   display: block;
   min-width: 0;
-  height: 100%;
+  width: 100%;
+  min-height: 100%;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .add-teacher {
   display: flex;
-  height: 100%;
-  min-height: 0;
+  min-height: calc(100vh - 112px);
   flex-direction: column;
   background: $page;
   color: $navy-dark;
@@ -25,7 +25,10 @@ $page: #f3f5fa;
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    padding: 22px 26px 15px;
+    width: 100%;
+    max-width: 1080px;
+    box-sizing: border-box;
+    padding: 0 0 15px;
   }
 
   &__title {
@@ -65,21 +68,16 @@ $page: #f3f5fa;
 
   &__form {
     display: flex;
-    min-height: 0;
-    flex: 1;
+    width: 100%;
+    max-width: 1080px;
     flex-direction: column;
   }
 
   &__sections {
     display: flex;
-    min-height: 0;
-    flex: 1;
     flex-direction: column;
     gap: 12px;
-    overflow-y: auto;
-    padding: 0 26px 18px;
-    scrollbar-color: #c5ccda transparent;
-    scrollbar-width: thin;
+    padding: 0 0 18px;
   }
 
   &__section {
@@ -110,6 +108,8 @@ $page: #f3f5fa;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px 14px;
   }
+
+  &__field--full { grid-column: 1 / -1; }
 
   &__field {
     display: flex;
@@ -191,9 +191,10 @@ $page: #f3f5fa;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 12px 26px 16px;
-    border-top: 1px solid #e6eaf2;
-    background: $page;
+    width: 100%;
+    max-width: 1080px;
+    box-sizing: border-box;
+    padding: 0 0 8px;
 
     > p { margin: 0; color: $muted; font-size: 10px; }
     > p span { color: #d34242; font-weight: 700; }
@@ -265,11 +266,13 @@ $page: #f3f5fa;
 }
 
 @media (max-width: 640px) {
-  .add-teacher__header { padding: 18px 17px 12px; }
-  .add-teacher__sections { padding: 0 17px 14px; }
+  .add-teacher { min-height: calc(100vh - 96px); }
+  .add-teacher__header { padding-bottom: 12px; }
+  .add-teacher__sections { padding-bottom: 14px; }
   .add-teacher__section { padding: 15px; }
   .add-teacher__grid { grid-template-columns: 1fr; gap: 12px; }
-  .add-teacher__footer { padding: 12px 17px 14px; }
+  .add-teacher__field--full { grid-column: auto; }
+  .add-teacher__footer { align-items: flex-start; }
 }
 
 @media (prefers-reduced-motion: reduce) {

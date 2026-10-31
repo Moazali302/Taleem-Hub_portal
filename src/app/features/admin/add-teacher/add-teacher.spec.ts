@@ -13,9 +13,12 @@ const TEACHER: TeacherListItem = {
   qualification: 'M.Ed',
   phone: '+923001234567',
   email: 'teacher@example.test',
+  subject: 'Math',
   specialty: 'Math',
   rank: 'senior_teacher',
   status: 'on_leave',
+  account_status: 'active',
+  joining_date: '2024-08-01',
   created_at: '2026-10-25T10:00:00.000Z',
   updated_at: '2026-10-25T10:00:00.000Z',
 };
@@ -56,18 +59,63 @@ describe('AddTeacherComponent', () => {
       email: 'teacher@example.test',
       specialty: 'Math',
       password: 'a-secure-password',
+      joining_date: '2026-11-01',
     });
     component.onSubmit();
 
     expect(teachersService.createTeacher).toHaveBeenCalledWith(expect.objectContaining({
       status: 'active',
       password: 'a-secure-password',
+      joining_date: '2026-11-01',
     }));
+    expect(teachersService.createTeacher.mock.calls[0][0]).not.toHaveProperty('cnic');
     expect(teachersService.createTeacher.mock.calls[0][0]).not.toHaveProperty('schoolId');
     expect(teachersService.createTeacher.mock.calls[0][0]).not.toHaveProperty('school_id');
   });
 
-  it('loads status from the edit API response and sends the selected status on update', () => {
+  it('accepts a blank optional CNIC and rejects an invalid CNIC format', () => {
+    const fixture = TestBed.createComponent(AddTeacherComponent);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+
+    expect(component.form.controls.cnic.valid).toBe(true);
+    component.form.controls.cnic.setValue('12345-1234567-1');
+    expect(component.form.controls.cnic.valid).toBe(true);
+    component.form.controls.cnic.setValue('invalid-cnic');
+    expect(component.form.controls.cnic.valid).toBe(false);
+  });
+
+  it('submits the added profile fields and omits an empty optional CNIC', () => {
+    const fixture = TestBed.createComponent(AddTeacherComponent);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+
+    component.form.patchValue({
+      teacher_name: 'Teacher Name',
+      qualification: 'M.Ed',
+      phone: '+923001234567',
+      email: 'teacher@example.test',
+      specialty: 'Math',
+      password: 'a-secure-password',
+      gender: 'female',
+      address: 'Lahore',
+      joining_date: '2026-11-01',
+      experience_years: 5,
+      monthly_salary: 60000,
+    });
+    component.onSubmit();
+
+    expect(teachersService.createTeacher).toHaveBeenCalledWith(expect.objectContaining({
+      gender: 'female',
+      address: 'Lahore',
+      joining_date: '2026-11-01',
+      experience_years: 5,
+      monthly_salary: 60000,
+    }));
+    expect(teachersService.createTeacher.mock.calls[0][0]).not.toHaveProperty('cnic');
+  });
+
+  it('loads status from the edit record and sends the selected status on update', () => {
     const fixture = TestBed.createComponent(AddTeacherComponent);
     fixture.componentRef.setInput('mode', 'edit');
     fixture.componentRef.setInput('teacher', TEACHER);

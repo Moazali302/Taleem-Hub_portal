@@ -4,7 +4,10 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { AdminTeachersService } from './admin-teachers.service';
+import {
+  AdminTeachersService,
+  InvalidTeacherListResponseError,
+} from './admin-teachers.service';
 import { TeacherListItem } from '../models/teacher.model';
 
 const TEACHER: TeacherListItem = {
@@ -15,12 +18,16 @@ const TEACHER: TeacherListItem = {
   qualification: 'M.Ed',
   phone: '+923001234567',
   email: 'teacher@example.test',
+  subject: 'Math',
   specialty: 'Math',
   rank: 'senior_teacher',
   status: 'on_leave',
+  account_status: 'active',
   created_at: '2026-10-25T10:00:00.000Z',
   updated_at: '2026-10-25T10:00:00.000Z',
 };
+
+const SUMMARY = { totalTeachers: 51, activeTeachers: 48, inactiveTeachers: 3 };
 
 describe('AdminTeachersService', () => {
   let service: AdminTeachersService;
@@ -36,9 +43,15 @@ describe('AdminTeachersService', () => {
 
   afterEach(() => http.verify());
 
-  it('requests teachers with pagination and maps data.items plus metadata', () => {
+  it('requests teachers with pagination, search, subject and account status filters', () => {
     let result: unknown;
-    service.getAllTeachers({ page: 2, limit: 50, search: 'Teacher' })
+    service.getAllTeachers({
+      page: 2,
+      limit: 50,
+      search: 'Teacher',
+      subject: 'Mathematics',
+      status: 'active',
+    })
       .subscribe((response) => (result = response.data));
 
     const request = http.expectOne((req) => req.url.endsWith('/teachers/GetAllTeachers'));
@@ -46,10 +59,61 @@ describe('AdminTeachersService', () => {
     expect(request.request.params.get('page')).toBe('2');
     expect(request.request.params.get('limit')).toBe('50');
     expect(request.request.params.get('search')).toBe('Teacher');
+    expect(request.request.params.get('subject')).toBe('Mathematics');
+    expect(request.request.params.get('status')).toBe('active');
 
-    const page = { items: [TEACHER], total: 51, page: 2, limit: 50, totalPages: 2 };
+    const page = {
+      summary: SUMMARY,
+      items: [TEACHER],
+      total: 51,
+      page: 2,
+      limit: 50,
+      totalPages: 2,
+    };
     request.flush({ success: true, message: 'Teachers fetched', data: page });
     expect(result).toEqual(page);
+  });
+
+  it('fetches every matching page for complete exports without adding school identifiers', () => {
+    let rows: TeacherListItem[] | undefined;
+    service.getAllMatchingTeachers({ search: 'Teacher', subject: 'Math', status: 'inactive' })
+      .subscribe((result) => (rows = result));
+
+    const firstPageRequest = http.expectOne((req) => req.url.endsWith('/teachers/GetAllTeachers'));
+    expect(firstPageRequest.request.params.get('page')).toBe('1');
+    expect(firstPageRequest.request.params.get('limit')).toBe('100');
+    expect(firstPageRequest.request.params.get('search')).toBe('Teacher');
+    expect(firstPageRequest.request.params.get('subject')).toBe('Math');
+    expect(firstPageRequest.request.params.get('status')).toBe('inactive');
+    expect(firstPageRequest.request.params.has('schoolId')).toBe(false);
+    expect(firstPageRequest.request.params.has('school_id')).toBe(false);
+    firstPageRequest.flush({
+      success: true,
+      message: 'Teachers fetched',
+      data: { summary: SUMMARY, items: [TEACHER], total: 101, page: 1, limit: 100, totalPages: 2 },
+    });
+
+    const secondPageRequest = http.expectOne((req) => req.url.endsWith('/teachers/GetAllTeachers'));
+    expect(secondPageRequest.request.params.get('page')).toBe('2');
+    secondPageRequest.flush({
+      success: true,
+      message: 'Teachers fetched',
+      data: { summary: SUMMARY, items: [{ ...TEACHER, id: 46 }], total: 101, page: 2, limit: 100, totalPages: 2 },
+    });
+
+    expect(rows?.map((row) => row.id)).toEqual([45, 46]);
+  });
+
+  it('surfaces a malformed list response instead of rendering fabricated pagination data', () => {
+    let responseError: unknown;
+    service.getAllTeachers({ page: 1, limit: 5 }).subscribe({
+      error: (error) => (responseError = error),
+    });
+
+    const request = http.expectOne((req) => req.url.endsWith('/teachers/GetAllTeachers'));
+    request.flush({ success: true, message: 'Teachers fetched', data: [TEACHER] });
+
+    expect(responseError).toBeInstanceOf(InvalidTeacherListResponseError);
   });
 
   it('creates a teacher with status and without school identifiers', () => {
@@ -62,6 +126,7 @@ describe('AdminTeachersService', () => {
       rank: 'senior_teacher' as const,
       password: 'a-secure-password',
       status: 'on_leave' as const,
+      joining_date: '2026-10-25',
     };
     service.createTeacher(payload).subscribe();
 

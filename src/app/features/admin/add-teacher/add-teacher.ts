@@ -35,6 +35,7 @@ export type TeacherFormMode = 'create' | 'edit' | 'view';
 export class AddTeacherComponent implements OnInit, OnDestroy {
   @Input() mode: TeacherFormMode = 'create';
   @Input() teacher: TeacherListItem | null = null;
+  @Input() showCloseButton = true;
 
   @Output() closeClicked = new EventEmitter<void>();
   @Output() saved = new EventEmitter<void>();
@@ -54,7 +55,13 @@ export class AddTeacherComponent implements OnInit, OnDestroy {
     qualification: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
     phone: ['', [Validators.required, Validators.pattern(/^\+92[0-9]{10}$/)]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
+    gender: [''],
+    cnic: ['', [Validators.pattern(/^\d{5}-\d{7}-\d$/)]],
+    address: [''],
     specialty: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
+    joining_date: ['', [Validators.required]],
+    experience_years: [null as number | null, [Validators.min(0)]],
+    monthly_salary: [null as number | null, [Validators.min(0)]],
     rank: this.fb.nonNullable.control(TEACHER_RANK_OPTIONS[0].value, [Validators.required]),
     status: this.fb.nonNullable.control<TeacherStatus>('active', [Validators.required]),
     password: [''],
@@ -146,7 +153,13 @@ export class AddTeacherComponent implements OnInit, OnDestroy {
       qualification: raw.qualification ?? '',
       phone: raw.phone ?? '',
       email: raw.email ?? '',
+      ...(raw.gender ? { gender: raw.gender } : {}),
+      ...(raw.cnic ? { cnic: raw.cnic } : {}),
+      ...(raw.address ? { address: raw.address } : {}),
       specialty: raw.specialty ?? '',
+      joining_date: raw.joining_date ?? '',
+      ...(raw.experience_years !== null ? { experience_years: raw.experience_years } : {}),
+      ...(raw.monthly_salary !== null ? { monthly_salary: raw.monthly_salary } : {}),
       rank: raw.rank,
       status: raw.status,
     };
@@ -187,7 +200,13 @@ export class AddTeacherComponent implements OnInit, OnDestroy {
       qualification: teacher.qualification,
       phone: teacher.phone,
       email: teacher.email,
+      gender: teacher.gender ?? '',
+      cnic: teacher.cnic ?? '',
+      address: teacher.address ?? '',
       specialty: teacher.specialty,
+      joining_date: teacher.joining_date ?? '',
+      experience_years: teacher.experience_years ?? null,
+      monthly_salary: teacher.monthly_salary ?? null,
       rank: teacher.rank,
       status: teacher.status ?? 'active',
       password: '',
