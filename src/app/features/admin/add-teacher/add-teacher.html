@@ -1,100 +1,189 @@
-<header class="add-teacher__header">
-  <button type="button" class="add-teacher__back" aria-label="Close" (click)="onClose()">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
-  <div>
-    <h2 class="add-teacher__title">{{ heading }}</h2>
-    <p class="add-teacher__subtitle">{{ subtitle }}</p>
-  </div>
-</header>
-
-<div class="add-teacher__body">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="add-teacher__section-label">
-      <span class="add-teacher__icon-badge" aria-hidden="true">
-        <img src="/svg/teacher.svg" alt="" />
-      </span>
-      <div>
-        <p class="add-teacher__section-title">Staff profile</p>
-        <p class="add-teacher__section-hint">Name, contact, and teaching assignment</p>
-      </div>
+<main class="add-teacher">
+  <header class="add-teacher__header">
+    <div>
+      <h1 class="add-teacher__title">{{ heading }}</h1>
+      <p class="add-teacher__breadcrumb">Teachers <span aria-hidden="true">›</span> {{ heading }}</p>
     </div>
+    <button type="button" class="add-teacher__close" aria-label="Close form" (click)="onClose()">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M19 12H5M5 12l7 7M5 12l7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+  </header>
 
-    <div class="add-teacher__grid">
-      <div class="add-teacher__field add-teacher__field--full">
-        <label for="teacher_name">Teacher Name <span>*</span></label>
-        <input id="teacher_name" type="text" formControlName="teacher_name" placeholder="Enter full name" />
-        @if (isInvalid('teacher_name')) {
-          <p class="add-teacher__error">Teacher name is required.</p>
-        }
-      </div>
+  <form class="add-teacher__form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="add-teacher__sections">
+        <section class="add-teacher__section">
+          <div class="add-teacher__section-heading">
+            <h2>Login Account</h2>
+            <p>The teacher signs in to the portal with this email and password.</p>
+          </div>
 
-      <div class="add-teacher__field">
-        <label for="qualification">Qualification <span>*</span></label>
-        <input id="qualification" type="text" formControlName="qualification" placeholder="e.g. M.Ed Mathematics" />
-        @if (isInvalid('qualification')) {
-          <p class="add-teacher__error">Qualification is required.</p>
-        }
-      </div>
+          <div class="add-teacher__grid">
+            <div class="add-teacher__field">
+              <label for="teacher-email">Email address <span>*</span></label>
+              <input
+                id="teacher-email"
+                type="email"
+                formControlName="email"
+                placeholder="teacher@school.edu.pk"
+                autocomplete="email"
+                [attr.aria-invalid]="isInvalid('email')"
+              />
+              @if (isInvalid('email')) {
+                <small class="add-teacher__error">Enter a valid email address.</small>
+              }
+            </div>
 
-      <div class="add-teacher__field">
-        <label for="specialty">Specialty / Subject <span>*</span></label>
-        <input id="specialty" type="text" formControlName="specialty" placeholder="e.g. Biology" />
-        @if (isInvalid('specialty')) {
-          <p class="add-teacher__error">Specialty is required.</p>
-        }
-      </div>
+            @if (mode !== 'view') {
+              <div class="add-teacher__field">
+                <label for="teacher-password">
+                  {{ mode === 'edit' ? 'New password' : 'Temporary password' }}
+                  @if (mode === 'create') { <span>*</span> } @else { <small>(optional)</small> }
+                </label>
+                <div class="add-teacher__password-field">
+                  <input
+                    id="teacher-password"
+                    type="password"
+                    formControlName="password"
+                    [placeholder]="mode === 'edit' ? 'Leave blank to keep current password' : 'Min. 8 characters'"
+                    autocomplete="new-password"
+                    [attr.aria-invalid]="isInvalid('password')"
+                  />
+                  @if (mode === 'create') {
+                    <button type="button" (click)="generatePassword()" [disabled]="isSubmitting">
+                      Generate
+                    </button>
+                  }
+                </div>
+                @if (isInvalid('password')) {
+                  <small class="add-teacher__error">Password must be 8–25 characters.</small>
+                } @else if (mode === 'edit') {
+                  <small class="add-teacher__hint">Leave blank to keep the current password.</small>
+                } @else {
+                  <small class="add-teacher__hint">Ask the teacher to change it after their first login.</small>
+                }
+              </div>
+            }
+          </div>
+        </section>
 
-      <div class="add-teacher__field">
-        <label for="phone">Phone Number <span>*</span></label>
-        <input id="phone" type="text" formControlName="phone" placeholder="+923001234567" />
-        @if (isInvalid('phone')) {
-          <p class="add-teacher__error">Enter a valid phone number.</p>
-        }
-      </div>
+        <section class="add-teacher__section">
+          <div class="add-teacher__section-heading">
+            <h2>Personal Details</h2>
+            <p>Basic information about the teacher.</p>
+          </div>
+
+          <div class="add-teacher__grid">
+            <div class="add-teacher__field">
+              <label for="teacher-name">Full name <span>*</span></label>
+              <input
+                id="teacher-name"
+                type="text"
+                formControlName="teacher_name"
+                placeholder="Enter full name"
+                autocomplete="name"
+                [attr.aria-invalid]="isInvalid('teacher_name')"
+              />
+              @if (isInvalid('teacher_name')) {
+                <small class="add-teacher__error">Enter a name with at least 2 characters.</small>
+              }
+            </div>
 
             <div class="add-teacher__field">
-        <label for="email">Email <span>*</span></label>
-        <input id="email" type="email" formControlName="email" placeholder="teacher@school.pk" />
-        @if (isInvalid('email')) {
-          <p class="add-teacher__error">Enter a valid email address.</p>
-        }
+              <label for="teacher-phone">Phone number <span>*</span></label>
+              <input
+                id="teacher-phone"
+                type="tel"
+                formControlName="phone"
+                placeholder="+923001234567"
+                autocomplete="tel"
+                [attr.aria-invalid]="isInvalid('phone')"
+              />
+              @if (isInvalid('phone')) {
+                <small class="add-teacher__error">Use Pakistan format: +92 followed by 10 digits.</small>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="add-teacher__section">
+          <div class="add-teacher__section-heading">
+            <h2>Professional Details</h2>
+            <p>Qualification and role at the school.</p>
+          </div>
+
+          <div class="add-teacher__grid">
+            <div class="add-teacher__field">
+              <label for="teacher-qualification">Highest qualification <span>*</span></label>
+              <input
+                id="teacher-qualification"
+                type="text"
+                formControlName="qualification"
+                placeholder="e.g. M.Sc Mathematics"
+                [attr.aria-invalid]="isInvalid('qualification')"
+              />
+              @if (isInvalid('qualification')) {
+                <small class="add-teacher__error">Qualification must have at least 2 characters.</small>
+              }
+            </div>
+
+            <div class="add-teacher__field">
+              <label for="teacher-specialty">Subject specialisation <span>*</span></label>
+              <input
+                id="teacher-specialty"
+                type="text"
+                formControlName="specialty"
+                placeholder="e.g. Mathematics"
+                [attr.aria-invalid]="isInvalid('specialty')"
+              />
+              @if (isInvalid('specialty')) {
+                <small class="add-teacher__error">Specialisation must have at least 2 characters.</small>
+              }
+            </div>
+
+            <div class="add-teacher__field">
+              <label for="teacher-rank">Role / rank <span>*</span></label>
+              <select id="teacher-rank" formControlName="rank" [attr.aria-invalid]="isInvalid('rank')">
+                @for (option of rankOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+              @if (isInvalid('rank')) {
+                <small class="add-teacher__error">Select a role.</small>
+              }
+            </div>
+
+            <div class="add-teacher__field">
+              <label for="teacher-status">Status <span>*</span></label>
+              <select id="teacher-status" formControlName="status">
+                @for (option of statusOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+              <small class="add-teacher__hint">Teachers on leave cannot sign in.</small>
+            </div>
+          </div>
+        </section>
       </div>
 
-      <div class="add-teacher__field">
-        <label for="password">Password <span>*</span></label>
-        <input id="password" type="password" formControlName="password" placeholder="Minimum 8 characters" autocomplete="new-password" />
-        @if (isInvalid('password')) {
-          <p class="add-teacher__error">Password must be 8–25 characters.</p>
-        }
-      </div>
-
-      <div class="add-teacher__field add-teacher__field--full">
-        <label for="rank">Rank <span>*</span></label>
-        <select id="rank" formControlName="rank">
-          @for (option of rankOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
+      <footer class="add-teacher__footer">
+        <p><span>*</span> Required field</p>
+        <div class="add-teacher__actions">
+          <button type="button" class="add-teacher__cancel" (click)="onClose()">
+            {{ isReadOnly ? 'Close' : 'Cancel' }}
+          </button>
+          @if (!isReadOnly) {
+            <button type="submit" class="add-teacher__save" [disabled]="isSubmitting || form.disabled">
+              @if (isSubmitting) {
+                <span class="add-teacher__spinner add-teacher__spinner--light" aria-hidden="true"></span>
+                Saving…
+              } @else {
+                {{ submitLabel }}
+              }
+            </button>
           }
-        </select>
-        @if (isInvalid('rank')) {
-          <p class="add-teacher__error">Rank is required.</p>
-        }
-      </div>
-    </div>
-
-    <div class="add-teacher__actions">
-      <app-button type="button" variant="outline" (click)="onClose()">Close</app-button>
-      @if (mode !== 'view') {
-        <app-button type="submit" variant="primary" [disabled]="isSubmitting">
-          @if(isSubmitting){
-            Saving…
-          } @else{
-          {{ submitLabel }}
-          }
-        </app-button>
-      }
-    </div>
+        </div>
+      </footer>
   </form>
-</div>
+</main>

@@ -24,7 +24,24 @@ export interface CreateTeacherPayload {
   email: string;
   specialty: string;
   rank: TeacherRank;
-  password:string;
+  password: string;
+  status: TeacherStatus;
+}
+
+export type UpdateTeacherPayload = Partial<CreateTeacherPayload>;
+
+export interface TeacherPage {
+  items: TeacherListItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface TeacherListQuery {
+  page: number;
+  limit: number;
+  search?: string;
 }
 
 export const TEACHER_RANK_OPTIONS: { value: TeacherRank; label: string }[] = [

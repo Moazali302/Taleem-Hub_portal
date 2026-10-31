@@ -22,7 +22,7 @@
         <img src="/svg/search.svg" alt="" class="teacher-listing__search-icon" aria-hidden="true" />
         <input
           type="text"
-          placeholder="Search teachers by name, school or specialty..."
+          placeholder="Search teachers by name, email or phone..."
           [ngModel]="searchTerm"
           (ngModelChange)="onSearchChange($event)"
           aria-label="Search teachers"
@@ -58,12 +58,36 @@
       <app-ag-grid-table
         [rowData]="filteredTeachers"
         [columnDefs]="columnDefs"
+        [pagination]="false"
         tabId="teachers"
       />
     }
+
+    @if (!isLoading && !hasError && total > 0) {
+      <footer class="teacher-listing__pagination" aria-label="Teacher list pagination">
+        <p>
+          Showing <strong>{{ firstResult }}–{{ lastResult }}</strong>
+          of <strong>{{ total }}</strong> teachers
+        </p>
+        <label>
+          Rows
+          <select [value]="limit" aria-label="Rows per page" (change)="onLimitChange($any($event.target).value)">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <div class="teacher-listing__page-controls">
+          <span>Page {{ page }} of {{ totalPages }}</span>
+          <button type="button" aria-label="Previous page" [disabled]="page <= 1 || isLoading" (click)="goToPage(page - 1)">‹</button>
+          <button type="button" aria-label="Next page" [disabled]="page >= totalPages || isLoading" (click)="goToPage(page + 1)">›</button>
+        </div>
+      </footer>
+    }
   </section>
 
-  <app-sidenav [isOpen]="isSidenavOpen" (close)="closeSidenav()">
+  <app-sidenav [isOpen]="isSidenavOpen" panelWidth="960px" (close)="closeSidenav()">
     <app-add-teacher
       *ngIf="isSidenavOpen"
       [mode]="formMode"

@@ -1,56 +1,48 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { HttpParams } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { ApiService } from './api.service';
-import { AuthService } from '../auth/auth.service';
 import { API } from '../constants/api.constants';
 import { ApiResponse } from '../models/api-response.model';
-import { CreateTeacherPayload, TeacherListItem } from '../models/teacher.model';
+import {
+CreateTeacherPayload,
+TeacherListItem,
+TeacherListQuery,
+TeacherPage,
+UpdateTeacherPayload,
+} from '../models/teacher.model';
 
 @Injectable({ providedIn: 'root' })
 export class AdminTeachersService {
-  constructor(
-    private readonly api: ApiService,
-    private readonly authService: AuthService,
-  ) {}
+constructor(private readonly api: ApiService) {}
 
-  // getAllTeachers(): Observable<ApiResponse<TeacherListItem[]>> {
-  //   const schoolId = this.authService.getSchoolId();
-  //   if (!schoolId) {
-  //     return of({
-  //       success: true,
-  //       message: 'No school context',
-  //       data: [],
-  //       meta: { timestamp: new Date().toISOString(), path: '' },
-  //     });
-  //   }
-  //   return this.api.get<TeacherListItem[]>(API.TEACHERS.LIST(schoolId));
-  // }
-  getAllTeachers(): Observable<ApiResponse<TeacherListItem[]>> {
-  return this.api.get<TeacherListItem[]>(API.TEACHERS.LIST);
+getAllTeachers(query: TeacherListQuery): Observable<ApiResponse<TeacherPage>> {
+  let params = new HttpParams()
+    .set('page', query.page)
+    .set('limit', query.limit);
+  if (query.search) params = params.set('search', query.search);
+
+  return this.api
+    .get<TeacherPage | TeacherListItem[]>(API.TEACHERS.LIST, params)
+    .pipe(map((response) => ({
+      ...response,
+      data: Array.isArray(response.data)
+        ? {
+            items: response.data,
+            total: response.data.length,
+            page: query.page,
+            limit: query.limit,
+            totalPages: response.data.length ? 1 : 0,
+          }
+        : response.data,
+    })));
 }
 
-  createTeacher(payload: CreateTeacherPayload): Observable<ApiResponse<TeacherListItem>> {
-    return this.api.post<TeacherListItem>(API.TEACHERS.CREATE, payload);
-  }
+createTeacher(payload: CreateTeacherPayload): Observable<ApiResponse<TeacherListItem>> {
+  return this.api.post<TeacherListItem>(API.TEACHERS.CREATE, payload);
+}
 
-  // TODO(backend): still mocked — UPDATE endpoint not yet confirmed via swagger
-  updateTeacher(id: number, payload: CreateTeacherPayload): Observable<ApiResponse<TeacherListItem>> {
-    const now = new Date().toISOString();
-    const updated: TeacherListItem = {
-      id,
-      school_id: '',
-      school_name: '',
-      status: 'active',
-      created_at: now,
-      updated_at: now,
-      ...payload,
-    };
-    return of({
-      success: true,
-      message: 'Teacher updated (mock — endpoint not confirmed)',
-      data: updated,
-      meta: { timestamp: now, path: '' },
-    }).pipe(delay(300));
-  }
+updateTeacher(id: number, payload: UpdateTeacherPayload): Observable<ApiResponse<TeacherListItem>> {
+  return this.api.patch<TeacherListItem>(API.TEACHERS.UPDATE(id), payload);
+}
 }
