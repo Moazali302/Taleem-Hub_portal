@@ -1,5 +1,6 @@
 export type TeacherStatus = 'active' | 'on_leave';
 export type TeacherAccountStatus = 'active' | 'inactive';
+export type TeacherGender = 'male' | 'female' | 'other';
 
 export type TeacherRank = 'junior_teacher' | 'senior_teacher' | 'head_of_department';
 
@@ -17,7 +18,7 @@ export interface TeacherListItem {
   status: TeacherStatus;
   account_status: TeacherAccountStatus;
   is_active?: boolean;
-  gender?: string;
+  gender?: TeacherGender | null;
   cnic?: string;
   address?: string;
   joining_date?: string;
@@ -36,12 +37,12 @@ export interface CreateTeacherPayload {
   rank: TeacherRank;
   password: string;
   status: TeacherStatus;
-  gender?: string;
-  cnic?: string;
-  address?: string;
+  gender?: TeacherGender | null;
+  cnic?: string | null;
+  address?: string | null;
   joining_date: string;
-  experience_years?: number;
-  monthly_salary?: number;
+  experience_years?: number | null;
+  monthly_salary?: number | null;
 }
 
 export type UpdateTeacherPayload = Partial<CreateTeacherPayload>;

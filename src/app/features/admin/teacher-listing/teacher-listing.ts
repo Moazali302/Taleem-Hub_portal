@@ -2,11 +2,19 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatMenuModule } from '@angular/material/menu';
+import { ColDef } from 'ag-grid-community';
 import { Subject, Subscription, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { StatCardComponent } from '@app/shared/components/stat-card/stat-card';
 import { StatCardData } from '@app/shared/components/stat-card/stat-card-model';
 import { ButtonComponent } from '@shared/components/button/button.component';
+import { AgGridTableComponent, COMPACT_ROW_HEIGHT } from '@app/shared/components/ag-grid-table/ag-grid-table';
+import { GridIconsComponent } from '@app/shared/components/ag-Grid/grid-icons/grid-icons';
+import {
+  StatusBadgeCellRendererComponent,
+  StatusBadgeColor,
+} from '@shared/components/data-grid/status-badge-cell-renderer.component';
+import { ICustomCellRenderer } from '@app/core/models/custom-cell-renderer.model';
+import { CustomCellEvent } from '@app/core/models/custom-cell-event.model';
 import { SidenavComponent } from '@app/shared/components/sidenav.component/sidenav';
 import { AddTeacherComponent, TeacherFormMode } from '../add-teacher/add-teacher';
 import {
@@ -22,15 +30,20 @@ import {
 } from '@app/core/models/teacher.model';
 import { downloadCsv } from '@app/shared/utlis/csv-export.util';
 
+const ACCOUNT_STATUS_COLORS: Record<string, StatusBadgeColor> = {
+  active: { bg: '#e1f6ec', text: '#07844d', dot: '#16a36a' },
+  inactive: { bg: '#ffebeb', text: '#d14343', dot: '#e05252' },
+};
+
 @Component({
   selector: 'app-teacher-listing',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    MatMenuModule,
     StatCardComponent,
     ButtonComponent,
+    AgGridTableComponent,
     SidenavComponent,
     AddTeacherComponent,
   ],
@@ -39,6 +52,8 @@ import { downloadCsv } from '@app/shared/utlis/csv-export.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TeacherListingComponent implements OnInit, OnDestroy {
+  readonly rowHeight = COMPACT_ROW_HEIGHT;
+
   statCards: StatCardData[] = [
     { icon: '/svg/users-plus.svg', label: 'Total Teachers', value: '—', variant: 'purple' },
     { icon: '/svg/users-plus.svg', label: 'Active', value: '—', variant: 'success' },
@@ -47,6 +62,7 @@ export class TeacherListingComponent implements OnInit, OnDestroy {
 
   teachers: TeacherListItem[] = [];
   availableSubjects: string[] = [];
+  schoolName = '';
   page = 1;
   limit = 5;
   total = 0;
@@ -59,6 +75,68 @@ export class TeacherListingComponent implements OnInit, OnDestroy {
   searchTerm = '';
   subjectFilter = 'all';
   statusFilter: TeacherAccountStatus | 'all' = 'all';
+
+  readonly columnDefs: ColDef<TeacherListItem>[] = [
+    {
+      field: 'school_name',
+      headerName: 'School',
+      flex: 1.2,
+      minWidth: 150,
+    },
+    {
+      field: 'teacher_name',
+      headerName: 'Teacher',
+      flex: 1.25,
+      minWidth: 150,
+    },
+    {
+      field: 'qualification',
+      headerName: 'Qualification',
+      flex: 1.2,
+      minWidth: 145,
+    },
+    {
+      field: 'subject',
+      headerName: 'Subject',
+      flex: 0.9,
+      minWidth: 110,
+    },
+    {
+      field: 'email',
+      headerName: 'Email',
+      flex: 1.5,
+      minWidth: 190,
+    },
+    {
+      field: 'phone',
+      headerName: 'Phone',
+      flex: 1,
+      minWidth: 125,
+    },
+    {
+      field: 'account_status',
+      headerName: 'Status',
+      flex: 0.75,
+      minWidth: 100,
+      sortable: false,
+      cellRenderer: StatusBadgeCellRendererComponent,
+      cellRendererParams: { colorMap: ACCOUNT_STATUS_COLORS, showDot: false },
+      valueFormatter: (params) => this.accountStatusLabel(params.value),
+    },
+    {
+      colId: 'actions',
+      headerName: '',
+      width: 58,
+      sortable: false,
+      resizable: false,
+      pinned: 'right',
+      cellRenderer: GridIconsComponent,
+      cellRendererParams: {
+        onView: (event: CustomCellEvent<TeacherListItem>) => this.onViewTeacher(event.rowData),
+        onEdit: (event: CustomCellEvent<TeacherListItem>) => this.onEditTeacher(event.rowData),
+      } as Partial<ICustomCellRenderer<TeacherListItem>>,
+    },
+  ];
 
   isSidenavOpen = false;
   formMode: TeacherFormMode = 'create';
@@ -109,6 +187,7 @@ export class TeacherListingComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.isLoading = false;
         this.teachers = res.data.items;
+        this.schoolName = res.data.items.find((teacher) => teacher.school_name)?.school_name ?? this.schoolName;
         this.page = res.data.page;
         this.limit = res.data.limit;
         this.total = res.data.total;
@@ -228,15 +307,6 @@ export class TeacherListingComponent implements OnInit, OnDestroy {
     });
   }
 
-  getInitials(name: string): string {
-    return name
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase())
-      .join('');
-  }
-
   accountStatusLabel(status: TeacherAccountStatus): string {
     return status === 'active' ? 'Active' : 'Inactive';
   }
@@ -252,6 +322,7 @@ export class TeacherListingComponent implements OnInit, OnDestroy {
       next: (rows) => {
         this.availableSubjects = [...new Set(rows.map((teacher) => teacher.subject).filter(Boolean))]
           .sort((left, right) => left.localeCompare(right));
+        this.schoolName = rows.find((teacher) => teacher.school_name)?.school_name ?? this.schoolName;
         this.cdr.markForCheck();
       },
       error: (err) => {

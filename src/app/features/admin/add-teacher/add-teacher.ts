@@ -16,6 +16,7 @@ import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 import {
   CreateTeacherPayload,
   TeacherListItem,
+  TeacherGender,
   TEACHER_RANK_OPTIONS,
   TeacherStatus,
   UpdateTeacherPayload,
@@ -55,7 +56,7 @@ export class AddTeacherComponent implements OnInit, OnDestroy {
     qualification: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
     phone: ['', [Validators.required, Validators.pattern(/^\+92[0-9]{10}$/)]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
-    gender: [''],
+    gender: this.fb.nonNullable.control<TeacherGender | ''>(''),
     cnic: ['', [Validators.pattern(/^\d{5}-\d{7}-\d$/)]],
     address: [''],
     specialty: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
@@ -148,18 +149,13 @@ export class AddTeacherComponent implements OnInit, OnDestroy {
     }
 
     const raw = this.form.getRawValue();
-    const fields = {
+    const sharedFields = {
       teacher_name: raw.teacher_name ?? '',
       qualification: raw.qualification ?? '',
       phone: raw.phone ?? '',
       email: raw.email ?? '',
-      ...(raw.gender ? { gender: raw.gender } : {}),
-      ...(raw.cnic ? { cnic: raw.cnic } : {}),
-      ...(raw.address ? { address: raw.address } : {}),
       specialty: raw.specialty ?? '',
       joining_date: raw.joining_date ?? '',
-      ...(raw.experience_years !== null ? { experience_years: raw.experience_years } : {}),
-      ...(raw.monthly_salary !== null ? { monthly_salary: raw.monthly_salary } : {}),
       rank: raw.rank,
       status: raw.status,
     };
@@ -169,11 +165,21 @@ export class AddTeacherComponent implements OnInit, OnDestroy {
 
     const request$ = this.mode === 'edit' && this.teacher
       ? this.teachersService.updateTeacher(this.teacher.id, {
-          ...fields,
+          ...sharedFields,
+          gender: raw.gender || null,
+          cnic: raw.cnic || null,
+          address: raw.address || null,
+          experience_years: raw.experience_years,
+          monthly_salary: raw.monthly_salary,
           ...(raw.password ? { password: raw.password } : {}),
         } satisfies UpdateTeacherPayload)
       : this.teachersService.createTeacher({
-          ...fields,
+          ...sharedFields,
+          ...(raw.gender ? { gender: raw.gender } : {}),
+          ...(raw.cnic ? { cnic: raw.cnic } : {}),
+          ...(raw.address ? { address: raw.address } : {}),
+          ...(raw.experience_years !== null ? { experience_years: raw.experience_years } : {}),
+          ...(raw.monthly_salary !== null ? { monthly_salary: raw.monthly_salary } : {}),
           password: raw.password ?? '',
         } satisfies CreateTeacherPayload);
 

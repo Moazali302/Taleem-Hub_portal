@@ -3,6 +3,9 @@
     <div>
       <h1 class="teacher-listing__title">Teachers</h1>
       <p class="teacher-listing__subtitle">Staff accounts and profiles.</p>
+      @if (schoolName) {
+        <p class="teacher-listing__school" aria-label="School">{{ schoolName }}</p>
+      }
     </div>
 
     <app-button icon="/svg/plus.svg" (click)="openAddTeacher()">
@@ -77,60 +80,14 @@
         <p>No teachers found. Try adjusting your search or filters.</p>
       </div>
     } @else {
-      <div class="teacher-listing__table-wrap">
-        <table class="teacher-listing__table">
-          <thead>
-            <tr>
-              <th scope="col">Teacher</th>
-              <th scope="col">Qualification</th>
-              <th scope="col">Subject</th>
-              <th scope="col">Email</th>
-              <th scope="col">Phone</th>
-              <th scope="col">Status</th>
-              <th scope="col"><span class="visually-hidden">Actions</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (teacher of teachers; track teacher.id) {
-              <tr>
-                <td>
-                  <div class="teacher-listing__identity">
-                    <span class="teacher-listing__avatar" aria-hidden="true">{{ getInitials(teacher.teacher_name) }}</span>
-                    <span>{{ teacher.teacher_name }}</span>
-                  </div>
-                </td>
-                <td>{{ teacher.qualification || '—' }}</td>
-                <td>{{ teacher.subject || '—' }}</td>
-                <td>{{ teacher.email || '—' }}</td>
-                <td>{{ teacher.phone || '—' }}</td>
-                <td>
-                  <span
-                    class="teacher-listing__badge"
-                    [class.teacher-listing__badge--active]="teacher.account_status === 'active'"
-                    [class.teacher-listing__badge--inactive]="teacher.account_status === 'inactive'"
-                  >
-                    {{ accountStatusLabel(teacher.account_status) }}
-                  </span>
-                </td>
-                <td class="teacher-listing__actions">
-                  <button
-                    type="button"
-                    class="teacher-listing__more"
-                    [matMenuTriggerFor]="teacherActions"
-                    [attr.aria-label]="'Actions for ' + teacher.teacher_name"
-                  >
-                    <span aria-hidden="true">⋮</span>
-                  </button>
-                  <mat-menu #teacherActions="matMenu">
-                    <button mat-menu-item type="button" (click)="onViewTeacher(teacher)">View</button>
-                    <button mat-menu-item type="button" (click)="onEditTeacher(teacher)">Edit</button>
-                  </mat-menu>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <app-ag-grid-table
+        [rowData]="teachers"
+        [columnDefs]="columnDefs"
+        [rowHeight]="rowHeight"
+        [pagination]="false"
+        [dashboard]="false"
+        tabId="teachers"
+      />
     }
 
     @if (!isLoading && !hasError && total > 0) {

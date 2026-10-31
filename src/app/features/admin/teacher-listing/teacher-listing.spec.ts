@@ -64,10 +64,28 @@ describe('TeacherListingComponent', () => {
 
   it('uses the API summary and renders account status rather than employment status', () => {
     expect(component.statCards.map((card) => card.value)).toEqual([38, 36, 2]);
-    expect(fixture.nativeElement.textContent).toContain('Inactive');
-    expect(fixture.nativeElement.textContent).toContain('Ayesha Khan');
-    expect(fixture.nativeElement.textContent).toContain('Mathematics');
+    expect(component.teachers[0].teacher_name).toBe('Ayesha Khan');
+    expect(component.teachers[0].subject).toBe('Mathematics');
+    expect(component.schoolName).toBe('Punjab High School');
     expect(component.accountStatusLabel(TEACHER.account_status)).toBe('Inactive');
+  });
+
+  it('uses the shared AG Grid with API columns, account-status badge and existing row actions', () => {
+    expect(fixture.nativeElement.querySelector('app-ag-grid-table')).not.toBeNull();
+    expect(component.columnDefs.map((column) => column.field).filter(Boolean)).toEqual([
+      'school_name',
+      'teacher_name',
+      'qualification',
+      'subject',
+      'email',
+      'phone',
+      'account_status',
+    ]);
+    expect(component.columnDefs.find((column) => column.field === 'teacher_name')?.cellRenderer).toBeUndefined();
+    const statusColumn = component.columnDefs.find((column) => column.field === 'account_status');
+    expect(statusColumn?.cellRenderer).toBeTruthy();
+    expect(component.accountStatusLabel('inactive')).toBe('Inactive');
+    expect(component.columnDefs.some((column) => column.colId === 'actions')).toBe(true);
   });
 
   it('resets to page one and sends the selected account status to the API', () => {

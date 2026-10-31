@@ -26,6 +26,28 @@
     font-size: 13px;
   }
 
+  &__school {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0 0;
+    padding: 4px 9px;
+    border: 1px solid #e0e7f5;
+    border-radius: 999px;
+    background: #fff;
+    color: #344a78;
+    font-size: 11px;
+    font-weight: 600;
+
+    &::before {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #24458e;
+      content: '';
+    }
+  }
+
   &__stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -118,108 +140,6 @@
       cursor: wait;
       opacity: .6;
     }
-  }
-
-  &__table-wrap {
-    overflow-x: auto;
-    padding: 0 15px;
-  }
-
-  &__table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    color: #25395f;
-    font-size: 11px;
-    text-align: left;
-    white-space: nowrap;
-
-    thead {
-      background: #f1f4fa;
-      color: #34466c;
-      text-transform: uppercase;
-      letter-spacing: .025em;
-    }
-
-    th {
-      height: 36px;
-      padding: 0 13px;
-      font-size: 9px;
-      font-weight: 700;
-
-      &:first-child { border-radius: 9px 0 0 0; }
-      &:last-child { border-radius: 0 9px 0 0; }
-    }
-
-    td {
-      height: 43px;
-      padding: 0 13px;
-      border-bottom: 1px solid #edf0f5;
-    }
-
-    tbody tr:last-child td { border-bottom: 0; }
-    tbody tr:hover { background: #fafbfe; }
-  }
-
-  &__identity {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    color: #17336f;
-    font-weight: 500;
-  }
-
-  &__avatar {
-    display: inline-flex;
-    width: 25px;
-    height: 25px;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 25px;
-    border-radius: 50%;
-    background: #e7edff;
-    color: #294d9e;
-    font-size: 9px;
-    font-weight: 700;
-  }
-
-  &__badge {
-    display: inline-flex;
-    min-width: 48px;
-    justify-content: center;
-    padding: 3px 9px;
-    border-radius: 999px;
-    font-size: 9px;
-    font-weight: 700;
-
-    &--active {
-      background: #e1f6ec;
-      color: #07844d;
-    }
-
-    &--inactive {
-      background: #ffebeb;
-      color: #d14343;
-    }
-  }
-
-  &__actions { width: 35px; text-align: center; }
-
-  &__more {
-    display: inline-flex;
-    width: 27px;
-    height: 27px;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    border-radius: 7px;
-    background: transparent;
-    color: #7583a1;
-    font-size: 19px;
-    line-height: 1;
-    cursor: pointer;
-
-    &:hover { background: #eef2fa; color: #203d7b; }
   }
 
   &__pagination {

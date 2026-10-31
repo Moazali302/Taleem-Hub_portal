@@ -23,6 +23,12 @@ const TEACHER: TeacherListItem = {
   rank: 'senior_teacher',
   status: 'on_leave',
   account_status: 'active',
+  gender: 'female',
+  cnic: '12345-1234567-1',
+  address: 'Lahore',
+  joining_date: '2024-08-01',
+  experience_years: 5,
+  monthly_salary: 60000,
   created_at: '2026-10-25T10:00:00.000Z',
   updated_at: '2026-10-25T10:00:00.000Z',
 };
@@ -127,6 +133,11 @@ describe('AdminTeachersService', () => {
       password: 'a-secure-password',
       status: 'on_leave' as const,
       joining_date: '2026-10-25',
+      gender: 'female' as const,
+      cnic: '12345-1234567-1',
+      address: 'Lahore',
+      experience_years: 5,
+      monthly_salary: 60000,
     };
     service.createTeacher(payload).subscribe();
 
@@ -138,12 +149,21 @@ describe('AdminTeachersService', () => {
     request.flush({ success: true, message: 'Teacher added', data: TEACHER });
   });
 
-  it('patches editable teacher fields and status to the legacy-compatible route', () => {
-    const payload = { status: 'active' as const };
+  it('patches all teacher profile fields and employment status to the compatible route', () => {
+    const payload = {
+      status: 'on_leave' as const,
+      gender: 'female' as const,
+      cnic: '12345-1234567-1',
+      address: 'Lahore',
+      joining_date: '2024-08-01',
+      experience_years: 5,
+      monthly_salary: 60000,
+    };
     service.updateTeacher(TEACHER.id, payload).subscribe();
     const patchRequest = http.expectOne((req) => req.url.endsWith('/teachers/UpdateTeacher45'));
     expect(patchRequest.request.method).toBe('PATCH');
     expect(patchRequest.request.body).toEqual(payload);
+    expect(patchRequest.request.body.status).toBe('on_leave');
     expect(patchRequest.request.body).not.toHaveProperty('school_id');
     patchRequest.flush({ success: true, message: 'Teacher updated', data: TEACHER });
   });
