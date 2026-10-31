@@ -4,18 +4,36 @@
   height: 100%;
 }
 .grid-action-icon {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
   border-radius: 0.5rem;
-  background-color: transparent;
-  padding: 0.25rem;
-  height: 30px;
+  border: 1px solid transparent;
+  background-color: #fff;
+  padding: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
-  color: #1f2430; // was $midnight-moss in the reference — not defined in this
-                  // project's variables file, so using the equivalent hex directly
+  color: #64748b;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease,
+    box-shadow 140ms ease;
 
-  &:hover {
-    background-color: #f3f4f6;
+  &:hover,
+  &--open {
+    background-color: #f1f5fb;
+    border-color: #dce4f2;
+    color: #14307a;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: #8da6df;
+    box-shadow: 0 0 0 3px rgb(20 48 122 / 14%);
+  }
+
+  &:active {
+    background-color: #e8eef9;
   }
 }
 
@@ -44,10 +62,25 @@
   color: #6b7280;
   width: 28px;
   height: 28px;
+  border: 1px solid transparent;
   border-radius: 6px;
+  background: transparent;
+  padding: 0;
+  transition: background-color 140ms ease, color 140ms ease;
 
   &:hover {
-    background-color: #f3f4f6;
+    background-color: #f1f5fb;
+    color: #14307a;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #8da6df;
+    outline-offset: 1px;
+  }
+
+  &--danger:hover {
+    color: #c62828;
+    background: #fff1f1;
   }
 }
 
@@ -72,4 +105,11 @@
 
 .tag-count {
   font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-action-icon,
+  .action-button {
+    transition: none;
+  }
 }
