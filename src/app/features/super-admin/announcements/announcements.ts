@@ -8,7 +8,6 @@ import {
   StatusBadgeColor,
   StatusBadgeCellRendererComponent,
 } from '@shared/components/data-grid/status-badge-cell-renderer.component';
-import { LoaderComponent } from '@app/shared/components/loader/loader.component';
 import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
 import { SidenavComponent } from '@app/shared/components/sidenav.component/sidenav';
 import { ICustomCellRenderer } from '@app/core/models/custom-cell-renderer.model';
@@ -45,7 +44,6 @@ const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
     AnnouncementComposeComponent,
     AgGridTableComponent,
     SidenavComponent,
-    LoaderComponent,
   ],
   templateUrl: './announcements.html',
   styleUrl: './announcements.scss',

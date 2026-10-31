@@ -9,7 +9,6 @@ import {
   StatusBadgeCellRendererComponent,
 } from '@shared/components/data-grid/status-badge-cell-renderer.component';
 import { GridToolbarComponent } from '@app/shared/grid-tool-bar/grid-toolbar';
-import { LoaderComponent } from '@app/shared/components/loader/loader.component';
 import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
 import { SidenavComponent } from '@app/shared/components/sidenav.component/sidenav';
 import { SummaryCardComponent } from '@app/shared/components/summary-card/summary-card';
@@ -62,7 +61,6 @@ const capitalize = (value: string): string => value.charAt(0).toUpperCase() + va
     GridToolbarComponent,
     AgGridTableComponent,
     SidenavComponent,
-    LoaderComponent,
   ],
   templateUrl: './Complaints.html',
   styleUrl: './Complaints.scss',

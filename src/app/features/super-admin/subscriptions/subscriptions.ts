@@ -8,7 +8,6 @@ import {
   StatusBadgeCellRendererComponent,
 } from '@shared/components/data-grid/status-badge-cell-renderer.component';
 import { AvatarNameCellRendererComponent } from '@shared/components/data-grid/avatar-name-cell-renderer.component';
-import { LoaderComponent } from '@app/shared/components/loader/loader.component';
 import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
 import { SummaryCardComponent } from '@app/shared/components/summary-card/summary-card';
 import { SidenavComponent } from '@app/shared/components/sidenav.component/sidenav';
@@ -61,7 +60,6 @@ const formatDate = (iso?: string): string => (iso ? dateFormatter.format(new Dat
     AgGridTableComponent,
     SidenavComponent,
     AssignPackageComponent,
-    LoaderComponent,
     GridToolbarComponent
 ],
   templateUrl: './subscriptions.html',

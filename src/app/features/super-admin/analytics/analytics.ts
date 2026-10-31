@@ -7,7 +7,6 @@ import { PlatformAnalyticsService } from '@app/core/services/PlatformAnalyticsSe
 import { BarChartComponent } from '@app/shared/components/BarChart/bar-chart';
 import { CardComponent } from '@app/shared/components/Card/card';
 import { DonutChartComponent } from '@app/shared/components/DonutChart/donut-chart';
-import { LoaderComponent } from '@app/shared/components/loader/loader.component';
 import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
 import { ProgressBarComponent } from '@app/shared/components/progressBar/progress-bar';
 import { SummaryCardComponent } from '@app/shared/components/summary-card/summary-card';
@@ -49,7 +48,6 @@ const formatSigned = (value: number, suffix = ''): string => `${value >= 0 ? '+'
     BarChartComponent,
     DonutChartComponent,
     ProgressBarComponent,
-    LoaderComponent,
   ],
   templateUrl: './analytics.html',
   styleUrl: './analytics.scss',

@@ -6,7 +6,6 @@ import { StatCardComponent } from '@app/shared/components/stat-card/stat-card';
 import { StatCardData } from '@app/shared/components/stat-card/stat-card-model';
 import { ButtonComponent } from '@shared/components/button/button.component';
 // ⚠️ VERIFY these two import paths against the actual project structure
-import { LoaderComponent } from '@app/shared/components/loader/loader.component';
 import { AgGridTableComponent } from '@app/shared/components/ag-grid-table/ag-grid-table';
 import { GridIconsComponent } from '@app/shared/components/ag-Grid/grid-icons/grid-icons';
 import { StatusBadgeCellRendererComponent } from '@shared/components/data-grid/status-badge-cell-renderer.component';
@@ -30,7 +29,6 @@ import { TeacherListItem, TeacherStatus } from '@app/core/models/teacher.model';
     AgGridTableComponent,
     SidenavComponent,
     AddTeacherComponent,
-    LoaderComponent,
   ],
   templateUrl: './teacher-listing.html',
   styleUrl: './teacher-listing.scss',

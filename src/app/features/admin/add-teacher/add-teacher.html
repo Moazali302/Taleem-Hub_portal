@@ -89,7 +89,7 @@
       @if (mode !== 'view') {
         <app-button type="submit" variant="primary" [disabled]="isSubmitting">
           @if(isSubmitting){
-            <app-loader/>
+            Saving…
           } @else{
           {{ submitLabel }}
           }
