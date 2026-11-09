@@ -1,117 +1,99 @@
-# 🎓 TaleemHub
+# Taleem Hub
 
-> Multi-tenant School & Academy Management SaaS for Pakistan
+### A role-based school management portal built for the education community
 
-TaleemHub is a cloud-based multi-tenant SaaS platform built for private schools, coaching centers, and academies in Pakistan. It provides 4 separate portals covering the full school management lifecycle.
+Taleem Hub is an Angular web application for managing school operations through purpose-built portals. The current frontend brings authentication, school administration, and platform-level management together in a responsive, modular interface, backed by configurable API endpoints.
 
----
-
-## 🏫 Portals
-
-| Portal | Who Uses It | URL |
-|--------|-------------|-----|
-| Super Admin | TaleemHub Owner | `taleemhub.pk/super-admin` |
-| School Admin | Principal / School Owner | `schoolname.taleemhub.pk/admin` |
-| Teacher | Teachers | `schoolname.taleemhub.pk/teacher` |
-| Parent / Student | Parents | `schoolname.taleemhub.pk/parent` |
+> **Project status:** Active development. School-admin and super-admin workflows are under development; teacher and parent dashboards are currently placeholders.
 
 ---
 
-## ✨ Key Features
+## At a glance
 
-- 🏢 **Multi-tenant Architecture** — One platform, hundreds of schools
-- 📲 **Real-time Notifications** — WhatsApp, Email & SMS across all events
-- 📊 **AG Grid + SSR** — Handles large data efficiently across all portals
-- 💳 **Local Payments** — JazzCash & EasyPaisa support
-- 📍 **GPS Attendance** — Teacher attendance with location tracking
-- 📄 **PDF Generation** — Result cards, fee receipts, reports
-- 🎓 **Full Exam Lifecycle** — Datesheet → Marks → Result → Parent delivery
+| | |
+|---|---|
+| **Application** | Role-based school management frontend |
+| **Framework** | Angular 21 |
+| **Language** | TypeScript |
+| **UI** | Angular Material, Tailwind CSS, AG Grid |
+| **API** | REST API, configured through Angular environments |
 
----
+## Portal experience
 
-## 🛠️ Tech Stack
+- **Authentication** — Login, registration, OTP verification, and password recovery flows.
+- **School administration** — Dashboard, teacher directory, and teacher creation.
+- **Platform administration** — School directory and details, school creation, subscriptions, announcements, complaints, demo requests, analytics, and dashboard.
+- **Teacher and parent areas** — Role-protected dashboard routes are present; their dashboards are not yet implemented.
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | Angular 22 & Tailwind CSS |
-| Backend | NestJS (Node.js) |
-| Database | PostgreSQL |
-| Data Grid | AG Grid (Server Side Rendering) |
-| Authentication | JWT + Role-based Guards |
-| File Storage | AWS S3 / Cloudflare R2 |
-| Maps | Google Maps API |
+Authenticated routes use role-aware guards. The application also centralizes API concerns such as authentication, token refresh, loading indicators, and error handling through HTTP interceptors.
 
----
-## 🚀 Getting Started
+## Built with
+
+- **Angular 21** — Standalone components, feature-based routing, and lazy-loaded route groups.
+- **TypeScript** — Typed application models and services.
+- **Angular Material** and **Tailwind CSS** — UI components and utility-first styling.
+- **AG Grid** — Data-grid capabilities.
+- **RxJS** — Asynchronous data and API workflows.
+- **ngx-toastr** — Application notifications.
+
+## Getting started
 
 ### Prerequisites
-- Node.js v18+
-- PostgreSQL
-- Angular CLI v17+
-- NestJS CLI
 
-### Installation
+- Node.js compatible with Angular 21 (Node.js 20.19 or later is recommended)
+- npm 10 or later
+- Access to a Taleem Hub API for workflows that load server data
+
+### Install and run
 
 ```bash
-# Clone the repo
-git clone https://github.com/Moazali302/TaleemHub.git
-cd TaleemHub
-
-# Install frontend dependencies
-cd frontend
+git clone https://github.com/Moazali302/Taleem-Hub_portal.git
+cd Taleem-Hub_portal
 npm install
-
-# Install backend dependencies
-cd ../backend
-npm install
+npm start
 ```
 
-### Environment Setup
+Open [http://localhost:4200](http://localhost:4200) in your browser.
 
-```bash
-# Backend — copy and fill in your values
-cp backend/.env.example backend/.env
+### API configuration
 
-# Frontend — update environment files
-# frontend/src/environments/environment.ts
+The development API base URL is configured in `src/environments/environment.ts` and defaults to `http://localhost:3000/v1`. The production environment uses the deployed API URL in `src/environments/environment.prod.ts`.
+
+Update the appropriate environment file when connecting to another API. Do not commit credentials, private tokens, or other secrets to environment files.
+
+## Available scripts
+
+| Command | Description |
+|---|---|
+| `npm start` | Start the Angular development server |
+| `npm run build` | Create a production build |
+| `npm test` | Run the configured unit tests |
+| `npm run watch` | Rebuild on changes using the development configuration |
+
+## Project structure
+
+```text
+src/
+├── app/
+│   ├── core/          # Authentication, guards, interceptors, models, and services
+│   ├── features/      # Auth, admin, super-admin, teacher, and parent features
+│   └── shared/        # Reusable layouts and UI components
+├── environments/      # Development and production API configuration
+├── main.ts            # Application bootstrap
+└── styles.css         # Global styles
 ```
 
-### Run Development Servers
+## Development notes
 
-```bash
-# Frontend (Angular)
-cd frontend
-ng serve
+- Feature routes are organized by portal and loaded through Angular routing.
+- Access to admin, teacher, parent, and super-admin route groups is protected by authentication and role guards.
+- The frontend expects a compatible API for server-backed data. This repository contains the Angular client; it does not include the backend service.
+- Production builds use environment replacement and configured bundle/style budgets.
 
-# Backend (NestJS)
-cd backend
-npm run start:dev
-```
+## License
+
+No license is currently included in this repository. Please contact the project owner for usage and distribution permissions.
 
 ---
 
-## 📦 Modules
-
-- ✅ Auth & Multi-tenant Setup
-- ✅ School Settings & Onboarding Wizard
-- ✅ Student Management
-- ✅ Teacher Management
-- ✅ Class & Timetable Management
-- ✅ Attendance (Student + Teacher with GPS)
-- ✅ Fee Management & Auto Reminders
-- ✅ Exam, Marks & Results
-- ✅ Complaint System
-- ✅ Leave Request System
-- ✅ Announcements
-- ✅ Super Admin Panel
-
-
----
-
-## 📄 License
-
-Private & Proprietary — TaleemHub © 2026
-
----
-
-<p align="center">Built with ❤️ for Pakistan's Education System</p>
+<p align="center"><strong>Taleem Hub</strong> · Building better tools for school communities</p>
