@@ -1,0 +1,202 @@
+<main class="add-student">
+  <header class="add-student__header">
+    <div>
+      <h1 class="add-student__title">Add Student</h1>
+      <p class="add-student__breadcrumb">Students <span aria-hidden="true">›</span> Add Student</p>
+    </div>
+  </header>
+
+  <form class="add-student__form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    @if (requestError) {
+      <div class="add-student__request-error" role="alert">{{ requestError }}</div>
+    }
+
+    <div class="add-student__sections">
+      <section class="add-student__section">
+        <div class="add-student__section-heading">
+          <h2>Login Account</h2>
+          <p>The student signs in to the portal with this email and password.</p>
+        </div>
+        <div class="add-student__grid">
+          <div class="add-student__field">
+            <label for="student-email">Email address <span>*</span></label>
+            <input id="student-email" type="email" formControlName="email" placeholder="student@school.edu.pk"
+              autocomplete="email" [attr.aria-invalid]="isInvalid('email')" />
+            @if (isInvalid('email')) { <small class="add-student__error">{{ fieldError('email') }}</small> }
+          </div>
+          <div class="add-student__field">
+            <label for="student-password">Temporary password <span>*</span></label>
+            <div class="add-student__password-field">
+              <input id="student-password" [type]="showPassword ? 'text' : 'password'" formControlName="password"
+                placeholder="Min. 8 characters" autocomplete="new-password"
+                [attr.aria-invalid]="isInvalid('password')" />
+              <button type="button" class="add-student__password-toggle"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+                [attr.aria-pressed]="showPassword" (click)="togglePasswordVisibility()">
+                @if (showPassword) {
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.9 5.2A10.7 10.7 0 0112 5c5.5 0 9 7 9 7a14.7 14.7 0 01-3 3.8M6.2 6.2C4.1 7.6 3 12 3 12s3.5 7 9 7a9.9 9.9 0 004.1-.9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+                    <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.7" />
+                  </svg>
+                }
+              </button>
+              <button type="button" class="add-student__generate" (click)="generatePassword()"
+                [disabled]="isSubmitting">Generate</button>
+            </div>
+            @if (isInvalid('password')) {
+              <small class="add-student__error">{{ fieldError('password') }}</small>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="add-student__section">
+        <div class="add-student__section-heading">
+          <h2>Student Details</h2>
+          <p>Basic information and class placement.</p>
+        </div>
+        <div class="add-student__grid">
+          <div class="add-student__field">
+            <label for="student-name">Full name <span>*</span></label>
+            <input id="student-name" type="text" formControlName="name" placeholder="Enter full name"
+              autocomplete="name" [attr.aria-invalid]="isInvalid('name')" />
+            @if (isInvalid('name')) { <small class="add-student__error">{{ fieldError('name') }}</small> }
+          </div>
+          <div class="add-student__field">
+            <label for="student-gender">Gender <span>*</span></label>
+            <select id="student-gender" formControlName="gender" [attr.aria-invalid]="isInvalid('gender')">
+              <option value="">Select gender</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
+            </select>
+            @if (isInvalid('gender')) { <small class="add-student__error">{{ fieldError('gender') }}</small> }
+          </div>
+          <div class="add-student__field">
+            <label for="student-dob">Date of birth <span>*</span></label>
+            <div class="add-student__date-field">
+              <input id="student-dob" type="text" formControlName="dob" placeholder="DD/MM/YYYY"
+                inputmode="numeric" autocomplete="bday" (input)="onDobInput($event)" (blur)="normalizeDobInput()"
+                [attr.aria-invalid]="isInvalid('dob')" aria-describedby="student-dob-hint" />
+              <button type="button" class="add-student__date-picker-button" aria-label="Choose date of birth"
+                (click)="openDobPicker()">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="3.5" y="5" width="17" height="16" rx="2" stroke="currentColor" stroke-width="1.7" />
+                  <path d="M7.5 3v4M16.5 3v4M3.5 9.5h17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                </svg>
+              </button>
+              <input #dobPicker class="add-student__native-date-picker" type="date" [max]="maxDobDate"
+                [value]="dobCalendarValue" (change)="onDobCalendarChange($event)" tabindex="-1"
+                aria-hidden="true" />
+            </div>
+            <small id="student-dob-hint" class="add-student__hint">Type DD/MM/YYYY or choose a date from the calendar.</small>
+            @if (isInvalid('dob')) { <small class="add-student__error">{{ fieldError('dob') }}</small> }
+          </div>
+          <div class="add-student__field">
+            <label for="student-cnic">B-Form / CNIC</label>
+            <input id="student-cnic" type="text" formControlName="cnic" placeholder="XXXXX-XXXXXXX-X"
+              inputmode="numeric" autocomplete="off" [attr.aria-invalid]="isInvalid('cnic')" />
+            @if (isInvalid('cnic')) { <small class="add-student__error">{{ fieldError('cnic') }}</small> }
+          </div>
+          <div class="add-student__field">
+            <label for="student-class">Class <span>*</span></label>
+            <input id="student-class" type="text" list="student-class-options" [value]="classSearchText"
+              (input)="onClassSearch($event)" placeholder="{{ isLoadingClasses ? 'Loading classes…' : 'Type to search classes 1–10' }}"
+              autocomplete="off" [disabled]="isLoadingClasses || !!classLoadError"
+              [attr.aria-invalid]="isInvalid('class_id')" />
+            <datalist id="student-class-options">
+              @for (classOption of classes; track classOption.id) {
+                <option [value]="classOptionLabel(classOption)"></option>
+              }
+            </datalist>
+            <small class="add-student__hint">Type to find a class, then select an existing option.</small>
+            @if (classLoadError) {
+              <small class="add-student__error">{{ classLoadError }} <button type="button" (click)="loadClasses()">Retry</button></small>
+            } @else if (isInvalid('class_id')) {
+              <small class="add-student__error">{{ fieldError('class_id') }}</small>
+            }
+          </div>
+          <div class="add-student__field">
+            <label for="student-roll">Roll number <span>*</span></label>
+            <input id="student-roll" type="text" formControlName="roll_no" placeholder="e.g. 0412"
+              [attr.aria-invalid]="isInvalid('roll_no')" />
+            @if (isInvalid('roll_no')) { <small class="add-student__error">{{ fieldError('roll_no') }}</small> }
+          </div>
+          <div class="add-student__field">
+            <label for="student-admission">Admission date <span>*</span></label>
+            <input id="student-admission" type="date" formControlName="admission_date"
+              [attr.aria-invalid]="isInvalid('admission_date')" />
+            @if (isInvalid('admission_date')) {
+              <small class="add-student__error">{{ fieldError('admission_date') }}</small>
+            }
+          </div>
+          <div class="add-student__field">
+            <label for="student-status">Status <span>*</span></label>
+            <select id="student-status" formControlName="status">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="add-student__field add-student__field--full">
+            <label for="student-address">Address</label>
+            <input id="student-address" type="text" formControlName="address" placeholder="Enter home address"
+              autocomplete="street-address" />
+          </div>
+        </div>
+      </section>
+
+      <section class="add-student__section">
+        <div class="add-student__section-heading">
+          <h2>Parent / Guardian</h2>
+          <p>Used for fee vouchers, results and WhatsApp updates.</p>
+        </div>
+        <div class="add-student__grid">
+          <div class="add-student__field">
+            <label for="student-parent-name">Parent name <span>*</span></label>
+            <input id="student-parent-name" type="text" formControlName="parent_name"
+              placeholder="Enter parent name" autocomplete="name" [attr.aria-invalid]="isInvalid('parent_name')" />
+            @if (isInvalid('parent_name')) {
+              <small class="add-student__error">{{ fieldError('parent_name') }}</small>
+            }
+          </div>
+          <div class="add-student__field">
+            <label for="student-parent-phone">Parent phone (WhatsApp) <span>*</span></label>
+            <input id="student-parent-phone" type="tel" formControlName="parent_phone"
+              placeholder="03XX-XXXXXXX" autocomplete="tel" [attr.aria-invalid]="isInvalid('parent_phone')" />
+            @if (isInvalid('parent_phone')) {
+              <small class="add-student__error">{{ fieldError('parent_phone') }}</small>
+            }
+          </div>
+          <div class="add-student__field">
+            <label for="student-parent-email">Parent email</label>
+            <input id="student-parent-email" type="email" formControlName="parent_email"
+              placeholder="parent@email.com" autocomplete="email"
+              [attr.aria-invalid]="isInvalid('parent_email')" />
+            @if (isInvalid('parent_email')) {
+              <small class="add-student__error">{{ fieldError('parent_email') }}</small>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="add-student__footer">
+      <p><span>*</span> Required field</p>
+      <div class="add-student__actions">
+        <button type="button" class="add-student__cancel" (click)="cancel()">Cancel</button>
+        <button type="submit" class="add-student__save" [disabled]="isSubmitting || form.disabled">
+          @if (isSubmitting) {
+            <span class="add-student__spinner" aria-hidden="true"></span>
+            Saving…
+          } @else {
+            Save Student
+          }
+        </button>
+      </div>
+    </footer>
+  </form>
+</main>
