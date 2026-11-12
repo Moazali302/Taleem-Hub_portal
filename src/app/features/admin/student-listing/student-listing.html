@@ -2,27 +2,40 @@
   <header class="student-listing__header">
     <div>
       <h1 class="student-listing__title">Students</h1>
-      <p class="student-listing__subtitle">Student accounts and profiles.</p>
+      <p class="student-listing__subtitle">Student accounts and enrolment.</p>
     </div>
     <button type="button" class="student-listing__add" (click)="openAddStudent()">
       <span aria-hidden="true">+</span> Add Student
     </button>
   </header>
 
+  <nav class="student-listing__tabs" aria-label="Student sections">
+    <span class="student-listing__tab student-listing__tab--active" aria-current="page">Students</span>
+    <span class="student-listing__tab">Records</span>
+  </nav>
+
+  <section class="student-listing__stats" aria-label="Student summary">
+    <article class="student-listing__stat">
+      <p>Total Students</p>
+      <strong>{{ summary?.total ?? '—' }}</strong>
+    </article>
+    <article class="student-listing__stat">
+      <p>Active</p>
+      <strong>{{ summary?.active ?? '—' }}</strong>
+    </article>
+    <article class="student-listing__stat student-listing__stat--accent">
+      <p>Inactive</p>
+      <strong>{{ summary?.inactive ?? '—' }}</strong>
+    </article>
+  </section>
+
   <section class="student-listing__grid-card" aria-label="Student list">
     <div class="student-listing__toolbar">
       <label class="student-listing__search">
         <img src="/svg/search.svg" alt="" aria-hidden="true" />
-        <input type="search" placeholder="Search by name, email, roll number or parent…"
+        <input type="search" placeholder="Search by name, roll no or email..."
           [ngModel]="searchTerm" (ngModelChange)="onSearchChange($event)" aria-label="Search students" />
       </label>
-
-      <select class="student-listing__filter" [ngModel]="statusFilter"
-        (ngModelChange)="onStatusFilterChange($event)" aria-label="Filter by status">
-        <option value="">All Status</option>
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
-      </select>
 
       <select class="student-listing__filter" [ngModel]="classFilter"
         (ngModelChange)="onClassFilterChange($event)" aria-label="Filter by class">
@@ -33,19 +46,10 @@
           </option>
         }
       </select>
-
-      <select class="student-listing__filter" [ngModel]="sortBy"
-        (ngModelChange)="onSortByChange($event)" aria-label="Sort students by">
-        @for (option of sortOptions; track option.value) {
-          <option [value]="option.value">{{ option.label }}</option>
-        }
-      </select>
-
-      <select class="student-listing__filter student-listing__filter--order" [ngModel]="sortOrder"
-        (ngModelChange)="onSortOrderChange($event)" aria-label="Sort direction">
-        <option value="DESC">Descending</option>
-        <option value="ASC">Ascending</option>
-      </select>
+      <button type="button" class="student-listing__export" [disabled]="isExporting"
+        (click)="exportStudents()">
+        {{ isExporting ? 'Exporting…' : 'Export' }}
+      </button>
     </div>
 
     @if (classLoadError) {
@@ -73,32 +77,49 @@
         <table class="student-listing__table">
           <thead>
             <tr>
-              <th scope="col">Student ID</th>
-              <th scope="col">Student</th>
-              <th scope="col">Login email</th>
-              <th scope="col">Class / Section</th>
-              <th scope="col">Roll no.</th>
-              <th scope="col">Parent contact</th>
-              <th scope="col">Admission date</th>
+              <th scope="col" [attr.aria-sort]="sortDirection('name')">
+                <button type="button" class="student-listing__sort" (click)="toggleSort('name')"
+                  aria-label="Sort by student name">
+                  Student <span aria-hidden="true">{{ sortIndicator('name') }}</span>
+                </button>
+              </th>
+              <th scope="col">Class</th>
+              <th scope="col" [attr.aria-sort]="sortDirection('roll_no')">
+                <button type="button" class="student-listing__sort" (click)="toggleSort('roll_no')"
+                  aria-label="Sort by roll number">
+                  Roll no <span aria-hidden="true">{{ sortIndicator('roll_no') }}</span>
+                </button>
+              </th>
+              <th scope="col">Parent</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Email</th>
               <th scope="col">Status</th>
+              <th scope="col" class="student-listing__actions-heading">
+                <span class="visually-hidden">Actions</span>
+              </th>
             </tr>
           </thead>
           <tbody>
             @for (student of students; track student.id) {
               <tr>
-                <td class="student-listing__id">{{ studentId(student) }}</td>
-                <td class="student-listing__name">{{ studentName(student) }}</td>
-                <td>{{ studentEmail(student) }}</td>
+                <td class="student-listing__student-cell">
+                  <span class="student-listing__avatar" aria-hidden="true">{{ studentInitials(student) }}</span>
+                  <span class="student-listing__name">{{ studentName(student) }}</span>
+                </td>
                 <td>{{ classLabel(student) }}</td>
                 <td>{{ student.roll_no ?? '—' }}</td>
-                <td>{{ parentContact(student) }}</td>
-                <td>{{ formatDate(student.admission_date) }}</td>
+                <td>{{ parentName(student) }}</td>
+                <td>{{ parentPhone(student) }}</td>
+                <td>{{ studentEmail(student) }}</td>
                 <td>
                   <span class="student-listing__status"
                     [class.student-listing__status--active]="student.status === 'active'"
                     [class.student-listing__status--inactive]="student.status === 'inactive'">
                     {{ statusLabel(student.status) }}
                   </span>
+                </td>
+                <td class="student-listing__actions-cell">
+                  <span class="student-listing__row-action" aria-hidden="true">⋮</span>
                 </td>
               </tr>
             }
@@ -111,14 +132,6 @@
       <footer class="student-listing__pagination" aria-label="Student list pagination">
         <p>
           Showing <strong>{{ firstResult }} to {{ lastResult }}</strong> of <strong>{{ total }}</strong>
-          <label>
-            Rows:
-            <select [ngModel]="limit" (ngModelChange)="onLimitChange($event)" aria-label="Rows per page">
-              <option [value]="20">20</option>
-              <option [value]="50">50</option>
-              <option [value]="100">100</option>
-            </select>
-          </label>
         </p>
         <nav class="student-listing__page-controls" aria-label="Pages">
           <button type="button" aria-label="Previous page" [disabled]="page <= 1"

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { EMPTY, expand, forkJoin, map, Observable, reduce } from 'rxjs';
 import { API } from '../constants/api.constants';
 import { ApiResponse } from '../models/api-response.model';
 import {
@@ -14,6 +14,12 @@ import { ApiService } from './api.service';
 
 export class InvalidStudentListResponseError extends Error {}
 export class InvalidClassOptionsResponseError extends Error {}
+
+export interface StudentSummary {
+  total: number;
+  active: number;
+  inactive: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AdminStudentsService {
@@ -39,6 +45,41 @@ export class AdminStudentsService {
 
         return { ...response, data: response.data };
       }),
+    );
+  }
+
+  getStudentSummary(): Observable<StudentSummary> {
+    const query: StudentListQuery = {
+      page: 1,
+      limit: 1,
+      search: '',
+      status: '',
+      class_id: '',
+      sortBy: 'created_at',
+      sortOrder: 'DESC',
+    };
+
+    return forkJoin({
+      all: this.getStudents(query),
+      active: this.getStudents({ ...query, status: 'active' }),
+      inactive: this.getStudents({ ...query, status: 'inactive' }),
+    }).pipe(map(({ all, active, inactive }) => ({
+      total: all.data.total,
+      active: active.data.total,
+      inactive: inactive.data.total,
+    })));
+  }
+
+  getAllMatchingStudents(
+    filters: Omit<StudentListQuery, 'page' | 'limit'>,
+  ): Observable<StudentListItem[]> {
+    const firstQuery: StudentListQuery = { ...filters, page: 1, limit: 100 };
+    return this.getStudents(firstQuery).pipe(
+      expand((response) => response.data.page < response.data.totalPages
+        ? this.getStudents({ ...firstQuery, page: response.data.page + 1 })
+        : EMPTY),
+      map((response) => response.data.items),
+      reduce((allStudents, pageStudents) => allStudents.concat(pageStudents), [] as StudentListItem[]),
     );
   }
 

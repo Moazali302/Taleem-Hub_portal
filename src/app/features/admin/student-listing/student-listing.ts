@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, Subscription, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-import { AdminStudentsService } from '@app/core/services/admin-students.service';
+import { AdminStudentsService, StudentSummary } from '@app/core/services/admin-students.service';
 import {
   StudentClassOption,
   StudentListItem,
@@ -14,6 +14,7 @@ import {
 } from '@app/core/models/student.model';
 import { ToastService } from '@app/core/services/toast.service';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
+import { downloadCsv } from '@app/shared/utlis/csv-export.util';
 
 @Component({
   selector: 'app-student-listing',
@@ -26,6 +27,7 @@ import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 export class StudentListingComponent implements OnInit, OnDestroy {
   students: StudentListItem[] = [];
   classes: StudentClassOption[] = [];
+  summary: StudentSummary | null = null;
   page = 1;
   limit = 20;
   total = 0;
@@ -34,24 +36,19 @@ export class StudentListingComponent implements OnInit, OnDestroy {
   hasError = false;
   errorMessage = '';
   classLoadError = '';
+  isExporting = false;
 
   searchTerm = '';
-  statusFilter: StudentStatus | '' = '';
   classFilter = '';
   sortBy: StudentSortBy = 'created_at';
   sortOrder: StudentSortOrder = 'DESC';
-
-  readonly sortOptions: { value: StudentSortBy; label: string }[] = [
-    { value: 'created_at', label: 'Recently added' },
-    { value: 'name', label: 'Name' },
-    { value: 'admission_date', label: 'Admission date' },
-    { value: 'roll_no', label: 'Roll number' },
-  ];
 
   private readonly searchChanges = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
   private listRequest?: Subscription;
   private classRequest?: Subscription;
+  private summaryRequest?: Subscription;
+  private exportRequest?: Subscription;
 
   constructor(
     private readonly studentsService: AdminStudentsService,
@@ -70,6 +67,7 @@ export class StudentListingComponent implements OnInit, OnDestroy {
       });
     this.loadStudents();
     this.loadClasses();
+    this.loadSummary();
   }
 
   ngOnDestroy(): void {
@@ -77,6 +75,8 @@ export class StudentListingComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
     this.listRequest?.unsubscribe();
     this.classRequest?.unsubscribe();
+    this.summaryRequest?.unsubscribe();
+    this.exportRequest?.unsubscribe();
   }
 
   get firstResult(): number {
@@ -102,7 +102,7 @@ export class StudentListingComponent implements OnInit, OnDestroy {
       page: this.page,
       limit: this.limit,
       search: this.searchTerm.trim(),
-      status: this.statusFilter,
+      status: '',
       class_id: this.classFilter,
       sortBy: this.sortBy,
       sortOrder: this.sortOrder,
@@ -124,6 +124,21 @@ export class StudentListingComponent implements OnInit, OnDestroy {
         this.total = 0;
         this.totalPages = 0;
         this.toaster.error(this.errorMessage);
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  loadSummary(): void {
+    this.summaryRequest?.unsubscribe();
+    this.summaryRequest = this.studentsService.getStudentSummary().subscribe({
+      next: (summary) => {
+        this.summary = summary;
+        this.cdr.markForCheck();
+      },
+      error: (error: unknown) => {
+        this.summary = null;
+        this.toaster.error(`Unable to load student summary: ${getHttpErrorMessage(error)}`);
         this.cdr.markForCheck();
       },
     });
@@ -151,34 +166,30 @@ export class StudentListingComponent implements OnInit, OnDestroy {
     this.searchChanges.next(value);
   }
 
-  onStatusFilterChange(value: StudentStatus | ''): void {
-    this.statusFilter = value;
-    this.page = 1;
-    this.loadStudents();
-  }
-
   onClassFilterChange(value: string): void {
     this.classFilter = value;
     this.page = 1;
     this.loadStudents();
   }
 
-  onSortByChange(value: StudentSortBy): void {
-    this.sortBy = value;
+  toggleSort(field: StudentSortBy): void {
+    if (this.sortBy === field) {
+      this.sortOrder = this.sortOrder === 'ASC' ? 'DESC' : 'ASC';
+    } else {
+      this.sortBy = field;
+      this.sortOrder = 'ASC';
+    }
     this.page = 1;
     this.loadStudents();
   }
 
-  onSortOrderChange(value: StudentSortOrder): void {
-    this.sortOrder = value;
-    this.page = 1;
-    this.loadStudents();
+  sortIndicator(field: StudentSortBy): string {
+    return this.sortBy !== field ? '' : this.sortOrder === 'ASC' ? '↑' : '↓';
   }
 
-  onLimitChange(value: string): void {
-    this.limit = Number(value);
-    this.page = 1;
-    this.loadStudents();
+  sortDirection(field: StudentSortBy): 'ascending' | 'descending' | 'none' {
+    if (this.sortBy !== field) return 'none';
+    return this.sortOrder === 'ASC' ? 'ascending' : 'descending';
   }
 
   goToPage(page: number): void {
@@ -197,6 +208,14 @@ export class StudentListingComponent implements OnInit, OnDestroy {
 
   studentName(student: StudentListItem): string {
     return student.name ?? student.student_name ?? '—';
+  }
+
+  studentInitials(student: StudentListItem): string {
+    const words = this.studentName(student).trim().split(/\s+/).filter(Boolean);
+    if (!words.length || words[0] === '—') return '—';
+    return words.length === 1
+      ? words[0].slice(0, 2).toUpperCase()
+      : `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
   }
 
   studentEmail(student: StudentListItem): string {
@@ -220,11 +239,12 @@ export class StudentListingComponent implements OnInit, OnDestroy {
     return section ? `${name} / ${section}` : name;
   }
 
-  parentContact(student: StudentListItem): string {
-    const name = student.parent_name?.trim();
-    const phone = student.parent_phone?.trim();
-    if (name && phone) return `${name} · ${phone}`;
-    return name ?? phone ?? '—';
+  parentName(student: StudentListItem): string {
+    return student.parent_name?.trim() || '—';
+  }
+
+  parentPhone(student: StudentListItem): string {
+    return student.parent_phone?.trim() || '—';
   }
 
   formatDate(value: string | undefined): string {
@@ -237,5 +257,38 @@ export class StudentListingComponent implements OnInit, OnDestroy {
 
   statusLabel(status: StudentStatus | undefined): string {
     return status === 'active' ? 'Active' : status === 'inactive' ? 'Inactive' : '—';
+  }
+
+  exportStudents(): void {
+    if (this.isExporting) return;
+    this.isExporting = true;
+    this.exportRequest?.unsubscribe();
+    this.exportRequest = this.studentsService.getAllMatchingStudents({
+      search: this.searchTerm.trim(),
+      status: '',
+      class_id: this.classFilter,
+      sortBy: this.sortBy,
+      sortOrder: this.sortOrder,
+    }).subscribe({
+      next: (rows) => {
+        downloadCsv('students.csv', [
+          { header: 'Student', value: (student) => this.studentName(student) },
+          { header: 'Class', value: (student) => this.classLabel(student) },
+          { header: 'Roll No', value: (student) => student.roll_no ?? '' },
+          { header: 'Parent', value: (student) => this.parentName(student) },
+          { header: 'Phone', value: (student) => this.parentPhone(student) },
+          { header: 'Email', value: (student) => this.studentEmail(student) },
+          { header: 'Status', value: (student) => this.statusLabel(student.status) },
+        ], rows);
+        this.isExporting = false;
+        this.toaster.success(`${rows.length} student${rows.length === 1 ? '' : 's'} exported.`);
+        this.cdr.markForCheck();
+      },
+      error: (error: unknown) => {
+        this.isExporting = false;
+        this.toaster.error(getHttpErrorMessage(error));
+        this.cdr.markForCheck();
+      },
+    });
   }
 }
