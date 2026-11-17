@@ -9,6 +9,11 @@ export interface StudentClassOption {
   section?: string;
 }
 
+export interface StudentStatusOption {
+  value: string;
+  label: string;
+}
+
 export interface StudentListItem {
   id: string | number;
   student_id?: string | number;
@@ -30,7 +35,7 @@ export interface StudentListItem {
   parent_name?: string;
   parent_phone?: string;
   admission_date?: string;
-  status?: StudentStatus;
+  status?: string;
 }
 
 export interface StudentPage {
@@ -60,7 +65,9 @@ export interface CreateStudentPayload {
   class_id: string;
   roll_no: string;
   admission_date: string;
-  status: StudentStatus;
+  status: string;
+  monthly_fee: number;
+  discount: number;
   cnic?: string;
   address?: string;
   parent_name: string;

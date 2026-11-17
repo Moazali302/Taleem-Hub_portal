@@ -9,11 +9,13 @@ import {
   StudentListQuery,
   StudentPage,
   StudentListItem,
+  StudentStatusOption,
 } from '../models/student.model';
 import { ApiService } from './api.service';
 
 export class InvalidStudentListResponseError extends Error {}
 export class InvalidClassOptionsResponseError extends Error {}
+export class InvalidStudentStatusOptionsResponseError extends Error {}
 
 export interface StudentSummary {
   total: number;
@@ -109,6 +111,30 @@ export class AdminStudentsService {
           }
 
           return { id, name, ...(section ? { section } : {}) };
+        });
+      }),
+    );
+  }
+
+  getStudentStatusOptions(): Observable<StudentStatusOption[]> {
+    return this.api.get<unknown>(API.STUDENTS.STATUS_OPTIONS).pipe(
+      map((response) => {
+        if (!Array.isArray(response.data) || !response.data.every(isRecord)) {
+          throw new InvalidStudentStatusOptionsResponseError(
+            'The student status response does not contain a valid status collection.',
+          );
+        }
+
+        return response.data.map((row) => {
+          const value = nonEmptyString(row['value']);
+          const label = nonEmptyString(row['label']);
+          if (!value || !label) {
+            throw new InvalidStudentStatusOptionsResponseError(
+              'A student status option is missing its value or label.',
+            );
+          }
+
+          return { value, label };
         });
       }),
     );

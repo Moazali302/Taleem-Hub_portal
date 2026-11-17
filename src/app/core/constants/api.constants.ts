@@ -13,6 +13,7 @@ export const API = {
   STUDENTS: {
     LIST: '/students',
     CREATE: '/students',
+    STATUS_OPTIONS: '/students/status-options',
     GET: (id: string) => `/students/${id}`,
     UPDATE: (id: string) => `/students/${id}`,
     DELETE: (id: string) => `/students/${id}`,

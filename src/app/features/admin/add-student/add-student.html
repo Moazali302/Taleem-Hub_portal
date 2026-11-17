@@ -136,16 +136,58 @@
           </div>
           <div class="add-student__field">
             <label for="student-status">Status <span>*</span></label>
-            <select id="student-status" formControlName="status">
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+            <select id="student-status" formControlName="status" [attr.aria-busy]="isLoadingStatuses"
+              [attr.aria-invalid]="isInvalid('status')">
+              <option value="">{{ isLoadingStatuses ? 'Loading statuses…' : 'Select status' }}</option>
+              @for (status of statuses; track status.value) {
+                <option [value]="status.value">{{ status.label }}</option>
+              }
             </select>
+            @if (statusLoadError) {
+              <small class="add-student__error">{{ statusLoadError }}
+                <button type="button" (click)="loadStatuses()">Retry</button>
+              </small>
+            } @else if (isInvalid('status')) {
+              <small class="add-student__error">{{ fieldError('status') }}</small>
+            }
           </div>
           <div class="add-student__field add-student__field--full">
             <label for="student-address">Address</label>
             <input id="student-address" type="text" formControlName="address" placeholder="Enter home address"
               autocomplete="street-address" />
           </div>
+        </div>
+      </section>
+
+      <section class="add-student__section">
+        <div class="add-student__section-heading">
+          <h2>Fee Details</h2>
+          <p>Set the student's monthly fee and any optional discount.</p>
+        </div>
+        <div class="add-student__grid">
+          <div class="add-student__field">
+            <label for="student-monthly-fee">Monthly fee (PKR) <span>*</span></label>
+            <input id="student-monthly-fee" type="number" formControlName="monthly_fee" min="0" step="1"
+              placeholder="e.g. 6,500" [attr.aria-invalid]="isInvalid('monthly_fee')" />
+            @if (isInvalid('monthly_fee')) {
+              <small class="add-student__error">{{ fieldError('monthly_fee') }}</small>
+            }
+          </div>
+          <div class="add-student__field">
+            <label for="student-discount">Discount (PKR)</label>
+            <input id="student-discount" type="number" formControlName="discount" min="0" step="1"
+              placeholder="e.g. 500 (optional)" [attr.aria-invalid]="isInvalid('discount')" />
+            @if (isInvalid('discount')) {
+              <small class="add-student__error">{{ fieldError('discount') }}</small>
+            }
+          </div>
+          <p class="add-student__fee-hint add-student__field--full">
+            @if (netMonthlyFee !== null) {
+              Net payable per month: PKR {{ netMonthlyFee | number:'1.0-2' }}.
+            } @else {
+              Net payable per month = monthly fee - discount.
+            }
+          </p>
         </div>
       </section>
 
