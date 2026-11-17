@@ -7,6 +7,6 @@ export interface RingSegment {
 export interface ProfitOverviewData {
   centerLabel: string;
   centerValue: string;
-  income: number;   // Income = sum of segments; shown as context, not as a 3rd segment
+  income: number;  
   segments: RingSegment[];
 }
