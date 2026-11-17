@@ -113,8 +113,8 @@
                 <td>{{ studentEmail(student) }}</td>
                 <td>
                   <span class="student-listing__status"
-                    [class.student-listing__status--active]="student.status === 'active'"
-                    [class.student-listing__status--inactive]="student.status === 'inactive'">
+                    [class.student-listing__status--active]="isActiveStatus(student.status)"
+                    [class.student-listing__status--inactive]="isInactiveStatus(student.status)">
                     {{ statusLabel(student.status) }}
                   </span>
                 </td>

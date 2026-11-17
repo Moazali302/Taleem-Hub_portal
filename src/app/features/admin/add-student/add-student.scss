@@ -113,6 +113,13 @@ $page: #f3f5fa;
     line-height: 1.4;
   }
 
+  &__fee-hint {
+    margin: -2px 0 0;
+    color: $muted;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
   &__field {
     display: flex;
     min-width: 0;

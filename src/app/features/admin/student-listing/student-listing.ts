@@ -10,7 +10,6 @@ import {
   StudentPage,
   StudentSortBy,
   StudentSortOrder,
-  StudentStatus,
 } from '@app/core/models/student.model';
 import { ToastService } from '@app/core/services/toast.service';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
@@ -255,8 +254,16 @@ export class StudentListingComponent implements OnInit, OnDestroy {
       : new Intl.DateTimeFormat('en-PK', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
   }
 
-  statusLabel(status: StudentStatus | undefined): string {
-    return status === 'active' ? 'Active' : status === 'inactive' ? 'Inactive' : '—';
+  statusLabel(status: string | undefined): string {
+    return status?.trim() || '—';
+  }
+
+  isActiveStatus(status: string | undefined): boolean {
+    return status?.trim().toLowerCase() === 'active';
+  }
+
+  isInactiveStatus(status: string | undefined): boolean {
+    return status?.trim().toLowerCase() === 'inactive';
   }
 
   exportStudents(): void {

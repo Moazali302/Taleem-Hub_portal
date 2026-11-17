@@ -19,7 +19,11 @@ import {
 import { Router } from '@angular/router';
 import { Subscription, Subject, takeUntil } from 'rxjs';
 import { AdminStudentsService } from '@app/core/services/admin-students.service';
-import { StudentClassOption, StudentGender, StudentStatus } from '@app/core/models/student.model';
+import {
+  StudentClassOption,
+  StudentGender,
+  StudentStatusOption,
+} from '@app/core/models/student.model';
 import { ToastService } from '@app/core/services/toast.service';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 
@@ -33,8 +37,11 @@ import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 })
 export class AddStudentComponent implements OnInit, OnDestroy {
   classes: StudentClassOption[] = [];
+  statuses: StudentStatusOption[] = [];
   isLoadingClasses = false;
+  isLoadingStatuses = false;
   classLoadError = '';
+  statusLoadError = '';
   classSearchText = '';
   dobCalendarValue = '';
   isSubmitting = false;
@@ -46,6 +53,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
   private readonly fb = new FormBuilder();
   private readonly destroy$ = new Subject<void>();
   private classRequest?: Subscription;
+  private statusRequest?: Subscription;
   private createRequest?: Subscription;
   @ViewChild('dobPicker') private dobPicker?: ElementRef<HTMLInputElement>;
 
@@ -59,12 +67,14 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     class_id: ['', [Validators.required]],
     roll_no: ['', [Validators.required, Validators.maxLength(50)]],
     admission_date: ['', [Validators.required, dateOnlyValidator]],
-    status: this.fb.nonNullable.control<StudentStatus>('active', [Validators.required]),
+    status: this.fb.nonNullable.control('', [Validators.required]),
+    monthly_fee: this.fb.control<number | null>(null, [Validators.required, Validators.min(0)]),
+    discount: this.fb.control<number | null>(0, [Validators.min(0)]),
     address: [''],
     parent_name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(255)]],
     parent_phone: ['', [Validators.required, pakistanPhoneValidator]],
     parent_email: ['', [Validators.email, Validators.maxLength(255)]],
-  }, { validators: admissionAfterDobValidator });
+  }, { validators: [admissionAfterDobValidator, discountWithinMonthlyFeeValidator] });
 
   constructor(
     private readonly studentsService: AdminStudentsService,
@@ -80,13 +90,21 @@ export class AddStudentComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     });
     this.loadClasses();
+    this.loadStatuses();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
     this.classRequest?.unsubscribe();
+    this.statusRequest?.unsubscribe();
     this.createRequest?.unsubscribe();
+  }
+
+  get netMonthlyFee(): number | null {
+    const monthlyFee = this.form.controls.monthly_fee.value;
+    const discount = this.form.controls.discount.value ?? 0;
+    return monthlyFee !== null && monthlyFee >= discount ? monthlyFee - discount : null;
   }
 
   get maxDobDate(): string {
@@ -100,7 +118,10 @@ export class AddStudentComponent implements OnInit, OnDestroy {
       || (!!control && control.invalid && (control.touched || this.submitted))
       || (name === 'admission_date'
         && this.form.hasError('admissionBeforeDob')
-        && (control?.touched || this.submitted || this.form.get('dob')?.touched === true));
+        && (control?.touched || this.submitted || this.form.get('dob')?.touched === true))
+      || (name === 'discount'
+        && this.form.hasError('discountExceedsMonthlyFee')
+        && (control?.touched || this.submitted));
   }
 
   fieldError(name: string): string {
@@ -123,6 +144,10 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     if (control.hasError('futureDate')) return 'Date of birth cannot be in the future.';
     if (control.hasError('pakistanPhone')) {
       return 'Use a Pakistan mobile number, e.g. 03XX-XXXXXXX or +923XXXXXXXXX.';
+    }
+    if (control.hasError('min')) return 'Enter an amount of zero or more.';
+    if (name === 'discount' && this.form.hasError('discountExceedsMonthlyFee')) {
+      return 'Discount cannot exceed the monthly fee.';
     }
     if (name === 'admission_date' && this.form.hasError('admissionBeforeDob')) {
       return 'Admission date cannot be before the date of birth.';
@@ -221,6 +246,26 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadStatuses(): void {
+    this.statusRequest?.unsubscribe();
+    this.isLoadingStatuses = true;
+    this.statusLoadError = '';
+    this.statusRequest = this.studentsService.getStudentStatusOptions().subscribe({
+      next: (statuses) => {
+        this.statuses = statuses;
+        this.isLoadingStatuses = false;
+        if (!statuses.length) this.statusLoadError = 'No student statuses are available.';
+        this.cdr.markForCheck();
+      },
+      error: (error: unknown) => {
+        this.isLoadingStatuses = false;
+        this.statusLoadError = `Unable to load student statuses: ${getHttpErrorMessage(error)}`;
+        this.toaster.error(this.statusLoadError);
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   cancel(): void {
     void this.router.navigate(['/admin/students']);
   }
@@ -237,6 +282,11 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     }
 
     const raw = this.form.getRawValue();
+    if (raw.monthly_fee === null) {
+      this.form.controls.monthly_fee.markAsTouched();
+      return;
+    }
+
     const payload = {
       name: raw.name.trim(),
       email: raw.email.trim(),
@@ -247,6 +297,8 @@ export class AddStudentComponent implements OnInit, OnDestroy {
       roll_no: raw.roll_no.trim(),
       admission_date: raw.admission_date,
       status: raw.status,
+      monthly_fee: raw.monthly_fee,
+      discount: raw.discount ?? 0,
       parent_name: raw.parent_name.trim(),
       parent_phone: normalizePakistanPhone(raw.parent_phone),
       ...(raw.cnic.trim() ? { cnic: raw.cnic.replace(/\D/g, '') } : {}),
@@ -316,6 +368,14 @@ const admissionAfterDobValidator: ValidatorFn = (control: AbstractControl): Vali
   const normalizedAdmission = typeof admissionDate === 'string' ? normalizeDate(admissionDate) : null;
   return normalizedDob && normalizedAdmission && normalizedAdmission < normalizedDob
     ? { admissionBeforeDob: true }
+    : null;
+};
+
+const discountWithinMonthlyFeeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const monthlyFee = control.get('monthly_fee')?.value;
+  const discount = control.get('discount')?.value;
+  return typeof monthlyFee === 'number' && typeof discount === 'number' && discount > monthlyFee
+    ? { discountExceedsMonthlyFee: true }
     : null;
 };
 
