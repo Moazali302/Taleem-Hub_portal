@@ -2,7 +2,10 @@
   <header class="teacher-listing__header">
     <div>
       <h1 class="teacher-listing__title">Teachers</h1>
-      <p class="teacher-listing__subtitle">Manage teaching staff across your school.</p>
+      <p class="teacher-listing__subtitle">Staff accounts and profiles.</p>
+      @if (schoolName) {
+        <p class="teacher-listing__school" aria-label="School">{{ schoolName }}</p>
+      }
     </div>
 
     <app-button icon="/svg/plus.svg" (click)="openAddTeacher()">
@@ -10,19 +13,19 @@
     </app-button>
   </header>
 
-  <section class="teacher-listing__stats">
+  <section class="teacher-listing__stats" aria-label="Teacher summary">
     @for (card of statCards; track card.label) {
       <app-stat-card [data]="card" />
     }
   </section>
 
-  <section class="teacher-listing__grid-card">
+  <section class="teacher-listing__grid-card" aria-label="Teacher list">
     <div class="teacher-listing__toolbar">
       <div class="teacher-listing__search">
         <img src="/svg/search.svg" alt="" class="teacher-listing__search-icon" aria-hidden="true" />
         <input
-          type="text"
-          placeholder="Search teachers by name, school or specialty..."
+          type="search"
+          placeholder="Search by name, email, phone or subject..."
           [ngModel]="searchTerm"
           (ngModelChange)="onSearchChange($event)"
           aria-label="Search teachers"
@@ -30,20 +33,41 @@
       </div>
 
       <select
-        class="teacher-listing__status-filter"
+        class="teacher-listing__filter"
+        [ngModel]="subjectFilter"
+        (ngModelChange)="onSubjectFilterChange($event)"
+        aria-label="Filter by subject"
+      >
+        <option value="all">All Subjects</option>
+        @for (subject of availableSubjects; track subject) {
+          <option [value]="subject">{{ subject }}</option>
+        }
+      </select>
+
+      <select
+        class="teacher-listing__filter"
         [ngModel]="statusFilter"
         (ngModelChange)="onStatusFilterChange($event)"
-        aria-label="Filter by status"
+        aria-label="Filter by account status"
       >
         <option value="all">All Status</option>
         <option value="active">Active</option>
-        <option value="on_leave">On Leave</option>
+        <option value="inactive">Inactive</option>
       </select>
+
+      <button
+        type="button"
+        class="teacher-listing__export"
+        [disabled]="isExporting"
+        (click)="exportTeachers()"
+      >
+        {{ isExporting ? 'Exporting…' : 'Export' }}
+      </button>
     </div>
 
     @if (isLoading) {
       <div class="teacher-listing__state" role="status">
-        <app-loader />
+        <span class="teacher-listing__spinner" aria-hidden="true"></span>
         <p>Loading teachers…</p>
       </div>
     } @else if (hasError) {
@@ -51,20 +75,62 @@
         <p>{{ errorMessage }}</p>
         <app-button variant="outline" size="sm" (click)="loadTeachers()">Try again</app-button>
       </div>
-    } @else if (filteredTeachers.length === 0) {
+    } @else if (teachers.length === 0) {
       <div class="teacher-listing__state" role="status">
-        <p>No teachers found.</p>
+        <p>No teachers found. Try adjusting your search or filters.</p>
       </div>
     } @else {
       <app-ag-grid-table
-        [rowData]="filteredTeachers"
+        [rowData]="teachers"
         [columnDefs]="columnDefs"
+        [rowHeight]="rowHeight"
+        [pagination]="false"
+        [dashboard]="false"
         tabId="teachers"
       />
     }
+
+    @if (!isLoading && !hasError && total > 0) {
+      <footer class="teacher-listing__pagination" aria-label="Teacher list pagination">
+        <p>
+          Showing <strong>{{ firstResult }} to {{ lastResult }}</strong>
+          of <strong>{{ total }}</strong>
+        </p>
+        <nav class="teacher-listing__page-controls" aria-label="Pages">
+          <button
+            type="button"
+            class="teacher-listing__page-arrow"
+            aria-label="Previous page"
+            [disabled]="page <= 1"
+            (click)="goToPage(page - 1)"
+          >
+            ‹
+          </button>
+          @for (pageNumber of visiblePages; track pageNumber) {
+            <button
+              type="button"
+              [attr.aria-current]="pageNumber === page ? 'page' : null"
+              [class.teacher-listing__page--current]="pageNumber === page"
+              (click)="goToPage(pageNumber)"
+            >
+              {{ pageNumber }}
+            </button>
+          }
+          <button
+            type="button"
+            class="teacher-listing__page-arrow"
+            aria-label="Next page"
+            [disabled]="page >= totalPages"
+            (click)="goToPage(page + 1)"
+          >
+            ›
+          </button>
+        </nav>
+      </footer>
+    }
   </section>
 
-  <app-sidenav [isOpen]="isSidenavOpen" (close)="closeSidenav()">
+  <app-sidenav [isOpen]="isSidenavOpen" panelWidth="960px" (close)="closeSidenav()">
     <app-add-teacher
       *ngIf="isSidenavOpen"
       [mode]="formMode"

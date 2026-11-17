@@ -13,6 +13,7 @@ export const API = {
   STUDENTS: {
     LIST: '/students',
     CREATE: '/students',
+    STATUS_OPTIONS: '/students/status-options',
     GET: (id: string) => `/students/${id}`,
     UPDATE: (id: string) => `/students/${id}`,
     DELETE: (id: string) => `/students/${id}`,
@@ -21,10 +22,9 @@ export const API = {
     ATTENDANCE: (id: string) => `/students/${id}/attendance`
   },
    TEACHERS: {
-  LIST: '/teachers/GetAllTeachers',// was a function with schoolId — corrected per actual controller (@Get() with no path)
+  LIST: '/teachers/GetAllTeachers',
   CREATE: '/teachers/CreateTeacher',
-  GET: (id: string) => `/teachers/${id}`,
-  UPDATE: (id: string) => `/teachers/UpdateTeacher${id}`, // see note below — no slash before :id in @Patch('UpdateTeacher:id')
+  UPDATE: (id: number) => `/teachers/UpdateTeacher${id}`,
   DELETE: (id: string) => `/teachers/DeleteTeacher${id}`
 },
   CLASSES: {
@@ -88,22 +88,28 @@ export const API = {
     TEACHER: (id: string) => `/admin/teachers/${id}`,
   },
   SUPER_ADMIN: {
+    DASHBOARD: '/super-admin/dashboard',
     CREATE_SCHOOL: '/schools/create-school',
      LIST_SCHOOLS: '/schools', 
     SCHOOLS: '/super-admin/GetAllSchools',
-    SCHOOL: (id: string) => `/super-admin/schools/${id}`,
+    SCHOOL_OPTIONS: '/schools/GetAllStatuses',
+    SCHOOL_DETAIL: (id: string) => `/schools/GetSchoolDetail?id=${encodeURIComponent(id)}`,
+    SCHOOL_FOR_EDIT: (id: string) => `/schools/GetSchoolForEdit?id=${encodeURIComponent(id)}`,
+    SCHOOL: (id: string) => `/schools/update-school?id=${encodeURIComponent(id)}`,
     BLOCK: (id: string) => `/super-admin/schools/${id}/block`,
     UNBLOCK: (id: string) => `/super-admin/schools/${id}/unblock`,
     REVENUE: '/super-admin/revenue',
     AUDIT_LOGS: '/super-admin/audit-logs',
     SUBSCRIPTIONS: '/super-admin/subscriptions',
-    ANALYTICS: '/super-admin/analytics',
+    ANALYTICS: '/super-admin/analytics/dashboard',
     ANNOUNCEMENTS: '/super-admin/announcements',
+    ANNOUNCEMENT_AUDIENCES: '/super-admin/announcements/audiences',
     ANNOUNCEMENT: (id: string) => `/super-admin/announcements/${id}`,
     COMPLAINTS: '/super-admin/complaints',
-    COMPLAINTS_SUMMARY: '/super-admin/complaints/summary',
-    COMPLAINT_STATUS: (id: string) => `/super-admin/complaints/${id}/status`,
+    COMPLAINT: (id: string) => `/super-admin/complaints/${encodeURIComponent(id)}`,
     ASSIGN_PACKAGE: (id: string) => `/super-admin/schools/${id}/package`,
+    GET_ALL_PACKAGES: '/super-admin/GetAllPackages',
+    UPDATE_PACKAGE: '/super-admin/updatePackage',
     DEMO_REQUESTS: '/super-admin/demo-request',
     DEMO_REQUEST_STATUS:(id:string)=>'/super-admin/demo-request/${id}'
   }

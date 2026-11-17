@@ -68,8 +68,11 @@ export class RefreshInterceptor implements HttpInterceptor {
           map((res) => res.token),
           tap((token) => this.tokenService.saveToken(token)),
           catchError((refreshError: HttpErrorResponse) => {
-            // Only a rejected session ends the login; a network blip must not log the user out.
-            if (refreshError.status === 401 || refreshError.status === 403) {
+            // A failed refresh must not end a still-valid access-token session.
+            if (
+              (refreshError.status === 401 || refreshError.status === 403) &&
+              this.tokenService.isTokenExpired()
+            ) {
               this.tokenService.removeToken();
               this.tokenService.removeUser();
               this.router.navigate(['/auth/login']);

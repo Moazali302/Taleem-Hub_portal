@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { StatCardComponent } from '@app/shared/components/stat-card/stat-card';
 import { StatCardData } from '@app/shared/components/stat-card/stat-card-model';
-import { LoaderComponent } from '@app/shared/components/loader/loader.component';
 import { ButtonComponent } from '@shared/components/button/button.component';
 import { AdminDashboardService } from '@app/core/services/admin-dashboard.service';
 import { ToastService } from '@app/core/services/toast.service';
@@ -17,7 +16,7 @@ import {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, StatCardComponent, LoaderComponent, ButtonComponent],
+  imports: [CommonModule, RouterLink, StatCardComponent, ButtonComponent],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

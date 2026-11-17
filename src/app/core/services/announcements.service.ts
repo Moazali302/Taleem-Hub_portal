@@ -1,78 +1,173 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { Observable, map } from 'rxjs';
 import { API } from '../constants/api.constants';
 import { ApiResponse } from '../models/api-response.model';
 import {
-  ANNOUNCEMENT_AUDIENCE_OPTIONS,
   AnnouncementAudienceOption,
   AnnouncementListItem,
   CreateAnnouncementPayload,
 } from '../models/announcement.model';
+import { ApiService } from './api.service';
 
-const MOCK_ANNOUNCEMENTS: AnnouncementListItem[] = [
-  { id: 1, title: 'Scheduled maintenance', message: 'The platform will be unavailable from 2:00 to 3:00 AM.', audience: 'all', recipients_count: 24, sent_at: '2026-10-14T09:00:00', status: 'delivered' },
-  { id: 2, title: 'Parent portal launch', message: 'Parents can now view fees, attendance and results from the new Parent Portal.', audience: 'premium', recipients_count: 5, sent_at: '2026-10-06T11:30:00', status: 'delivered' },
-  { id: 3, title: 'Fee module update', message: 'Fee vouchers now support partial payments and instalment plans.', audience: 'custom', recipients_count: 12, sent_at: '2026-10-01T10:15:00', status: 'delivered' },
-  { id: 4, title: 'Eid holiday notice', message: 'Support will be limited during the Eid holidays. Urgent issues can still be raised as complaints.', audience: 'all', recipients_count: 24, sent_at: '2026-10-25T08:00:00', status: 'scheduled' },
-];
+interface AnnouncementApiItem {
+  id: string | number;
+  title: string;
+  message: string;
+  audienceType: string;
+  audienceLabel?: string | null;
+  targetPlan?: string | { name?: string; value?: string } | null;
+  status: string;
+  publishedAt?: string | null;
+  scheduledAt?: string | null;
+  createdAt: string;
+  recipientCount?: number;
+  schoolCount?: number;
+}
 
-// Recipients per audience — the backend will derive these from live subscriptions.
-const MOCK_AUDIENCE_RECIPIENTS: Record<CreateAnnouncementPayload['audience'], number> = {
-  all: 24,
-  basic: 9,
-  advanced: 10,
-  premium: 5,
-};
+interface AnnouncementAudienceApiItem {
+  type: string;
+  label: string;
+  schoolCount: number;
+  plan?: string | null;
+  planName?: string | null;
+}
 
-const MOCK_LATENCY_MS = 300;
-
-function toResponse<T>(data: T, message: string, path: string): ApiResponse<T> {
-  return { success: true, message, data, meta: { timestamp: new Date().toISOString(), path } };
+interface AnnouncementApiPayload {
+  title: string;
+  message: string;
+  audienceType: string;
+  targetPlan: string | null;
+  status: 'PUBLISHED';
+  target: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AnnouncementsService {
-  // Kept in memory so a sent announcement shows up in the next list load while mocked.
-  private announcements: AnnouncementListItem[] = MOCK_ANNOUNCEMENTS.map((item) => ({ ...item }));
+  constructor(private readonly api: ApiService) {}
 
-  // TODO(backend): swap mock for real call — GET /super-admin/announcements, response: AnnouncementListItem[]
   getAnnouncements(): Observable<ApiResponse<AnnouncementListItem[]>> {
-    return of(
-      toResponse(
-        this.announcements.map((item) => ({ ...item })),
-        'Announcements loaded',
-        API.SUPER_ADMIN.ANNOUNCEMENTS,
-      ),
-    ).pipe(delay(MOCK_LATENCY_MS));
+    return this.api.get<unknown>(API.SUPER_ADMIN.ANNOUNCEMENTS).pipe(
+      map((response) => ({
+        ...response,
+        data: this.extractItems<AnnouncementApiItem>(response.data).map((item) =>
+          this.toAnnouncement(item),
+        ),
+      })),
+    );
   }
 
-  // TODO(backend): swap mock for real call — GET /super-admin/announcements/audiences, response: AnnouncementAudienceOption[]
   getAudienceOptions(): Observable<ApiResponse<AnnouncementAudienceOption[]>> {
-    const options = ANNOUNCEMENT_AUDIENCE_OPTIONS.map((option) => ({
-      ...option,
-      recipients_count: MOCK_AUDIENCE_RECIPIENTS[option.value],
-    }));
-    return of(
-      toResponse(options, 'Audiences loaded', `${API.SUPER_ADMIN.ANNOUNCEMENTS}/audiences`),
-    ).pipe(delay(MOCK_LATENCY_MS));
+    return this.api.get<AnnouncementAudienceApiItem[]>(
+      API.SUPER_ADMIN.ANNOUNCEMENT_AUDIENCES,
+    ).pipe(
+      map((response) => ({
+        ...response,
+        data: response.data.map((item) => {
+          const plan = item.plan ?? null;
+          const value = item.type.toUpperCase() === 'ALL'
+            ? 'all'
+            : this.toUiAudience(plan, item.planName);
+
+          return {
+            value,
+            label: item.label,
+            recipients_count: item.schoolCount,
+            type: item.type,
+            plan,
+          };
+        }),
+      })),
+    );
   }
 
-  // TODO(backend): swap mock for real call — POST /super-admin/announcements, body: CreateAnnouncementPayload
-  sendAnnouncement(payload: CreateAnnouncementPayload): Observable<ApiResponse<AnnouncementListItem>> {
-    const created: AnnouncementListItem = {
-      id: Math.max(0, ...this.announcements.map((item) => item.id)) + 1,
+  sendAnnouncement(payload: CreateAnnouncementPayload): Observable<ApiResponse<AnnouncementApiItem>> {
+    const body: AnnouncementApiPayload = {
       title: payload.title,
       message: payload.message,
-      audience: payload.audience,
-      recipients_count: MOCK_AUDIENCE_RECIPIENTS[payload.audience],
-      sent_at: new Date().toISOString(),
-      status: 'delivered',
+      audienceType: payload.audienceType,
+      targetPlan: payload.targetPlan,
+      status: 'PUBLISHED',
+      target: payload.target,
     };
-    this.announcements = [created, ...this.announcements];
 
-    return of(toResponse({ ...created }, 'Announcement sent', API.SUPER_ADMIN.ANNOUNCEMENTS)).pipe(
-      delay(MOCK_LATENCY_MS),
-    );
+    return this.api.post<AnnouncementApiItem>(API.SUPER_ADMIN.ANNOUNCEMENTS, body);
+  }
+
+  private extractItems<T>(data: unknown): T[] {
+    if (Array.isArray(data)) {
+      return data as T[];
+    }
+
+    if (data && typeof data === 'object') {
+      const record = data as Record<string, unknown>;
+      if (Array.isArray(record['items'])) {
+        return record['items'] as T[];
+      }
+    }
+
+    throw new Error('Announcements response did not contain a list.');
+  }
+
+  private toAnnouncement(item: AnnouncementApiItem): AnnouncementListItem {
+    const plan = this.planValue(item.targetPlan);
+    const audience = item.audienceType.toUpperCase() === 'ALL'
+      ? 'all'
+      : this.toUiAudience(plan, item.audienceLabel);
+    const sentAt = item.publishedAt ?? item.scheduledAt ?? item.createdAt;
+
+    return {
+      id: item.id,
+      title: item.title,
+      message: item.message,
+      audience,
+      audience_label: item.audienceLabel ?? undefined,
+      recipients_count: item.recipientCount ?? item.schoolCount ?? 0,
+      sent_at: sentAt,
+      status: this.toUiStatus(item.status),
+    };
+  }
+
+  private planValue(plan: AnnouncementApiItem['targetPlan']): string | null {
+    if (typeof plan === 'string') {
+      return plan;
+    }
+
+    return plan?.value ?? plan?.name ?? null;
+  }
+
+  private toUiAudience(plan: string | null, label?: string | null): 'basic' | 'advanced' | 'premium' | 'custom' {
+    const normalizedPlan = plan?.toLowerCase();
+    if (normalizedPlan === 'free_trial') {
+      return label?.toLowerCase().includes('premium') ? 'premium' : 'basic';
+    }
+    if (normalizedPlan === 'advance' || normalizedPlan === 'advanced') {
+      return 'advanced';
+    }
+    if (normalizedPlan === 'basic' || normalizedPlan === 'premium') {
+      return normalizedPlan;
+    }
+
+    const normalizedLabel = label?.toLowerCase() ?? '';
+    if (normalizedLabel.includes('premium')) {
+      return 'premium';
+    }
+    if (normalizedLabel.includes('advanced')) {
+      return 'advanced';
+    }
+    if (normalizedLabel.includes('basic')) {
+      return 'basic';
+    }
+    return 'custom';
+  }
+
+  private toUiStatus(status: string): string {
+    switch (status.toUpperCase()) {
+      case 'PUBLISHED':
+        return 'delivered';
+      case 'SCHEDULED':
+        return 'scheduled';
+      default:
+        return status.toLowerCase();
+    }
   }
 }

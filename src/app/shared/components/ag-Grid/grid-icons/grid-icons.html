@@ -10,24 +10,29 @@
   </ng-container>
 
   <!-- Trigger Icon & Mat Menu -->
-  <div *ngIf="!params.hideMenu"
+  <button *ngIf="!params.hideMenu"
+       type="button"
        class="grid-action-icon"
-       [matMenuTriggerFor]="actionMenu" (click)="$event.stopPropagation()" #menuTrigger="matMenuTrigger">
+       [class.grid-action-icon--open]="menuTrigger.menuOpen"
+       [matMenuTriggerFor]="actionMenu"
+       (click)="$event.stopPropagation()"
+       #menuTrigger="matMenuTrigger"
+       aria-label="Row actions">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="1" />
       <circle cx="12" cy="19" r="1" />
       <circle cx="12" cy="5" r="1" />
     </svg>
-  </div>
+  </button>
 
-  <mat-menu #actionMenu="matMenu">
-    <button mat-menu-item *ngIf="params.onView" (click)="menuTrigger.closeMenu();View($event)">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+  <mat-menu #actionMenu="matMenu" class="app-action-menu-panel">
+    <button mat-menu-item class="grid-menu-item--view" *ngIf="params.onView" (click)="menuTrigger.closeMenu();View($event)">
+      <svg class="grid-menu-icon grid-menu-icon--view" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
       <span>View Detail</span>
     </button>
 
-    <button mat-menu-item *ngIf="params.onEdit" (click)="menuTrigger.closeMenu();Edit($event)">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
+    <button mat-menu-item class="grid-menu-item--edit" *ngIf="params.onEdit" (click)="menuTrigger.closeMenu();Edit($event)">
+      <svg class="grid-menu-icon grid-menu-icon--edit" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
       <span>Edit</span>
     </button>
 
@@ -41,7 +46,7 @@
       <span>View History</span>
     </button>
 
-    <button mat-menu-item *ngIf="params.onViewUsers" (click)="menuTrigger.closeMenu();OnViewUsers($event)" style="position: relative;">
+    <button mat-menu-item *ngIf="params.onViewUsers" (click)="menuTrigger.closeMenu();OnViewUsers($event)">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 11c1.657 0 3 -1.343 3 -3c0 -1.657 -1.343 -3 -3 -3" /><path d="M19.999 21c.001 -.11 .001 -.22 .001 -.333a4 4 0 0 0 -3 -3.867" /></svg>
       <span>View Users</span>
       <div class="counter" *ngIf="params.usersCount">{{ params.usersCount }}</div>
@@ -72,8 +77,8 @@
       <span>Notify Client</span>
     </button>
 
-    <button mat-menu-item *ngIf="params.onDelete" (click)="menuTrigger.closeMenu();Delete($event)">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+    <button mat-menu-item class="grid-menu-item--danger" *ngIf="params.onDelete" (click)="menuTrigger.closeMenu();Delete($event)">
+      <svg class="grid-menu-icon grid-menu-icon--danger" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
       <span>Delete</span>
     </button>
 
@@ -107,15 +112,15 @@
   <!-- Delete Icon for hideMenu=true -->
   <ng-container *ngIf="params.hideMenu">
     <div class="action-parent">
-      <div class="action-button" *ngIf="params.onDownload" (click)="Download($event)">
+      <button type="button" class="action-button" *ngIf="params.onDownload" (click)="Download($event)" aria-label="Download">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-      </div>
-      <div class="action-button" *ngIf="params.onEdit" (click)="Edit($event)">
+      </button>
+      <button type="button" class="action-button" *ngIf="params.onEdit" (click)="Edit($event)" aria-label="Edit">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
-      </div>
-      <div class="action-button" *ngIf="params.onDelete" (click)="Delete($event)">
+      </button>
+      <button type="button" class="action-button action-button--danger" *ngIf="params.onDelete" (click)="Delete($event)" aria-label="Delete">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-      </div>
+      </button>
     </div>
   </ng-container>
 </div>

@@ -8,7 +8,6 @@ import {
   StatusBadgeColor,
   StatusBadgeCellRendererComponent,
 } from '@shared/components/data-grid/status-badge-cell-renderer.component';
-import { LoaderComponent } from '@app/shared/components/loader/loader.component';
 import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
 import { SidenavComponent } from '@app/shared/components/sidenav.component/sidenav';
 import { ICustomCellRenderer } from '@app/core/models/custom-cell-renderer.model';
@@ -45,7 +44,6 @@ const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
     AnnouncementComposeComponent,
     AgGridTableComponent,
     SidenavComponent,
-    LoaderComponent,
   ],
   templateUrl: './announcements.html',
   styleUrl: './announcements.scss',
@@ -145,6 +143,13 @@ export class AnnouncementsComponent implements OnInit {
     this.announcementsService.getAnnouncements().subscribe({
       next: (res) => {
         this.announcements = res.data;
+        this.hasError = false;
+        this.errorMessage = '';
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.hasError = true;
+        this.errorMessage = getHttpErrorMessage(err);
         this.cdr.markForCheck();
       },
     });

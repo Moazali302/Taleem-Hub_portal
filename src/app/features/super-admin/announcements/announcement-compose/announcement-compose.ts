@@ -12,6 +12,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   ANNOUNCEMENT_MESSAGE_MAX_LENGTH,
   ANNOUNCEMENT_TITLE_MAX_LENGTH,
+  AnnouncementAudience,
   AnnouncementAudienceOption,
   CreateAnnouncementPayload,
 } from '@app/core/models/announcement.model';
@@ -44,7 +45,7 @@ export class AnnouncementComposeComponent {
   readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(ANNOUNCEMENT_TITLE_MAX_LENGTH)]],
     message: ['', [Validators.required, Validators.maxLength(ANNOUNCEMENT_MESSAGE_MAX_LENGTH)]],
-    audience: ['all' as CreateAnnouncementPayload['audience'], [Validators.required]],
+    audience: ['all' as AnnouncementAudience, [Validators.required]],
   });
 
   constructor(
@@ -75,10 +76,23 @@ export class AnnouncementComposeComponent {
     }
 
     const { title, message, audience } = this.form.getRawValue();
+    const selectedOption = this.audienceOptions.find((option) => option.value === audience);
+    if (!selectedOption) {
+      this.toaster.error('Please select a valid audience.');
+      return;
+    }
+
+    const payload: CreateAnnouncementPayload = {
+      title: title.trim(),
+      message: message.trim(),
+      audienceType: selectedOption.type ?? (audience === 'all' ? 'ALL' : 'PLAN'),
+      targetPlan: selectedOption.plan ?? this.toApiPlan(audience),
+      target: audience === 'all' ? 'all' : selectedOption.plan ?? audience,
+    };
     this.isSubmitting = true;
 
     this.announcementsService
-      .sendAnnouncement({ title: title.trim(), message: message.trim(), audience })
+      .sendAnnouncement(payload)
       .subscribe({
         next: () => {
           this.isSubmitting = false;
@@ -93,5 +107,18 @@ export class AnnouncementComposeComponent {
           this.cdr.markForCheck();
         },
       });
+  }
+
+  private toApiPlan(audience: AnnouncementAudience): string | null {
+    switch (audience) {
+      case 'basic':
+        return 'basic';
+      case 'advanced':
+        return 'advance';
+      case 'premium':
+        return 'premium';
+      default:
+        return null;
+    }
   }
 }

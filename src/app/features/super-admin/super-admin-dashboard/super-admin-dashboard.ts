@@ -1,24 +1,14 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ActivityItem } from '@app/core/models/activity.model';
-import { AnalyticsPoint } from '@app/core/models/analytics.model';
-import { ExpiringSubscriptionItem, FeeCollectionSummary } from '@app/core/models/dashboard.model';
+import { Subject, Subscription, takeUntil } from 'rxjs';
+import { SuperAdminDashboard } from '@app/core/models/super-admin-dashboard.model';
 import { SummaryCardData } from '@app/core/models/summary-card.model';
-import { SummaryCardComponent } from '@app/shared/components/summary-card/summary-card';
-import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
+import { SuperAdminDashboardService } from '@app/core/services/super-admin-dashboard.service';
 import { CardComponent } from '@app/shared/components/Card/card';
-import { DonutChartComponent } from '@app/shared/components/DonutChart/donut-chart';
-import { TimeAgoPipe } from '@app/pipe/time-ago.pipe';
-
-interface ChartPoint {
-  x: number;
-  y: number;
-}
-
-const CHART_WIDTH = 600;
-const CHART_HEIGHT = 200;
-const CHART_PADDING_Y = 16;
+import { PageHeaderComponent } from '@app/shared/components/page-header/page-header';
+import { SummaryCardComponent } from '@app/shared/components/summary-card/summary-card';
+import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,94 +16,177 @@ const CHART_PADDING_Y = 16;
   imports: [
     CommonModule,
     RouterLink,
-    TimeAgoPipe,
     SummaryCardComponent,
     PageHeaderComponent,
     CardComponent,
-    DonutChartComponent,
   ],
   templateUrl: './super-admin-dashboard.html',
   styleUrl: './super-admin-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SuperAdminDashboardComponent {
-  // TODO(backend): replace the mock data below with a DashboardService call
-  // once the super-admin dashboard endpoint is ready.
+export class SuperAdminDashboardComponent implements OnInit, OnDestroy {
+  dashboard: SuperAdminDashboard | null = null;
+  isLoading = false;
+  isRefreshing = false;
+  hasError = false;
+  errorMessage = '';
+  lastUpdated: Date | null = null;
 
-  readonly stats: SummaryCardData[] = [
-    { label: 'Total Schools', value: 24, caption: '+3.2% this month', captionTone: 'positive' },
-    { label: 'Active Students', value: '5,842', caption: '+1.1%', captionTone: 'positive' },
-    { label: 'Total Teachers', value: 412, caption: '-0.5%', captionTone: 'negative' },
-    { label: 'Expiring Subscriptions', value: 6, caption: '2 urgent', accent: 'warning' },
-    { label: 'Open Complaints', value: 18, caption: '5 critical', accent: 'danger' },
-  ];
+  private readonly destroy$ = new Subject<void>();
+  private request?: Subscription;
 
-  readonly revenueTotalLabel = 'PKR 18.4M this month';
+  constructor(
+    private readonly dashboardService: SuperAdminDashboardService,
+    private readonly cdr: ChangeDetectorRef,
+  ) {}
 
-  readonly revenuePoints: AnalyticsPoint[] = [
-    { label: 'Jan', value: 8.2 },
-    { label: 'Feb', value: 9.6 },
-    { label: 'Mar', value: 9.1 },
-    { label: 'Apr', value: 11.4 },
-    { label: 'May', value: 12.3 },
-    { label: 'Jun', value: 12.0 },
-    { label: 'Jul', value: 13.9 },
-    { label: 'Aug', value: 15.2 },
-    { label: 'Sep', value: 14.8 },
-    { label: 'Oct', value: 16.9 },
-    { label: 'Nov', value: 17.6 },
-    { label: 'Dec', value: 18.4 },
-  ];
-
-  readonly feeCollection: FeeCollectionSummary = {
-    ratePercent: 82,
-    trendPercent: 2.4,
-    trendDirection: 'up',
-    collectedAmount: 'PKR 42.3M',
-    billedAmount: 'PKR 51.6M',
-    pendingAmount: 'PKR 9.3M',
-    overdueCount: 14,
-  };
-
-  readonly recentActivities: ActivityItem[] = [
-    { type: 'school_added', description: 'Oakridge School added to the platform', timestamp: '2026-09-15T13:00:00' },
-    { type: 'status_changed', description: 'Beaconhouse status changed to Active', timestamp: '2026-09-14T10:00:00' },
-    { type: 'subscription_upgraded', description: 'City School upgraded to Premium plan', timestamp: '2026-09-12T09:00:00' },
-    { type: 'subscription_upgraded', description: 'Hafiz School System renewed Advanced plan', timestamp: '2026-08-20T15:20:00' },
-  ];
-
-  readonly expiringSubscriptions: ExpiringSubscriptionItem[] = [
-    { schoolName: 'AGE High School', plan: 'Basic', expiresIn: '2 days' },
-    { schoolName: 'Hafiz School System', plan: 'Advanced', expiresIn: '8 days' },
-    { schoolName: 'Test School', plan: 'Basic', expiresIn: '12 days' },
-    { schoolName: 'Kips Academy', plan: 'Advanced', expiresIn: '15 days' },
-  ];
-
-  // ---------- Revenue chart (inline SVG) ----------
-  readonly chartViewBox = `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`;
-  readonly chartLinePath: string;
-  readonly chartAreaPath: string;
-
-  constructor() {
-    const points = this.toChartPoints(this.revenuePoints);
-    this.chartLinePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
-    this.chartAreaPath = points.length
-      ? `${this.chartLinePath} L${points[points.length - 1].x},${CHART_HEIGHT} L${points[0].x},${CHART_HEIGHT} Z`
-      : '';
+  ngOnInit(): void {
+    this.load();
   }
 
-  private toChartPoints(data: AnalyticsPoint[]): ChartPoint[] {
-    if (!data.length) return [];
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.request?.unsubscribe();
+  }
 
-    const values = data.map((d) => d.value);
-    const min = Math.min(...values);
-    const range = Math.max(...values) - min || 1; // avoid divide-by-zero on flat data
-    const plotHeight = CHART_HEIGHT - CHART_PADDING_Y * 2;
-    const stepX = data.length > 1 ? CHART_WIDTH / (data.length - 1) : 0;
+  get summaryCards(): SummaryCardData[] {
+    const summary = this.dashboard?.summary;
+    if (!summary) return [];
 
-    return data.map((d, i) => ({
-      x: stepX * i,
-      y: CHART_PADDING_Y + plotHeight - ((d.value - min) / range) * plotHeight,
-    }));
+    const schoolChange = summary.totalSchools.percentageChange;
+    return [
+      {
+        label: 'Total Schools',
+        value: this.formatNumber(summary.totalSchools.total),
+        caption: schoolChange === null
+          ? 'Comparison unavailable'
+          : `${this.formatSigned(schoolChange)} vs previous period`,
+        captionTone: schoolChange === null ? 'neutral' : schoolChange >= 0 ? 'positive' : 'negative',
+      },
+      {
+        label: 'Active Students',
+        value: this.formatNumber(summary.activeStudents.total),
+        caption: this.comparisonCaption(summary.activeStudents),
+        captionTone: this.comparisonTone(summary.activeStudents.percentageChange),
+      },
+      {
+        label: 'Total Teachers',
+        value: this.formatNumber(summary.totalTeachers.total),
+        caption: this.comparisonCaption(summary.totalTeachers),
+        captionTone: this.comparisonTone(summary.totalTeachers.percentageChange),
+      },
+      {
+        label: 'Expiring Subscriptions',
+        value: this.formatNumber(summary.expiringSubscriptions.total),
+        caption: `${this.formatNumber(summary.expiringSubscriptions.urgent)} urgent · within ${summary.expiringSubscriptions.urgentWithinDays} days`,
+        accent: summary.expiringSubscriptions.urgent > 0 ? 'warning' : undefined,
+      },
+      {
+        label: 'Open Complaints',
+        value: this.formatNumber(summary.openComplaints.total),
+        caption: `${this.formatNumber(summary.openComplaints.critical)} critical`,
+        accent: summary.openComplaints.critical > 0 ? 'danger' : undefined,
+      },
+    ];
+  }
+
+  get expiringSubscriptions(): SuperAdminDashboard['expiringSubscriptions'] {
+    return [...(this.dashboard?.expiringSubscriptions ?? [])].sort((a, b) => {
+      const byDaysRemaining = a.daysRemaining - b.daysRemaining;
+      return byDaysRemaining || a.schoolId - b.schoolId;
+    });
+  }
+
+  load(): void {
+    this.request?.unsubscribe();
+    this.isLoading = !this.dashboard;
+    this.isRefreshing = !!this.dashboard;
+    this.hasError = false;
+    this.errorMessage = '';
+
+    this.request = this.dashboardService.getDashboard()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.dashboard = response.data;
+          this.isLoading = false;
+          this.isRefreshing = false;
+          this.lastUpdated = new Date();
+          this.cdr.markForCheck();
+        },
+        error: (error: unknown) => {
+          this.isLoading = false;
+          this.isRefreshing = false;
+          this.hasError = true;
+          this.errorMessage = getHttpErrorMessage(error);
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  formatNumber(value: number | null | undefined): string {
+    if (value === null || value === undefined || !Number.isFinite(value)) return '—';
+    return new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 }).format(value);
+  }
+
+  formatCurrency(value: number | null, currency: string): string {
+    if (value === null || !Number.isFinite(value)) return 'Not available';
+    return new Intl.NumberFormat('en-PK', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 0,
+    }).format(value);
+  }
+
+  formatPercentage(value: number | null): string {
+    if (value === null || !Number.isFinite(value)) return 'Not available';
+    return `${new Intl.NumberFormat('en-PK', { maximumFractionDigits: 2 }).format(value)}%`;
+  }
+
+  formatSigned(value: number): string {
+    const sign = value > 0 ? '+' : '';
+    return `${sign}${new Intl.NumberFormat('en-PK', { maximumFractionDigits: 2 }).format(value)}%`;
+  }
+
+  formatDate(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Date unavailable';
+    return new Intl.DateTimeFormat('en-PK', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(date);
+  }
+
+  formatPeriod(from: string, toExclusive: string): string {
+    const start = new Date(from);
+    const end = new Date(toExclusive);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 'Current month';
+    end.setUTCDate(end.getUTCDate() - 1);
+    const formatter = new Intl.DateTimeFormat('en-PK', {
+      dateStyle: 'medium',
+      timeZone: 'UTC',
+    });
+    return `${formatter.format(start)} – ${formatter.format(end)}`;
+  }
+
+  trendHeight(
+    amount: number,
+    trend: SuperAdminDashboard['revenueAnalytics']['trend'],
+  ): number {
+    const maximum = Math.max(0, ...trend.map((point) => point.amount));
+    return maximum === 0 ? 0 : Math.max(4, (amount / maximum) * 100);
+  }
+
+  private comparisonCaption(metric: { percentageChange?: number | null }): string {
+    if (metric.percentageChange === null || metric.percentageChange === undefined) {
+      return 'Comparison unavailable';
+    }
+    return `${this.formatSigned(metric.percentageChange)} vs previous period`;
+  }
+
+  private comparisonTone(value: number | null | undefined): SummaryCardData['captionTone'] {
+    if (value === null || value === undefined) return 'neutral';
+    return value >= 0 ? 'positive' : 'negative';
   }
 }
