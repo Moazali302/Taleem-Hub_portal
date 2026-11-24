@@ -1,0 +1,248 @@
+<main class="fees">
+  <header class="fees__header">
+    <div>
+      <h1 class="fees__title">Fees</h1>
+      <p class="fees__subtitle">Billing, vouchers and payment tracking.</p>
+    </div>
+    <div class="fees__header-actions">
+      <label class="fees__month">
+        <span class="visually-hidden">Select fee month</span>
+        <input type="month" [ngModel]="month" (ngModelChange)="onMonthChange($event)"
+          [ngModelOptions]="{ standalone: true }" aria-label="Select fee month" />
+      </label>
+      <button type="button" class="fees__generate" [disabled]="isGeneratingVouchers"
+        (click)="generateVouchers()">
+        {{ isGeneratingVouchers ? 'Generating…' : 'Generate vouchers' }}
+      </button>
+    </div>
+  </header>
+
+  @if (voucherError) {
+    <p class="fees__notice fees__notice--error" role="alert">{{ voucherError }}</p>
+  }
+
+  <section class="fees__stats" aria-label="Fee collection summary">
+    <article class="fees__stat fees__stat--collected">
+      <p>Collected</p>
+      <strong>{{ isSummaryLoading ? '…' : summary ? formatPkr(summary.collected) : '—' }}</strong>
+    </article>
+    <article class="fees__stat fees__stat--pending">
+      <p>Pending</p>
+      <strong>{{ isSummaryLoading ? '…' : summary ? formatPkr(summary.pending) : '—' }}</strong>
+    </article>
+    <article class="fees__stat fees__stat--overdue">
+      <p>Overdue accounts</p>
+      <strong>{{ isSummaryLoading ? '…' : summary ? summary.overdue_count : '—' }}</strong>
+    </article>
+    <article class="fees__stat fees__stat--vouchers">
+      <p>Vouchers sent</p>
+      <strong>{{ isSummaryLoading ? '…' : summary ? summary.vouchers_sent : '—' }}</strong>
+    </article>
+  </section>
+  @if (summaryError) {
+    <div class="fees__summary-error" role="alert">
+      <span>Unable to load summary: {{ summaryError }}</span>
+      <button type="button" (click)="loadSummary()">Retry</button>
+    </div>
+  }
+
+  <section class="fees__card" aria-label="Student fee records">
+    <div class="fees__toolbar">
+      <label class="fees__search">
+        <img src="/svg/search.svg" alt="" aria-hidden="true" />
+        <input type="search" placeholder="Search students..." aria-label="Search fee records"
+          [ngModel]="searchTerm" (ngModelChange)="onSearchChange($event)"
+          [ngModelOptions]="{ standalone: true }" />
+      </label>
+      <select class="fees__filter" aria-label="Filter by payment status"
+        [ngModel]="statusFilter" (ngModelChange)="onStatusChange($event)"
+        [ngModelOptions]="{ standalone: true }">
+        <option value="">All status</option>
+        <option value="Paid">Paid</option>
+        <option value="Partial">Partial</option>
+        <option value="Overdue">Overdue</option>
+        <option value="Pending">Pending</option>
+      </select>
+      <button type="button" class="fees__export" [disabled]="isExporting || fees.length === 0"
+        (click)="exportFees()">
+        {{ isExporting ? 'Exporting…' : 'Export' }}
+      </button>
+    </div>
+
+    @if (isLoading) {
+      <div class="fees__state" role="status">
+        <span class="fees__spinner" aria-hidden="true"></span>
+        <p>Loading fee records…</p>
+      </div>
+    } @else if (hasError) {
+      <div class="fees__state fees__state--error" role="alert">
+        <p>{{ errorMessage }}</p>
+        <button type="button" class="fees__retry" (click)="loadFees()">Try again</button>
+      </div>
+    } @else if (fees.length === 0) {
+      <div class="fees__state" role="status">
+        <p>No fee records found. Try adjusting your search or filters.</p>
+      </div>
+    } @else {
+      <div class="fees__table-wrap">
+        <table class="fees__table">
+          <thead>
+            <tr>
+              <th scope="col">Student</th>
+              <th scope="col">Class</th>
+              <th scope="col">Net payable</th>
+              <th scope="col">Paid</th>
+              <th scope="col">Due date</th>
+              <th scope="col">Status</th>
+              <th scope="col">Voucher</th>
+              <th scope="col"><span class="visually-hidden">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fee of fees; track fee.id) {
+              <tr>
+                <td class="fees__student">
+                  <span class="fees__avatar" aria-hidden="true">{{ initials(fee.studentName) }}</span>
+                  <span class="fees__student-name">{{ fee.studentName }}</span>
+                </td>
+                <td>{{ fee.className }}</td>
+                <td>{{ formatPkr(fee.amountDue) }}</td>
+                <td>{{ formatPkr(fee.amountPaid) }}</td>
+                <td>{{ formatDate(fee.dueDate) }}</td>
+                <td><span class="fee-status" [class]="statusClass(fee)">{{ fee.status }}</span></td>
+                <td>{{ fee.voucherSent === null ? '—' : fee.voucherSent ? 'Sent' : 'Not sent' }}</td>
+                <td class="fees__action-cell">
+                  <button type="button" class="fees__history-button" (click)="openPaymentHistory(fee)">
+                    History
+                  </button>
+                  @if (!isPaid(fee)) {
+                    <button type="button" class="fees__receive" (click)="openPaymentForm(fee)">
+                      Receive
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <footer class="fees__pagination" aria-label="Fee record pagination">
+        <p>Showing <strong>{{ firstResult }} to {{ lastResult }}</strong> of <strong>{{ total }}</strong></p>
+        <nav class="fees__page-controls" aria-label="Pages">
+          <button type="button" aria-label="Previous page" [disabled]="page <= 1 || isLoading"
+            (click)="goToPage(page - 1)">‹</button>
+          @for (pageNumber of visiblePages; track pageNumber) {
+            <button type="button" [attr.aria-current]="pageNumber === page ? 'page' : null"
+              [class.fees__page--current]="pageNumber === page" [disabled]="isLoading"
+              (click)="goToPage(pageNumber)">
+              {{ pageNumber }}
+            </button>
+          }
+          <button type="button" aria-label="Next page" [disabled]="page >= totalPages || isLoading"
+            (click)="goToPage(page + 1)">›</button>
+        </nav>
+      </footer>
+    }
+  </section>
+
+  @if (activeDialog === 'payment' && selectedFee) {
+    <div class="fees__dialog-backdrop" (click)="closeDialog()">
+      <section class="fees__dialog" role="dialog" aria-modal="true" aria-labelledby="payment-title"
+        (click)="$event.stopPropagation()">
+        <header class="fees__dialog-header">
+          <div>
+            <h2 id="payment-title">Receive payment</h2>
+            <p>{{ selectedFee.studentName }} · {{ selectedFee.className }}</p>
+          </div>
+          <button type="button" class="fees__dialog-close" aria-label="Close dialog"
+            [disabled]="isSubmittingPayment" (click)="closeDialog()">×</button>
+        </header>
+        <p class="fees__dialog-balance">
+          Outstanding balance <strong>{{ formatPkr(selectedFee.amountDue - selectedFee.amountPaid) }}</strong>
+        </p>
+        <form class="fees__payment-form" [formGroup]="paymentForm" (ngSubmit)="submitPayment()">
+          <label for="payment-amount">Amount received</label>
+          <div class="fees__amount-input">
+            <span>PKR</span>
+            <input id="payment-amount" type="number" min="0.01" step="0.01" inputmode="decimal"
+              formControlName="amount" aria-describedby="payment-amount-help payment-amount-error" />
+          </div>
+          <small id="payment-amount-help">Enter a positive amount with up to 2 decimal places.</small>
+          @if (paymentForm.controls.amount.touched && paymentForm.controls.amount.hasError('required')) {
+            <p id="payment-amount-error" class="fees__field-error">Enter the amount received.</p>
+          } @else if (paymentForm.controls.amount.touched && paymentForm.controls.amount.hasError('min')) {
+            <p id="payment-amount-error" class="fees__field-error">Amount must be greater than zero.</p>
+          } @else if (paymentForm.controls.amount.touched && paymentForm.controls.amount.hasError('maxDecimalPlaces')) {
+            <p id="payment-amount-error" class="fees__field-error">Use no more than 2 decimal places.</p>
+          }
+
+          <label for="payment-method">Payment method</label>
+          <select id="payment-method" formControlName="method">
+            <option value="cash">Cash</option>
+            <option value="bank_transfer">Bank transfer</option>
+            <option value="jazzcash">JazzCash</option>
+            <option value="easypaisa">EasyPaisa</option>
+          </select>
+
+          @if (paymentError) {
+            <p class="fees__form-error" role="alert">{{ paymentError }}</p>
+          }
+          <div class="fees__dialog-actions">
+            <button type="button" class="fees__cancel" [disabled]="isSubmittingPayment" (click)="closeDialog()">
+              Cancel
+            </button>
+            <button type="submit" class="fees__generate" [disabled]="isSubmittingPayment">
+              {{ isSubmittingPayment ? 'Saving…' : 'Record payment' }}
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  }
+
+  @if (activeDialog === 'history' && selectedFee) {
+    <div class="fees__dialog-backdrop" (click)="closeDialog()">
+      <section class="fees__dialog fees__dialog--history" role="dialog" aria-modal="true"
+        aria-labelledby="history-title" (click)="$event.stopPropagation()">
+        <header class="fees__dialog-header">
+          <div>
+            <h2 id="history-title">Payment history</h2>
+            <p>{{ selectedFee.studentName }} · {{ selectedFee.className }}</p>
+          </div>
+          <button type="button" class="fees__dialog-close" aria-label="Close dialog" (click)="closeDialog()">×</button>
+        </header>
+        @if (isLoadingHistory) {
+          <div class="fees__state" role="status">
+            <span class="fees__spinner" aria-hidden="true"></span>
+            <p>Loading payment history…</p>
+          </div>
+        } @else if (historyError) {
+          <div class="fees__state fees__state--error" role="alert">
+            <p>{{ historyError }}</p>
+            <button type="button" class="fees__retry" (click)="openPaymentHistory(selectedFee!)">Try again</button>
+          </div>
+        } @else if (payments.length === 0) {
+          <div class="fees__state" role="status"><p>No payments recorded for this fee.</p></div>
+        } @else {
+          <div class="fees__history-table-wrap">
+            <table class="fees__history-table">
+              <thead>
+                <tr><th>Amount</th><th>Method</th><th>Date</th><th>Reference</th></tr>
+              </thead>
+              <tbody>
+                @for (payment of payments; track payment.id) {
+                  <tr>
+                    <td>{{ formatPkr(payment.amount) }}</td>
+                    <td>{{ payment.method.replace('_', ' ') }}</td>
+                    <td>{{ formatDate(payment.paidAt) }}</td>
+                    <td>{{ payment.reference ?? '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    </div>
+  }
+</main>
