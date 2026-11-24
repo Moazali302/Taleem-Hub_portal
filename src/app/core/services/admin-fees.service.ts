@@ -234,7 +234,14 @@ function paymentRowsFrom(value: unknown): FeePayment[] {
       id,
       amount,
       method,
-      paidAt: nonEmptyString(row['paid_at']) ?? nonEmptyString(row['created_at']) ?? null,
+      paidAt:
+        nonEmptyString(row['paid_at']) ??
+        nonEmptyString(row['received_at']) ??
+        nonEmptyString(row['payment_date']) ??
+        nonEmptyString(row['paymentDate']) ??
+        nonEmptyString(row['created_at']) ??
+        nonEmptyString(row['date']) ??
+        null,
       reference: nonEmptyString(row['reference']) ?? nonEmptyString(row['transaction_id']),
     };
   });

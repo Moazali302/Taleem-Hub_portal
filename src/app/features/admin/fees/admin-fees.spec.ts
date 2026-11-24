@@ -86,6 +86,25 @@ describe('AdminFeesComponent', () => {
     expect(feesService.submitPayment).not.toHaveBeenCalled();
   });
 
+  it('renders the payment date in the payment history table', () => {
+    feesService.getPaymentHistory.mockReturnValue(of({
+      data: [{
+        id: 'payment-5',
+        amount: 1000,
+        method: 'cash',
+        paidAt: '2026-11-24T10:30:00.000Z',
+        reference: 'R-5',
+      }],
+    }));
+
+    component.openPaymentHistory(FEE);
+    fixture.detectChanges();
+
+    const dateCell = fixture.nativeElement.querySelector('.fees__history-table tbody tr td:nth-child(3)');
+    expect(dateCell.textContent.trim()).not.toBe('—');
+    expect(dateCell.textContent.trim()).toContain('Nov');
+  });
+
   it('does not report voucher success when WhatsApp delivery returns 503', () => {
     feesService.generateVouchers.mockReturnValue(throwError(() => ({ status: 503 })));
 
