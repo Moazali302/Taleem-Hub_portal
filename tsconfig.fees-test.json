@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.spec.json",
+  "include": [
+    "src/**/*.d.ts",
+    "src/app/features/admin/fees/admin-fees.spec.ts",
+    "src/app/core/services/admin-fees.service.spec.ts"
+  ]
+}

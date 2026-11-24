@@ -53,7 +53,8 @@ export interface FeePayment {
 }
 
 export interface FeePaymentResult {
-  fee: FeeRecord | null;
+  fee: FeeRecord;
+  payment: FeePayment;
 }
 
 export class InvalidFeeResponseError extends Error {}
@@ -64,7 +65,12 @@ export class AdminFeesService {
 
   getSummary(month: string): Observable<ApiResponse<FeeSummary>> {
     const params = new HttpParams().set('month', month);
-    return this.api.get<FeeSummary>(API.FEES.SUMMARY, params);
+    return this.api.get<unknown>(API.FEES.SUMMARY, params).pipe(
+      map((response): ApiResponse<FeeSummary> => ({
+        ...response,
+        data: feeSummaryFrom(response.data),
+      })),
+    );
   }
 
   getFees(query: FeeListQuery): Observable<ApiResponse<FeePage>> {
@@ -91,7 +97,7 @@ export class AdminFeesService {
     return this.api.post<unknown>(API.FEES.PAYMENTS(id), { amount, method }).pipe(
       map((response): ApiResponse<FeePaymentResult> => ({
         ...response,
-        data: { fee: updatedFeeFrom(response.data) },
+        data: paymentResultFrom(response.data),
       })),
     );
   }
@@ -110,6 +116,41 @@ export class AdminFeesService {
   }
 }
 
+function feeSummaryFrom(value: unknown): FeeSummary {
+  if (!isRecord(value)) {
+    throw new InvalidFeeResponseError('The fee summary response is invalid.');
+  }
+
+  const month = nonEmptyString(value['month']);
+  const collected = finiteNumber(value['collected']);
+  const pending = finiteNumber(value['pending']);
+  const overdueCount = finiteNumber(value['overdue_count']);
+  const vouchersSent = finiteNumber(value['vouchers_sent']);
+  if (
+    !month ||
+    collected === undefined ||
+    pending === undefined ||
+    overdueCount === undefined ||
+    vouchersSent === undefined ||
+    collected < 0 ||
+    pending < 0 ||
+    overdueCount < 0 ||
+    !Number.isInteger(overdueCount) ||
+    vouchersSent < 0 ||
+    !Number.isInteger(vouchersSent)
+  ) {
+    throw new InvalidFeeResponseError('The fee summary response is missing required values.');
+  }
+
+  return {
+    month,
+    collected,
+    pending,
+    overdue_count: overdueCount,
+    vouchers_sent: vouchersSent,
+  };
+}
+
 function feePageFrom(value: unknown): FeePage {
   if (!isRecord(value) || !Array.isArray(value['items']) || !value['items'].every(isRecord)) {
     throw new InvalidFeeResponseError('The fees response does not contain a valid page of records.');
@@ -119,7 +160,22 @@ function feePageFrom(value: unknown): FeePage {
   const page = finiteNumber(value['page']);
   const limit = finiteNumber(value['limit']);
   const totalPages = finiteNumber(value['totalPages']);
-  if (total === undefined || page === undefined || limit === undefined || totalPages === undefined) {
+  if (
+    total === undefined ||
+    page === undefined ||
+    limit === undefined ||
+    totalPages === undefined ||
+    total < 0 ||
+    page < 1 ||
+    limit < 1 ||
+    limit > 100 ||
+    totalPages < 0 ||
+    !Number.isInteger(total) ||
+    !Number.isInteger(page) ||
+    !Number.isInteger(limit) ||
+    !Number.isInteger(totalPages) ||
+    page > Math.max(totalPages, 1)
+  ) {
     throw new InvalidFeeResponseError('The fees response is missing pagination details.');
   }
 
@@ -194,57 +250,57 @@ function feeRecordFrom(row: Record<string, unknown>): FeeRecord {
   };
 }
 
-function updatedFeeFrom(value: unknown): FeeRecord | null {
-  if (!isRecord(value)) return null;
-
-  const candidates = [
-    value['fee'],
-    value['updated_fee'],
-    value['updatedFee'],
-    value['data'],
-    value,
-  ];
-  for (const candidate of candidates) {
-    if (!isRecord(candidate) || !candidate['status']) continue;
-    try {
-      return feeRecordFrom(candidate);
-    } catch (error) {
-      if (!(error instanceof InvalidFeeResponseError)) throw error;
-    }
+function paymentResultFrom(value: unknown): FeePaymentResult {
+  if (!isRecord(value)) {
+    throw new InvalidFeeResponseError('The payment response is invalid.');
   }
-  return null;
+
+  const paymentData = firstRecord(value, ['payment', 'created_payment', 'createdPayment']);
+  const feeData = firstRecord(value, ['fee', 'updated_fee', 'updatedFee']);
+  if (!paymentData || !feeData) {
+    throw new InvalidFeeResponseError('The payment response is missing the payment or updated fee.');
+  }
+
+  return {
+    payment: paymentFrom(paymentData),
+    fee: feeRecordFrom(feeData),
+  };
 }
 
 function paymentRowsFrom(value: unknown): FeePayment[] {
   let rows: unknown = value;
-  if (isRecord(value)) rows = value['items'] ?? value['payments'];
+  if (isRecord(value)) {
+    rows = value['items'] ?? value['payments'];
+  }
   if (!Array.isArray(rows) || !rows.every(isRecord)) {
     throw new InvalidFeeResponseError('The payment history response is not a valid collection.');
   }
 
-  return rows.map((row) => {
-    const id = nonEmptyString(row['id']) ?? nonEmptyString(row['payment_id']);
-    const amount = firstNumber(row['amount'], row['paid_amount']);
-    const method = nonEmptyString(row['method']) ?? nonEmptyString(row['payment_method']);
-    if (!id || amount === undefined || !method) {
-      throw new InvalidFeeResponseError('A payment history entry is missing its ID, amount, or method.');
-    }
+  return rows.map(paymentFrom);
+}
 
-    return {
-      id,
-      amount,
-      method,
-      paidAt:
-        nonEmptyString(row['paid_at']) ??
-        nonEmptyString(row['received_at']) ??
-        nonEmptyString(row['payment_date']) ??
-        nonEmptyString(row['paymentDate']) ??
-        nonEmptyString(row['created_at']) ??
-        nonEmptyString(row['date']) ??
-        null,
-      reference: nonEmptyString(row['reference']) ?? nonEmptyString(row['transaction_id']),
-    };
-  });
+function paymentFrom(row: Record<string, unknown>): FeePayment {
+  const id = nonEmptyString(row['id']) ?? nonEmptyString(row['payment_id']);
+  const amount = firstNumber(row['amount'], row['paid_amount']);
+  const method = nonEmptyString(row['method']) ?? nonEmptyString(row['payment_method']);
+  if (!id || amount === undefined || !method) {
+    throw new InvalidFeeResponseError('A payment record is missing its ID, amount, or method.');
+  }
+
+  return {
+    id,
+    amount,
+    method,
+    paidAt:
+      nonEmptyString(row['received_at']) ??
+      nonEmptyString(row['paid_at']) ??
+      nonEmptyString(row['payment_date']) ??
+      nonEmptyString(row['paymentDate']) ??
+      nonEmptyString(row['created_at']) ??
+      nonEmptyString(row['date']) ??
+      null,
+    reference: nonEmptyString(row['reference']) ?? nonEmptyString(row['transaction_id']),
+  };
 }
 
 function feeStatusFrom(value: unknown): FeeStatus | undefined {
@@ -263,8 +319,20 @@ function firstNumber(...values: unknown[]): number | undefined {
 
 function finiteNumber(value: unknown): number | undefined {
   if (typeof value !== 'number' && typeof value !== 'string') return undefined;
+  if (typeof value === 'string' && !value.trim()) return undefined;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function firstRecord(
+  source: Record<string, unknown>,
+  keys: string[],
+): Record<string, unknown> | undefined {
+  for (const key of keys) {
+    const value = source[key];
+    if (isRecord(value)) return value;
+  }
+  return undefined;
 }
 
 function nonEmptyString(value: unknown): string | undefined {

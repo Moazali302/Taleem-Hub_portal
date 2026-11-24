@@ -41,7 +41,17 @@ describe('AdminFeesComponent', () => {
         data: { month: '2026-11', collected: 0, pending: 7200, overdue_count: 1, vouchers_sent: 1 },
       })),
       getFees: vi.fn(() => of({ data: PAGE })),
-      submitPayment: vi.fn(() => of({ data: { fee: { ...FEE, amountPaid: 1500, status: 'Partial' } } })),
+      submitPayment: vi.fn(() => of({
+        data: {
+          fee: { ...FEE, amountPaid: 1500, status: 'Partial' },
+          payment: {
+            id: 'payment-5',
+            amount: 1500,
+            method: 'cash',
+            paidAt: '2026-11-24T10:30:00.000Z',
+          },
+        },
+      })),
       getPaymentHistory: vi.fn(() => of({ data: [] })),
       generateVouchers: vi.fn(() => of({ data: null })),
     };
@@ -71,7 +81,7 @@ describe('AdminFeesComponent', () => {
     component.submitPayment();
 
     expect(feesService.submitPayment).toHaveBeenCalledWith(FEE.id, 1500, 'bank_transfer');
-    expect(component.fees[0].status).toBe('Partial');
+    expect(component.fees()[0].status).toBe('Partial');
     expect(feesService.getSummary).toHaveBeenCalledTimes(2);
     expect(toastService.success).toHaveBeenCalled();
   });
