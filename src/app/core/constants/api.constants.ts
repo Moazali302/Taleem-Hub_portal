@@ -36,9 +36,11 @@ export const API = {
     STUDENTS: (id: string) => `/classes/${id}/students`
   },
   FEES: {
+    SUMMARY: '/fees/summary',
     LIST: '/fees',
+    PAYMENTS: (id: string) => `/fees/${encodeURIComponent(id)}/payments`,
+    GENERATE_VOUCHERS: '/fees/vouchers/generate',
     STUDENT: (id: string) => `/fees/student/${id}`,
-    MARK_PAID: (id: string) => `/fees/${id}/mark-paid`,
     CHALLAN: (id: string) => `/fees/${id}/challan`,
     OVERDUE: '/fees/overdue'
   },
