@@ -84,6 +84,10 @@ export const API = {
     UPDATE: (id: string) => `/announcements/${id}`,
     DELETE: (id: string) => `/announcements/${id}`
   },
+  SCHOOL: {
+    ANNOUNCEMENTS: '/school/announcements',
+    ANNOUNCEMENT_OPTIONS: '/school/announcements/options',
+  },
   ADMIN: {
     DASHBOARD: '/admin/dashboard',
     TEACHERS: '/admin/teachers',

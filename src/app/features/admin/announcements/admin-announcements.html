@@ -1,0 +1,221 @@
+<main class="announcements">
+  @if (isComposerOpen()) {
+    <header class="announcements__header announcements__header--compose">
+      <div>
+        <h1>New Announcement</h1>
+        <p>Write your message and choose who should see it.</p>
+      </div>
+    </header>
+
+    <div class="announcements__compose-layout">
+      <form class="compose-card" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        @if (optionsState() === 'loading') {
+          <div class="compose-card__state" role="status">Loading announcement options…</div>
+        } @else if (optionsState() === 'error') {
+          <div class="compose-card__state compose-card__state--error" role="alert">
+            <p>{{ optionsError() }}</p>
+            <button type="button" class="button button--secondary" (click)="loadOptions()">
+              Try again
+            </button>
+          </div>
+        } @else if (options(); as announcementOptions) {
+          <div class="compose-card__field">
+            <label for="announcement-title">Title</label>
+            <input
+              id="announcement-title"
+              type="text"
+              formControlName="title"
+              maxlength="255"
+              placeholder="Write an announcement title"
+            />
+            @if (isInvalid('title')) {
+              <p class="compose-card__error">
+                @if (form.controls.title.hasError('maxlength')) {
+                  Title must be 255 characters or fewer.
+                } @else {
+                  Enter a title.
+                }
+              </p>
+            }
+          </div>
+
+          <div class="compose-card__field">
+            <label for="announcement-message">Message</label>
+            <textarea
+              id="announcement-message"
+              rows="4"
+              formControlName="message"
+              maxlength="500"
+              placeholder="Write your message here"
+            ></textarea>
+            <div class="compose-card__counter">
+              @if (isInvalid('message')) {
+                <span class="compose-card__error">
+                  @if (form.controls.message.hasError('maxlength')) {
+                    Message must be 500 characters or fewer.
+                  } @else {
+                    Enter a message.
+                  }
+                </span>
+              }
+              <span>{{ form.controls.message.value.length }}/500</span>
+            </div>
+          </div>
+
+          <fieldset class="compose-card__recipients">
+            <legend>Send to</legend>
+            <div class="compose-card__recipient-grid">
+              @for (option of announcementOptions.recipients; track option.value) {
+                <label class="compose-card__recipient"
+                  [class.is-selected]="form.controls.target.value === option.value">
+                  <input type="radio" formControlName="target" [value]="option.value" />
+                  <span>{{ option.label }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+
+          <div class="compose-card__settings">
+            <div class="compose-card__field">
+              <label for="announcement-priority">Priority</label>
+              <select id="announcement-priority" formControlName="priority">
+                @for (option of announcementOptions.priorities; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="compose-card__field">
+              <label for="announcement-publish-option">Publish</label>
+              <select id="announcement-publish-option" formControlName="publishOption"
+                (change)="onPublishOptionChange($event)">
+                @for (option of announcementOptions.publishOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          @if (form.controls.publishOption.value === 'schedule') {
+            <div class="compose-card__field">
+              <label for="announcement-scheduled-at">Schedule date and time</label>
+              <input
+                id="announcement-scheduled-at"
+                type="datetime-local"
+                formControlName="scheduledAt"
+                [min]="minimumScheduleDate"
+              />
+              @if (isInvalid('scheduledAt')) {
+                <p class="compose-card__error">
+                  @if (form.controls.scheduledAt.hasError('required')) {
+                    Choose a date and time.
+                  } @else {
+                    Scheduled time must be in the future.
+                  }
+                </p>
+              }
+            </div>
+          }
+
+          <footer class="compose-card__actions">
+            <button type="button" class="button button--secondary"
+              [disabled]="isSubmitting()" (click)="closeComposer()">Cancel</button>
+            <button type="submit" class="button button--primary"
+              [disabled]="isSubmitting() || optionsState() !== 'ready'">
+              {{ isSubmitting() ? 'Publishing…' : form.controls.publishOption.value === 'schedule'
+                ? 'Schedule Announcement' : 'Publish Announcement' }}
+            </button>
+          </footer>
+        }
+      </form>
+
+      <aside class="preview">
+        <h2>Live preview</h2>
+        <article class="preview__card">
+          <div class="preview__badges">
+            <span class="badge badge--audience">{{ recipientLabel() }}</span>
+            <span [class]="'badge ' + priorityClass(previewDraft().priority)">
+              {{ priorityLabel() }}
+            </span>
+          </div>
+          <h3>{{ previewDraft().title || 'Your announcement title' }}</h3>
+          <p>{{ previewDraft().message || 'Your announcement message will appear here.' }}</p>
+          <small>Preview · Just now</small>
+        </article>
+        <p class="preview__note">Only {{ recipientLabel().toLowerCase() }} of your school will be notified.</p>
+      </aside>
+    </div>
+  } @else {
+    <header class="announcements__header">
+      <div>
+        <h1>Announcements</h1>
+        <p>Publish updates for students, teachers, staff and parents.</p>
+      </div>
+      <button type="button" class="button button--primary" (click)="openComposer()">
+        + New Announcement
+      </button>
+    </header>
+
+    <nav class="announcements__tabs" aria-label="Filter announcements by audience">
+      @for (tab of recipientTabs; track tab.label) {
+        <button type="button"
+          [class.is-active]="selectedTarget() === tab.target"
+          [attr.aria-pressed]="selectedTarget() === tab.target"
+          (click)="selectTarget(tab.target)">
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+
+    <section class="announcements__list" aria-label="School announcements" aria-live="polite">
+      @if (isLoading()) {
+        <div class="announcements__state" role="status">Loading announcements…</div>
+      } @else if (listError()) {
+        <div class="announcements__state announcements__state--error" role="alert">
+          <p>{{ listError() }}</p>
+          <button type="button" class="button button--secondary" (click)="loadAnnouncements()">
+            Try again
+          </button>
+        </div>
+      } @else if (announcements().length === 0) {
+        <div class="announcements__state">No announcements found.</div>
+      } @else {
+        @for (announcement of announcements(); track announcement.id) {
+          <article class="announcement-card">
+            <div class="announcement-card__content">
+              <div class="announcement-card__badges">
+                <span class="badge badge--audience">{{ audienceLabel(announcement.target) }}</span>
+                @if (announcement.priority) {
+                  <span [class]="'badge ' + priorityClass(announcement.priority)">
+                    {{ optionLabel(options()?.priorities, announcement.priority, announcement.priority) }}
+                  </span>
+                }
+              </div>
+              <h2>{{ announcement.title }}</h2>
+              <p>{{ announcement.message }}</p>
+              <small>
+                {{ statusLabel(announcement.status) }} · {{ announcementDate(announcement) }}
+              </small>
+            </div>
+          </article>
+        }
+      }
+    </section>
+
+    @if (!isLoading() && !listError() && total() > 0) {
+      <footer class="announcements__pagination">
+        <span>Showing {{ firstResult() }} to {{ lastResult() }} of {{ total() }}</span>
+        <nav aria-label="Announcement pages">
+          <button type="button" class="button button--secondary"
+            [disabled]="currentPage() <= 1" (click)="changePage(currentPage() - 1)">
+            Previous
+          </button>
+          <span>Page {{ currentPage() }} of {{ totalPages() }}</span>
+          <button type="button" class="button button--secondary"
+            [disabled]="currentPage() >= totalPages()" (click)="changePage(currentPage() + 1)">
+            Next
+          </button>
+        </nav>
+      </footer>
+    }
+  }
+</main>

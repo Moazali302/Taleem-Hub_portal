@@ -6,6 +6,7 @@ import { StudentListingComponent } from './student-listing/student-listing';
 import { StudentCreatePageComponent } from './add-student/student-create-page';
 import { AdminFeesComponent } from './fees/admin-fees';
 import { AdminAttendanceComponent } from './attendance/admin-attendance';
+import { AdminAnnouncementsComponent } from './announcements/admin-announcements';
 
 export const adminRoutes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -16,4 +17,5 @@ export const adminRoutes: Routes = [
   { path: 'students', component: StudentListingComponent },
   { path: 'fees', component: AdminFeesComponent },
   { path: 'attendance', component: AdminAttendanceComponent },
+  { path: 'announcements', component: AdminAnnouncementsComponent },
 ];
