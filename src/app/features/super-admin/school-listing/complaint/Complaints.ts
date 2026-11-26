@@ -263,15 +263,20 @@ export class ComplaintsComponent implements OnInit, OnDestroy {
   }
 
   exportCsv(): void {
-    downloadCsv('complaints.csv', [
-      { header: 'ID', value: (row) => row.id },
-      { header: 'School', value: (row) => row.school?.name ?? '' },
-      { header: 'Subject', value: (row) => row.subject },
-      { header: 'Raised By', value: (row) => row.raisedBy?.name ?? '' },
-      { header: 'Priority', value: (row) => row.priority },
-      { header: 'Status', value: (row) => this.statusLabel(row.status) },
-      { header: 'Created At', value: (row) => row.createdAt },
-    ], this.complaints);
+    try {
+      downloadCsv('complaints.csv', [
+        { header: 'ID', value: (row) => row.id },
+        { header: 'School', value: (row) => row.school?.name ?? '' },
+        { header: 'Subject', value: (row) => row.subject },
+        { header: 'Raised By', value: (row) => row.raisedBy?.name ?? '' },
+        { header: 'Priority', value: (row) => row.priority },
+        { header: 'Status', value: (row) => this.statusLabel(row.status) },
+        { header: 'Created At', value: (row) => row.createdAt },
+      ], this.complaints);
+      this.toaster.success(`${this.complaints.length} complaint record${this.complaints.length === 1 ? '' : 's'} exported.`);
+    } catch {
+      this.toaster.error('Unable to export complaints. Please try again.');
+    }
   }
 
   openEdit(complaint: Complaint): void {

@@ -8,6 +8,7 @@ import { PageHeaderComponent } from '@app/shared/components/page-header/page-hea
 import { SummaryCardComponent } from '@app/shared/components/summary-card/summary-card';
 import { downloadCsv } from '@app/shared/utlis/csv-export.util';
 import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
+import { ToastService } from '@app/core/services/toast.service';
 
 interface NewSchoolBar {
   label: string;
@@ -53,6 +54,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   constructor(
     private readonly analyticsService: PlatformAnalyticsService,
     private readonly cdr: ChangeDetectorRef,
+    private readonly toaster: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -154,6 +156,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.isLoading = false;
           this.isRefreshing = false;
           this.lastUpdated = new Date();
+          this.toaster.success('Analytics loaded successfully.');
           this.cdr.markForCheck();
         },
         error: (error: unknown) => {
@@ -161,6 +164,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.isRefreshing = false;
           this.hasError = true;
           this.errorMessage = getHttpErrorMessage(error);
+          this.toaster.error(this.errorMessage);
           this.cdr.markForCheck();
         },
       });
@@ -216,7 +220,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   exportReport(): void {
-    if (!this.dashboard) return;
+    if (!this.dashboard) {
+      this.toaster.warning('Analytics data is not ready to export.');
+      return;
+    }
     const data = this.dashboard;
     const rows: { metric: string; value: string | number }[] = [
       { metric: 'Date range', value: data.range },
@@ -241,9 +248,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       ...data.schoolsByCity.map((city) => ({ metric: `Schools · ${city.city}`, value: city.count })),
     ];
 
-    downloadCsv('super-admin-analytics.csv', [
-      { header: 'Metric', value: (row) => row.metric },
-      { header: 'Value', value: (row) => row.value },
-    ], rows);
+    try {
+      downloadCsv('super-admin-analytics.csv', [
+        { header: 'Metric', value: (row) => row.metric },
+        { header: 'Value', value: (row) => row.value },
+      ], rows);
+      this.toaster.success('Analytics report downloaded successfully.');
+    } catch {
+      this.toaster.error('Unable to download analytics report. Please try again.');
+    }
   }
 }

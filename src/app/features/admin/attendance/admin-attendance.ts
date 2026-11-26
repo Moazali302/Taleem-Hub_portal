@@ -63,6 +63,11 @@ export class AdminAttendanceComponent {
   readonly selectedLeaveId = signal('leave-1');
   readonly rejectionRemark = signal('');
   readonly isRegisterOpen = signal(false);
+  readonly editingRegisterId = signal<string | null>(null);
+  readonly deleteRegisterId = signal<string | null>(null);
+  readonly editPresent = signal(0);
+  readonly editAbsent = signal(0);
+  readonly editLeave = signal(0);
 
   readonly classRegisters = signal<ClassRegister[]>(createClassRegisters());
   readonly teachers = signal<TeacherAttendance[]>(createTeacherAttendance());
@@ -236,6 +241,7 @@ export class AdminAttendanceComponent {
     const date = new Date(this.selectedDate());
     date.setDate(date.getDate() + offset);
     this.selectedDate.set(date);
+    this.toaster.info(`Attendance date changed to ${this.dateLabel()}.`);
   }
 
   setSearch(value: string): void {
@@ -278,6 +284,75 @@ export class AdminAttendanceComponent {
     this.selectedLeaveId.set(id);
   }
 
+  openEditRegister(register: ClassRegister): void {
+    if (register.present === null || register.absent === null || register.leave === null) {
+      this.toaster.error('This class register is still pending and cannot be edited.');
+      return;
+    }
+    this.editingRegisterId.set(register.id);
+    this.editPresent.set(register.present);
+    this.editAbsent.set(register.absent);
+    this.editLeave.set(register.leave);
+  }
+
+  saveRegisterEdit(): void {
+    const id = this.editingRegisterId();
+    if (!id) return;
+
+    const present = this.editPresent();
+    const absent = this.editAbsent();
+    const leave = this.editLeave();
+    if (present < 0 || absent < 0 || leave < 0) {
+      this.toaster.error('Attendance counts cannot be negative.');
+      return;
+    }
+
+    const total = present + absent + leave;
+    if (total === 0) {
+      this.toaster.error('Enter at least one attendance record.');
+      return;
+    }
+
+    this.classRegisters.update((registers) =>
+      registers.map((register) => {
+        if (register.id !== id) return register;
+        const rate = Math.round((present / total) * 100);
+        return { ...register, present, absent, leave, rate };
+      }),
+    );
+    this.editingRegisterId.set(null);
+    this.toaster.success('Class attendance updated successfully.');
+  }
+
+  cancelRegisterEdit(): void {
+    this.editingRegisterId.set(null);
+  }
+
+  requestRegisterDelete(id: string): void {
+    this.deleteRegisterId.set(id);
+  }
+
+  cancelRegisterDelete(): void {
+    this.deleteRegisterId.set(null);
+  }
+
+  confirmRegisterDelete(): void {
+    const id = this.deleteRegisterId();
+    if (!id) return;
+    const register = this.classRegisters().find((item) => item.id === id);
+    if (!register) {
+      this.toaster.error('The selected class register could not be found.');
+      return;
+    }
+
+    this.classRegisters.update((registers) => registers.filter((item) => item.id !== id));
+    if (this.selectedClassId() === id) {
+      this.selectedClassId.set(this.classRegisters()[0]?.id ?? '');
+    }
+    this.deleteRegisterId.set(null);
+    this.toaster.success(`${register.className} attendance register deleted.`);
+  }
+
   decideLeave(id: string, decision: 'Approved' | 'Rejected'): void {
     if (decision === 'Rejected' && !this.rejectionRemark().trim()) {
       this.toaster.error('Add a reason before rejecting this leave request.');
@@ -295,39 +370,40 @@ export class AdminAttendanceComponent {
   }
 
   exportReport(): void {
-    if (this.activeTab() === 'classes') {
-      downloadCsv('class-attendance.csv', [
-        { header: 'Class', value: (row: ClassRegister) => row.className },
-        { header: 'Teacher', value: (row: ClassRegister) => row.teacher },
-        { header: 'Submitted', value: (row: ClassRegister) => row.submittedAt ?? 'Pending' },
-        { header: 'Present', value: (row: ClassRegister) => row.present ?? '—' },
-        { header: 'Absent', value: (row: ClassRegister) => row.absent ?? '—' },
-        { header: 'Leave', value: (row: ClassRegister) => row.leave ?? '—' },
-        { header: 'Attendance rate', value: (row: ClassRegister) => row.rate === null ? 'Pending' : `${row.rate}%` },
-      ], this.classRegisters());
-      return;
+    try {
+      if (this.activeTab() === 'classes') {
+        downloadCsv('class-attendance.csv', [
+          { header: 'Class', value: (row: ClassRegister) => row.className },
+          { header: 'Teacher', value: (row: ClassRegister) => row.teacher },
+          { header: 'Submitted', value: (row: ClassRegister) => row.submittedAt ?? 'Pending' },
+          { header: 'Present', value: (row: ClassRegister) => row.present ?? '—' },
+          { header: 'Absent', value: (row: ClassRegister) => row.absent ?? '—' },
+          { header: 'Leave', value: (row: ClassRegister) => row.leave ?? '—' },
+          { header: 'Attendance rate', value: (row: ClassRegister) => row.rate === null ? 'Pending' : `${row.rate}%` },
+        ], this.classRegisters());
+      } else if (this.activeTab() === 'teachers') {
+        downloadCsv('teacher-attendance.csv', [
+          { header: 'Teacher', value: (row: TeacherAttendance) => row.name },
+          { header: 'Assignment', value: (row: TeacherAttendance) => row.assignment },
+          { header: 'Marked at', value: (row: TeacherAttendance) => row.markedAt ?? '—' },
+          { header: 'Location', value: (row: TeacherAttendance) => row.location },
+          { header: 'Status', value: (row: TeacherAttendance) => row.status },
+          { header: 'Comment', value: (row: TeacherAttendance) => row.comment },
+        ], this.teachers());
+      } else {
+        downloadCsv('leave-requests.csv', [
+          { header: 'Teacher', value: (row: LeaveRequest) => row.teacher },
+          { header: 'Type', value: (row: LeaveRequest) => row.type },
+          { header: 'Dates', value: (row: LeaveRequest) => row.dates },
+          { header: 'Duration', value: (row: LeaveRequest) => row.duration },
+          { header: 'Status', value: (row: LeaveRequest) => row.status },
+          { header: 'Reason', value: (row: LeaveRequest) => row.reason },
+        ], this.leaveRequests());
+      }
+      this.toaster.success('Attendance report downloaded successfully.');
+    } catch {
+      this.toaster.error('Unable to download the attendance report. Please try again.');
     }
-
-    if (this.activeTab() === 'teachers') {
-      downloadCsv('teacher-attendance.csv', [
-        { header: 'Teacher', value: (row: TeacherAttendance) => row.name },
-        { header: 'Assignment', value: (row: TeacherAttendance) => row.assignment },
-        { header: 'Marked at', value: (row: TeacherAttendance) => row.markedAt ?? '—' },
-        { header: 'Location', value: (row: TeacherAttendance) => row.location },
-        { header: 'Status', value: (row: TeacherAttendance) => row.status },
-        { header: 'Comment', value: (row: TeacherAttendance) => row.comment },
-      ], this.teachers());
-      return;
-    }
-
-    downloadCsv('leave-requests.csv', [
-      { header: 'Teacher', value: (row: LeaveRequest) => row.teacher },
-      { header: 'Type', value: (row: LeaveRequest) => row.type },
-      { header: 'Dates', value: (row: LeaveRequest) => row.dates },
-      { header: 'Duration', value: (row: LeaveRequest) => row.duration },
-      { header: 'Status', value: (row: LeaveRequest) => row.status },
-      { header: 'Reason', value: (row: LeaveRequest) => row.reason },
-    ], this.leaveRequests());
   }
 
   private activePageSize(): number {

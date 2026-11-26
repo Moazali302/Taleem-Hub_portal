@@ -163,7 +163,12 @@ columnDefs: ColDef<School>[] = [
   }
 
   onExport(): void {
-    this.dataGrid?.exportCsv('schools.csv');
+    try {
+      this.dataGrid?.exportCsv('schools.csv');
+      this.toaster.success(`${this.filteredSchools.length} school record${this.filteredSchools.length === 1 ? '' : 's'} exported.`);
+    } catch {
+      this.toaster.error('Unable to export schools. Please try again.');
+    }
   }
 
   openAddSchool(): void {
@@ -176,6 +181,7 @@ columnDefs: ColDef<School>[] = [
 
   onSchoolAdded(_res: ApiResponse<CreateSchoolData>): void {
     this.closeAddSchool();
+    this.toaster.success('School added successfully.');
     this.loadSchools();
   }
 

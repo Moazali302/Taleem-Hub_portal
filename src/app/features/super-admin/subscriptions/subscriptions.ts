@@ -25,6 +25,7 @@ import { getHttpErrorMessage } from '@app/shared/utlis/http-error.util';
 import { downloadCsv } from '@app/shared/utlis/csv-export.util';
 import { AssignPackageComponent } from './assign-package/assign-package';
 import { GridToolbarComponent as GridToolbarComponent } from '@app/shared/grid-tool-bar/grid-toolbar';
+import { ToastService } from '@app/core/services/toast.service';
 
 const PLAN_COLORS: Record<string, StatusBadgeColor> = {
   basic: { bg: '#eef1f8', text: '#3b4a73', dot: '#3b4a73' },
@@ -147,6 +148,7 @@ export class SubscriptionsComponent implements OnInit {
   constructor(
     private readonly subscriptionsService: SubscriptionsService,
     private readonly cdr: ChangeDetectorRef,
+    private readonly toaster: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -186,14 +188,19 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   exportCsv(): void {
-    downloadCsv('subscriptions.csv', [
-      { header: 'School', value: (row) => row.school_name },
-      { header: 'Plan', value: (row) => capitalize(row.plan) },
-      { header: 'Billing', value: (row) => capitalize(row.billing_cycle) },
-      { header: 'Amount (PKR)', value: (row) => row.amount },
-      { header: 'Expires', value: (row) => row.expires_at ?? '-' },
-      { header: 'Status', value: (row) => capitalize(row.status ?? '-') },
-    ], this.filteredSubscriptions);
+    try {
+      downloadCsv('subscriptions.csv', [
+        { header: 'School', value: (row) => row.school_name },
+        { header: 'Plan', value: (row) => capitalize(row.plan) },
+        { header: 'Billing', value: (row) => capitalize(row.billing_cycle) },
+        { header: 'Amount (PKR)', value: (row) => row.amount },
+        { header: 'Expires', value: (row) => row.expires_at ?? '-' },
+        { header: 'Status', value: (row) => capitalize(row.status ?? '-') },
+      ], this.filteredSubscriptions);
+      this.toaster.success(`${this.filteredSubscriptions.length} subscription record${this.filteredSubscriptions.length === 1 ? '' : 's'} exported.`);
+    } catch {
+      this.toaster.error('Unable to export subscriptions. Please try again.');
+    }
   }
 
   openAssignPackage(): void {
