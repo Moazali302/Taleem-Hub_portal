@@ -1,0 +1,373 @@
+<main class="attendance">
+  <header class="attendance__header">
+    <div>
+      <div class="attendance__title-row">
+        <h1>Attendance</h1>
+        <span class="attendance__sample-tag">Sample data</span>
+      </div>
+      <p class="attendance__subtitle">
+        @switch (activeTab()) {
+          @case ('classes') { Class registers submitted by teachers. View only. }
+          @case ('teachers') { Review what teachers submit and decide on leave requests. }
+          @case ('leaves') { Review teacher leave requests and decide. }
+        }
+      </p>
+    </div>
+    <button type="button" class="attendance__primary-button" (click)="exportReport()">
+      Download {{ activeTab() === 'leaves' ? 'Leave' : 'Monthly' }} Report
+    </button>
+  </header>
+
+  <div class="attendance__controls">
+    <nav class="attendance__tabs" aria-label="Attendance sections">
+      <button type="button" [class.is-active]="activeTab() === 'classes'"
+        [attr.aria-current]="activeTab() === 'classes' ? 'page' : null" (click)="setTab('classes')">
+        Class Attendance
+      </button>
+      <button type="button" [class.is-active]="activeTab() === 'teachers'"
+        [attr.aria-current]="activeTab() === 'teachers' ? 'page' : null" (click)="setTab('teachers')">
+        Teacher Attendance
+      </button>
+      <button type="button" [class.is-active]="activeTab() === 'leaves'"
+        [attr.aria-current]="activeTab() === 'leaves' ? 'page' : null" (click)="setTab('leaves')">
+        Leave Requests <span class="attendance__tab-count">{{ pendingLeaveCount() }}</span>
+      </button>
+    </nav>
+
+    <div class="attendance__date-picker" aria-label="Attendance date">
+      <button type="button" aria-label="Previous day" (click)="changeDate(-1)">‹</button>
+      <time>{{ dateLabel() }}</time>
+      <button type="button" aria-label="Next day" (click)="changeDate(1)">›</button>
+    </div>
+  </div>
+
+  @if (activeTab() === 'classes') {
+    <section class="attendance__stats" aria-label="Class attendance summary">
+      <article class="attendance__stat">
+        <p>Students present</p><strong>92%</strong>
+        <div class="attendance__progress"><span style="width: 92%"></span></div>
+        <small>1,184 of 1,287</small>
+      </article>
+      <article class="attendance__stat">
+        <p>Registers submitted</p><strong>9 / 12</strong>
+        <div class="attendance__progress"><span style="width: 75%"></span></div>
+        <small>Submitted by teachers</small>
+      </article>
+      <article class="attendance__stat">
+        <p>Pending</p><strong class="attendance__value--gold">3</strong>
+        <small>Not submitted yet</small>
+      </article>
+      <article class="attendance__stat">
+        <p>Below 85%</p><strong class="attendance__value--red">1 class</strong>
+        <small>9-B needs follow-up</small>
+      </article>
+    </section>
+
+    <section class="attendance__workspace">
+      <div class="attendance__panel">
+        <div class="attendance__toolbar">
+          <label class="attendance__search">
+            <span class="attendance__visually-hidden">Search classes or teachers</span>
+            <input type="search" placeholder="Search classes or teachers..."
+              [value]="searchTerm()" (input)="setSearch($any($event.target).value)" />
+          </label>
+          <div class="attendance__filters" aria-label="Filter class registers">
+            @for (filter of ['All', 'Submitted', 'Pending']; track filter) {
+              <button type="button" [class.is-active]="classFilter() === filter"
+                (click)="setClassFilter($any(filter))">{{ filter }}</button>
+            }
+          </div>
+        </div>
+        <div class="attendance__table-wrap">
+          <table class="attendance__table">
+            <thead><tr>
+              <th scope="col">Class · Teacher</th><th scope="col">Submitted</th>
+              <th scope="col">Present</th><th scope="col">Absent</th>
+              <th scope="col">Leave</th><th scope="col">Rate</th><th scope="col">Action</th>
+            </tr></thead>
+            <tbody>
+              @for (register of visibleClasses(); track register.id) {
+                <tr [class.is-selected]="selectedClassId() === register.id"
+                  (click)="selectedClassId.set(register.id)">
+                  <td><strong>{{ register.className }}</strong><small>{{ register.teacher }}</small></td>
+                  <td>{{ register.submittedAt ?? '—' }}</td>
+                  <td>{{ register.present ?? '—' }}</td><td>{{ register.absent ?? '—' }}</td>
+                  <td>{{ register.leave ?? '—' }}</td>
+                  <td>
+                    @if (register.rate === null) { <span>Pending</span> }
+                    @else { <span [class.attendance__rate--low]="register.rate < 85">{{ register.rate }}%</span> }
+                  </td>
+                  <td>
+                    @if (register.submittedAt) {
+                      <button type="button" class="attendance__text-button"
+                        (click)="$event.stopPropagation(); selectedClassId.set(register.id)">View register</button>
+                    } @else {
+                      <button type="button" class="attendance__text-button"
+                        (click)="$event.stopPropagation(); remindTeacher(register.teacher)">
+                        Remind teacher
+                      </button>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr><td class="attendance__empty" colspan="7">No classes match your search.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <footer class="attendance__pagination">
+          <span>{{ rangeLabel() }}</span>
+          <nav aria-label="Class register pages">
+            @for (page of pages(); track page) {
+              <button type="button" [class.is-current]="currentPage() === page"
+                [attr.aria-current]="currentPage() === page ? 'page' : null"
+                (click)="goToPage(page)">{{ page }}</button>
+            }
+          </nav>
+        </footer>
+      </div>
+
+      @if (selectedClass(); as register) {
+        <aside class="attendance__detail-panel" aria-label="Selected class register">
+          <div class="attendance__detail-heading">
+            <h2>Register · {{ register.className }}</h2>
+            @if (register.rate !== null) {
+              <span class="attendance__badge attendance__badge--red">{{ register.rate }}%</span>
+            } @else { <span class="attendance__badge attendance__badge--gold">Pending</span> }
+          </div>
+          <p class="attendance__detail-caption">
+            {{ register.submittedAt ? 'Submitted by ' + register.teacher + ' at ' + register.submittedAt : 'This register has not been submitted yet.' }}
+          </p>
+          @if (register.present !== null && register.absent !== null && register.leave !== null) {
+            <div class="attendance__mini-stats">
+              <div><strong>{{ register.present }}</strong><span>Present</span></div>
+              <div><strong>{{ register.absent }}</strong><span>Absent</span></div>
+            </div>
+            <p class="attendance__list-label">Absent students</p>
+            <ul class="attendance__absent-list">
+              <li>Roll no. 04 · Student 04 <span class="attendance__badge attendance__badge--red">Absent</span></li>
+              <li>Roll no. 09 · Student 09 <span class="attendance__badge attendance__badge--red">Absent</span></li>
+              <li>Roll no. 15 · Student 15 <span class="attendance__badge attendance__badge--blue">Leave</span></li>
+            </ul>
+            <button type="button" class="attendance__text-button attendance__full-register"
+              (click)="isRegisterOpen.set(true)">View full register ›</button>
+            <p class="attendance__note">Teacher’s note is shown here if added.</p>
+          }
+        </aside>
+      }
+    </section>
+  }
+
+  @if (activeTab() === 'teachers') {
+    <section class="attendance__stats" aria-label="Teacher attendance summary">
+      <article class="attendance__stat"><p>Present</p><strong>41</strong>
+        <div class="attendance__progress"><span style="width: 89%"></span></div><small>89% of 46 teachers</small>
+      </article>
+      <article class="attendance__stat"><p>On unapproved leave</p><strong class="attendance__value--gold">3</strong><small>Today</small></article>
+      <article class="attendance__stat"><p>Not marked</p><strong class="attendance__value--red">2</strong><small>No check-in yet</small></article>
+      <article class="attendance__stat"><p>Class registers submitted</p><strong>9 / 12</strong>
+        <div class="attendance__progress"><span style="width: 75%"></span></div><small>3 classes pending</small>
+      </article>
+    </section>
+
+    <section class="attendance__workspace">
+      <div class="attendance__panel">
+        <div class="attendance__toolbar attendance__toolbar--teacher">
+          <label class="attendance__search">
+            <span class="attendance__visually-hidden">Search teachers</span>
+            <input type="search" placeholder="Search teachers..."
+              [value]="searchTerm()" (input)="setSearch($any($event.target).value)" />
+          </label>
+          <select aria-label="Filter teacher attendance status" [value]="teacherFilter()"
+            (change)="setTeacherFilter($any($event.target).value)">
+            <option>All</option><option>On time</option><option>Late</option>
+            <option>On leave</option><option>Not marked</option>
+          </select>
+          <button type="button" class="attendance__secondary-button" (click)="exportReport()">Export</button>
+        </div>
+        <div class="attendance__table-wrap">
+          <table class="attendance__table attendance__teacher-table">
+            <thead><tr><th scope="col">Teacher</th><th scope="col">Marked at</th>
+              <th scope="col">Location</th><th scope="col">Status</th><th scope="col">Comment</th></tr></thead>
+            <tbody>
+              @for (teacher of visibleTeachers(); track teacher.id) {
+                <tr>
+                  <td><strong>{{ teacher.name }}</strong><small>{{ teacher.assignment }}</small></td>
+                  <td>{{ teacher.markedAt ?? '—' }}</td>
+                  <td>{{ teacher.location }} @if (teacher.markedAt) { <small class="attendance__map-label">View on map</small> }</td>
+                  <td><span class="attendance__badge"
+                    [class.attendance__badge--green]="teacher.status === 'On time'"
+                    [class.attendance__badge--gold]="teacher.status === 'Late'"
+                    [class.attendance__badge--blue]="teacher.status === 'On leave'"
+                    [class.attendance__badge--red]="teacher.status === 'Not marked'">
+                    {{ teacher.status }}{{ teacher.status === 'Late' ? ' · 24 min' : '' }}
+                  </span></td>
+                  <td class="attendance__comment">{{ teacher.comment || '—' }}</td>
+                </tr>
+              } @empty {
+                <tr><td class="attendance__empty" colspan="5">No teachers match your search.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <footer class="attendance__pagination">
+          <span>{{ rangeLabel() }}</span>
+          <nav aria-label="Teacher attendance pages">
+            <button type="button" aria-label="Previous page" [disabled]="currentPage() <= 1"
+              (click)="goToPage(currentPage() - 1)">‹</button>
+            @for (page of pages(); track page) {
+              <button type="button" [class.is-current]="currentPage() === page"
+                [attr.aria-current]="currentPage() === page ? 'page' : null"
+                (click)="goToPage(page)">{{ page }}</button>
+            }
+            <button type="button" aria-label="Next page" [disabled]="currentPage() >= pageCount()"
+              (click)="goToPage(currentPage() + 1)">›</button>
+          </nav>
+        </footer>
+      </div>
+
+      <aside class="attendance__detail-panel attendance__leave-summary">
+        <div class="attendance__detail-heading"><h2>Leave requests</h2>
+          <span class="attendance__badge attendance__badge--gold">{{ pendingLeaveCount() }} pending</span>
+        </div>
+        @for (request of leaveRequests(); track request.id) {
+          @if (request.status === 'Pending') {
+            <article class="attendance__request-card">
+              <div class="attendance__request-heading"><strong>{{ request.teacher }}</strong>
+                <span class="attendance__badge attendance__badge--blue">{{ request.type }}</span></div>
+              <small>{{ request.dates }} · {{ request.duration }}</small>
+              <p>{{ request.reason }}</p>
+              <div class="attendance__request-actions">
+                <button type="button" class="attendance__approve"
+                  (click)="decideLeave(request.id, 'Approved')">Approve</button>
+                <button type="button" class="attendance__reject"
+                  (click)="reviewLeave(request.id)">Review / reject</button>
+              </div>
+            </article>
+          }
+        }
+        <p class="attendance__note">Rejecting a request requires a reason for the teacher.</p>
+      </aside>
+    </section>
+  }
+
+  @if (activeTab() === 'leaves') {
+    <section class="attendance__stats" aria-label="Leave request summary">
+      <article class="attendance__stat"><p>Pending</p><strong class="attendance__value--gold">{{ pendingLeaveCount() }}</strong><small>Need your decision</small></article>
+      <article class="attendance__stat"><p>Approved this month</p><strong class="attendance__value--green">7</strong><small>Approved requests</small></article>
+      <article class="attendance__stat"><p>Rejected this month</p><strong class="attendance__value--red">1</strong><small>Rejected requests</small></article>
+      <article class="attendance__stat"><p>On leave today</p><strong>3</strong><small>Approved leaves</small></article>
+    </section>
+
+    <section class="attendance__workspace attendance__workspace--leaves">
+      <div class="attendance__panel">
+        <div class="attendance__toolbar attendance__toolbar--leaves">
+          <div class="attendance__filters" aria-label="Filter leave requests">
+            @for (filter of ['Pending', 'Approved', 'Rejected', 'All']; track filter) {
+              <button type="button" [class.is-active]="leaveFilter() === filter"
+                (click)="setLeaveFilter($any(filter))">
+                {{ filter }}{{ filter === 'Pending' ? ' ' + pendingLeaveCount() : '' }}
+              </button>
+            }
+          </div>
+          <label class="attendance__search">
+            <span class="attendance__visually-hidden">Search teachers</span>
+            <input type="search" placeholder="Search teachers..."
+              [value]="searchTerm()" (input)="setSearch($any($event.target).value)" />
+          </label>
+        </div>
+        <div class="attendance__table-wrap">
+          <table class="attendance__table attendance__leave-table">
+            <thead><tr><th scope="col">Teacher</th><th scope="col">Type</th>
+              <th scope="col">Dates</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
+            <tbody>
+              @for (request of visibleLeaves(); track request.id) {
+                <tr [class.is-selected]="selectedLeaveId() === request.id" (click)="selectLeave(request.id)">
+                  <td><strong>{{ request.teacher }}</strong><small>Applied {{ request.appliedAt }}</small></td>
+                  <td>{{ request.type }}</td>
+                  <td>{{ request.dates }}<small>{{ request.duration }}</small></td>
+                  <td><span class="attendance__badge"
+                    [class.attendance__badge--gold]="request.status === 'Pending'"
+                    [class.attendance__badge--green]="request.status === 'Approved'"
+                    [class.attendance__badge--red]="request.status === 'Rejected'">{{ request.status }}</span></td>
+                  <td><button type="button" class="attendance__text-button"
+                    (click)="$event.stopPropagation(); selectLeave(request.id)">
+                    {{ request.status === 'Pending' ? 'Review' : 'View' }}</button></td>
+                </tr>
+              } @empty {
+                <tr><td class="attendance__empty" colspan="5">No leave requests match your search.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <footer class="attendance__pagination">
+          <span>{{ rangeLabel() }}</span>
+          <nav aria-label="Leave request pages">
+            @for (page of pages(); track page) {
+              <button type="button" [class.is-current]="currentPage() === page"
+                [attr.aria-current]="currentPage() === page ? 'page' : null"
+                (click)="goToPage(page)">{{ page }}</button>
+            }
+          </nav>
+        </footer>
+      </div>
+
+      @if (selectedLeave(); as request) {
+        <aside class="attendance__detail-panel attendance__leave-detail" aria-label="Leave request details">
+          <div class="attendance__detail-heading"><h2>Leave request</h2>
+            <span class="attendance__badge"
+              [class.attendance__badge--gold]="request.status === 'Pending'"
+              [class.attendance__badge--green]="request.status === 'Approved'"
+              [class.attendance__badge--red]="request.status === 'Rejected'">{{ request.status }}</span>
+          </div>
+          <strong class="attendance__detail-name">{{ request.teacher }}</strong>
+          <p class="attendance__detail-caption">{{ request.assignment }}</p>
+          <div class="attendance__leave-facts">
+            <small>Type</small><strong>{{ request.type }}</strong>
+            <small>Dates</small><strong>{{ request.dates }} · {{ request.duration }}</strong>
+            <small>Reason from teacher</small><p>{{ request.reason }}</p>
+          </div>
+          @if (request.status === 'Pending') {
+            <label class="attendance__remark-label" for="leave-remark">Your remark <span>(required when rejecting)</span></label>
+            <textarea id="leave-remark" rows="3" placeholder="Add a note for the teacher..."
+              [value]="rejectionRemark()" (input)="rejectionRemark.set($any($event.target).value)"></textarea>
+            <div class="attendance__decision-actions">
+              <button type="button" class="attendance__approve"
+                (click)="decideLeave(request.id, 'Approved')">Approve</button>
+              <button type="button" class="attendance__reject"
+                (click)="decideLeave(request.id, 'Rejected')">Reject</button>
+            </div>
+          } @else {
+            <p class="attendance__note">This request has already been {{ request.status.toLowerCase() }}.</p>
+          }
+        </aside>
+      }
+    </section>
+  }
+
+  @if (isRegisterOpen() && selectedClass(); as register) {
+    <div class="attendance__modal-backdrop" (click)="isRegisterOpen.set(false)">
+      <section class="attendance__modal" role="dialog" aria-modal="true"
+        aria-labelledby="register-title" (click)="$event.stopPropagation()">
+        <header class="attendance__modal-header">
+          <div><h2 id="register-title">Class register · {{ register.className }}</h2>
+            <p>{{ register.teacher }} · {{ dateLabel() }}</p></div>
+          <button type="button" aria-label="Close register" (click)="isRegisterOpen.set(false)">×</button>
+        </header>
+        <div class="attendance__table-wrap">
+          <table class="attendance__table attendance__register-table">
+            <thead><tr><th scope="col">Roll no.</th><th scope="col">Student</th><th scope="col">Status</th></tr></thead>
+            <tbody>@for (student of registerStudents(); track student.rollNumber) {
+              <tr><td>{{ student.rollNumber }}</td><td>{{ student.name }}</td>
+                <td><span class="attendance__badge"
+                  [class.attendance__badge--green]="student.status === 'Present'"
+                  [class.attendance__badge--red]="student.status === 'Absent'"
+                  [class.attendance__badge--blue]="student.status === 'Leave'">{{ student.status }}</span></td>
+              </tr>
+            }</tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  }
+</main>
