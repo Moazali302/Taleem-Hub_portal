@@ -225,6 +225,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
 
     this.form.controls.password.setValue(passwordChars.join(''));
     this.form.controls.password.markAsDirty();
+    this.toaster.success('A secure password was generated.');
   }
 
   loadClasses(): void {

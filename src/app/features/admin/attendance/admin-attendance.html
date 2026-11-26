@@ -107,6 +107,12 @@
                         Remind teacher
                       </button>
                     }
+                    <div class="attendance__row-actions">
+                      <button type="button" class="attendance__edit-button"
+                        (click)="$event.stopPropagation(); openEditRegister(register)">Edit</button>
+                      <button type="button" class="attendance__delete-button"
+                        (click)="$event.stopPropagation(); requestRegisterDelete(register.id)">Delete</button>
+                    </div>
                   </td>
                 </tr>
               } @empty {
@@ -343,6 +349,59 @@
         </aside>
       }
     </section>
+  }
+
+  @if (editingRegisterId(); as registerId) {
+    <div class="attendance__modal-backdrop" (click)="cancelRegisterEdit()">
+      <section class="attendance__modal attendance__modal--small" role="dialog" aria-modal="true"
+        aria-labelledby="edit-register-title" (click)="$event.stopPropagation()">
+        <header class="attendance__modal-header">
+          <div>
+            <h2 id="edit-register-title">Edit class attendance</h2>
+            <p>Update the submitted attendance counts.</p>
+          </div>
+          <button type="button" aria-label="Close edit dialog" (click)="cancelRegisterEdit()">×</button>
+        </header>
+        <div class="attendance__edit-grid">
+          <label>Present
+            <input type="number" min="0" [ngModel]="editPresent()"
+              (ngModelChange)="editPresent.set($event)" />
+          </label>
+          <label>Absent
+            <input type="number" min="0" [ngModel]="editAbsent()"
+              (ngModelChange)="editAbsent.set($event)" />
+          </label>
+          <label>Leave
+            <input type="number" min="0" [ngModel]="editLeave()"
+              (ngModelChange)="editLeave.set($event)" />
+          </label>
+        </div>
+        <div class="attendance__decision-actions">
+          <button type="button" class="attendance__reject" (click)="cancelRegisterEdit()">Cancel</button>
+          <button type="button" class="attendance__approve" (click)="saveRegisterEdit()">Save changes</button>
+        </div>
+      </section>
+    </div>
+  }
+
+  @if (deleteRegisterId(); as registerId) {
+    <div class="attendance__modal-backdrop" (click)="cancelRegisterDelete()">
+      <section class="attendance__modal attendance__modal--confirm" role="dialog" aria-modal="true"
+        aria-labelledby="delete-register-title" (click)="$event.stopPropagation()">
+        <header class="attendance__modal-header">
+          <div>
+            <h2 id="delete-register-title">Delete attendance register?</h2>
+            <p>This action removes the selected register from the attendance list.</p>
+          </div>
+          <button type="button" aria-label="Close delete dialog" (click)="cancelRegisterDelete()">×</button>
+        </header>
+        <div class="attendance__decision-actions">
+          <button type="button" class="attendance__reject" (click)="cancelRegisterDelete()">Cancel</button>
+          <button type="button" class="attendance__approve attendance__approve--danger"
+            (click)="confirmRegisterDelete()">Delete register</button>
+        </div>
+      </section>
+    </div>
   }
 
   @if (isRegisterOpen() && selectedClass(); as register) {

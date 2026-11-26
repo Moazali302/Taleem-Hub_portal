@@ -136,6 +136,7 @@ export class AddTeacherComponent implements OnInit, OnDestroy {
     const password = Array.from(randomValues, (value) => characters[value % characters.length]).join('');
     this.form.controls.password.setValue(password);
     this.form.controls.password.markAsDirty();
+    this.toaster.success('A secure password was generated.');
   }
 
   onSubmit(): void {
